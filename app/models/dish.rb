@@ -12,7 +12,7 @@ class Dish < ApplicationRecord
 
   def self.search_by_conditions(params)
     scope = Dish.all
-    scope = scope.where("name ILIKE ?", "%#{params[:keyword]}%")          if params[:keyword].present?
+    scope = scope.where("dishes.name ILIKE ?", "%#{params[:keyword]}%")   if params[:keyword].present?
     scope = scope.by_category(params[:category])                          if params[:category].present?
     scope = scope.where("time_of_days @> ?",      [params[:time_of_day]].to_json)        if params[:time_of_day].present?
     scope = scope.where("seasons @> ?",           [params[:season]].to_json)             if params[:season].present?

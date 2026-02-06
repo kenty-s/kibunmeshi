@@ -58,6 +58,12 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Use RSpec for testing [https://rspec.info/]
+  gem 'rspec-rails'
+
+  # Use Factory Bot for fixtures replacement [
+  gem 'factory_bot_rails'
 end
 
 group :development do
