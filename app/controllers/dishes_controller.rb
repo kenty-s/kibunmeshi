@@ -9,7 +9,10 @@ class DishesController < ApplicationController
     if @dish.nil?
       flash[:alert] = "条件に合う料理が見つかりませんでした"
       redirect_to root_path
+      return
     end
+
+    save_search_history(result_params.to_h, @dish)
     # 料理が見つかった場合は(result.html.erb)を表示
   end
 

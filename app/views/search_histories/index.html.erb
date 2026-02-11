@@ -1,10 +1,14 @@
 <div class="bg-[#f8efe4] min-h-screen py-10">
   <div class="max-w-6xl mx-auto px-4 space-y-8">
     <header class="space-y-1">
-      <div class="flex items-center gap-2 text-2xl font-semibold text-gray-800">
-        <span class="text-xl">🕑</span>
-        <span>検索履歴</span>
-        <span class="text-sm text-gray-500 font-normal">過去に提案された料理の履歴です</span>
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-2 text-2xl font-semibold text-gray-800">
+          <span class="text-xl">🕑</span>
+          <span>検索履歴</span>
+          <span class="text-sm text-gray-500 font-normal">過去に提案された料理の履歴です</span>
+        </div>
+        <%= link_to "あなたは ガッツリ派？ or サッパリ派？", trends_search_histories_path,
+              class: "px-5 py-3 text-sm font-semibold text-white bg-orange-500 rounded-lg shadow-sm hover:bg-orange-600 transition-colors" %>
       </div>
     </header>
 
@@ -30,7 +34,7 @@
       <% spice_param = h.query_params["spice_name"].presence || h.query_params["spice_names"] %>
       <% spice_tags = dish_tags.any? ? dish_tags.select { |cc| cc.label == "スパイス/ハーブ" }.map { |cc| cc.category.name } : Array(spice_param) %>
       <% tag_orders = {
-        "時間帯" => ["朝", "昼", "夜", "おやつ"],
+        "時間帯" => ["朝", "昼", "夜"],
         "季節" => ["春", "夏", "秋", "冬"],
         "ジャンル" => ["和食", "洋食", "中華", "エスニック", "その他"],
         "スパイス/ハーブ" => ["ブラックペッパー", "ガーリック", "生姜", "唐辛子", "クミン", "コリアンダー", "ターメリック", "パプリカ", "オレガノ", "ローズマリー", "タイム", "パセリ", "ローレル", "ナツメグ", "クローブ", "山椒", "カルダモン", "シナモン", "バジル", "五香粉"]
