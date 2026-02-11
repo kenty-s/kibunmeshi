@@ -4,10 +4,8 @@ class HomeController < ApplicationController
       @time_of_days = case @current_time.hour
       when 6..10
         "朝"
-      when 11..14
+      when 11..16
         "昼"
-      when 15..16
-        "おやつ"
       else
         "夜"
       end
