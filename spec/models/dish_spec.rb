@@ -67,7 +67,7 @@ RSpec.describe Dish, type: :model do
     it 'handles blank and unknown names' do
       aggregate_failures do
         expect(Dish.spices_for_name('')).to eq([])
-        expect(Dish.spices_for_name('未知の料理')).to eq([ 'ブラックペッパー' ])
+        expect(Dish.spices_for_name('未知の料理')).to eq([])
       end
     end
   end
