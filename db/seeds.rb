@@ -20,12 +20,12 @@ end
 
 def dish_placeholder_svg(name)
   palette = [
-    ["#2b2118", "#d4a373"],
-    ["#1f2a24", "#8fc5a2"],
-    ["#2b2f3a", "#a6c0ff"],
-    ["#3a2630", "#e6a6b3"],
-    ["#2a2d20", "#d8c48b"],
-    ["#2f1f22", "#f0b49c"]
+    [ "#2b2118", "#d4a373" ],
+    [ "#1f2a24", "#8fc5a2" ],
+    [ "#2b2f3a", "#a6c0ff" ],
+    [ "#3a2630", "#e6a6b3" ],
+    [ "#2a2d20", "#d8c48b" ],
+    [ "#2f1f22", "#f0b49c" ]
   ]
   seed = Zlib.crc32(name)
   base, accent = palette[seed % palette.length]
@@ -118,25 +118,25 @@ if legacy_pepper
 end
 
 # 気分（MVP用：ガッツリ/サッパリ）
-['ガッツリ', 'サッパリ'].each { |name| Category.find_or_create_by(name: name) }
+[ 'ガッツリ', 'サッパリ' ].each { |name| Category.find_or_create_by(name: name) }
 
 # 時間帯
-['朝', '昼', '夜'].each { |name| Category.find_or_create_by(name: name) }
+[ '朝', '昼', '夜' ].each { |name| Category.find_or_create_by(name: name) }
 
 # 季節
-['春', '夏', '秋', '冬'].each { |name| Category.find_or_create_by(name: name) }
+[ '春', '夏', '秋', '冬' ].each { |name| Category.find_or_create_by(name: name) }
 
 # 気分詳細
-['疲れた', '元気', 'リラックス', '集中したい', '特別な日'].each { |name| Category.find_or_create_by(name: name) }
+[ '疲れた', '元気', 'リラックス', '集中したい', '特別な日' ].each { |name| Category.find_or_create_by(name: name) }
 
 # ジャンル
-['和食', '洋食', '中華', 'エスニック', 'その他'].each { |name| Category.find_or_create_by(name: name) }
+[ '和食', '洋食', '中華', 'エスニック', 'その他' ].each { |name| Category.find_or_create_by(name: name) }
 
 # 調理スタイル
-['簡単', '本格的', '温かい', '冷たい'].each { |name| Category.find_or_create_by(name: name) }
+[ '簡単', '本格的', '温かい', '冷たい' ].each { |name| Category.find_or_create_by(name: name) }
 
 # ヘルシーさ
-['ヘルシー', 'こってり', '野菜多め', 'タンパク質重視'].each { |name| Category.find_or_create_by(name: name) }
+[ 'ヘルシー', 'こってり', '野菜多め', 'タンパク質重視' ].each { |name| Category.find_or_create_by(name: name) }
 
 # スパイス/ハーブ
 SPICE_NAMES.each { |name| Category.find_or_create_by(name: name) }
@@ -148,159 +148,159 @@ puts "Creating dishes..."
 
 foods_data = [
   # ガッツリ系 - 朝食
-  {name: 'ベーコンエッグ', category: 'ガッツリ', time_of_days: ['朝'], seasons: ['秋', '冬'], moods: ['元気'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり', 'タンパク質重視']},
-  {name: 'パンケーキ', category: 'ガッツリ', time_of_days: ['朝'], seasons: ['春', '夏'], moods: ['特別な日', 'リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: '焼き魚', category: 'ガッツリ', time_of_days: ['朝', '夜'], seasons: ['春', '秋', '冬'], moods: ['集中したい'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: 'フレンチトースト', category: 'ガッツリ', time_of_days: ['朝'], seasons: ['春', '秋', '冬'], moods: ['特別な日'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'オムレツ', category: 'ガッツリ', time_of_days: ['朝'], seasons: ['春', '秋', '冬'], moods: ['元気'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: 'ホットサンド', category: 'ガッツリ', time_of_days: ['朝'], seasons: ['秋', '冬'], moods: ['元気'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり']},
+  { name: 'ベーコンエッグ', category: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], moods: [ '元気' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり', 'タンパク質重視' ] },
+  { name: 'パンケーキ', category: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], moods: [ '特別な日', 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: '焼き魚', category: 'ガッツリ', time_of_days: [ '朝', '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ '集中したい' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: 'フレンチトースト', category: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '春', '秋', '冬' ], moods: [ '特別な日' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'オムレツ', category: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: 'ホットサンド', category: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], moods: [ '元気' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり' ] },
 
   # ガッツリ系 - 昼食・夜食（定番）
-  {name: 'カレーライス', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '夏', '秋', '冬'], moods: ['元気', '疲れた'], genres: ['その他'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['野菜多め']},
-  {name: 'ラーメン', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['秋', '冬'], moods: ['疲れた', '元気'], genres: ['中華'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり']},
-  {name: 'とんかつ', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '秋', '冬'], moods: ['元気', '疲れた'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり', 'タンパク質重視']},
-  {name: 'ハンバーグ', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '秋', '冬'], moods: ['元気'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり', 'タンパク質重視']},
-  {name: 'ステーキ', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '秋', '冬'], moods: ['特別な日'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: '唐揚げ', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋'], moods: ['元気'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり', 'タンパク質重視']},
-  {name: 'ピザ', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋'], moods: ['元気', '特別な日'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'ハンバーガー', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋'], moods: ['元気'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり']},
-  {name: 'オムライス', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '秋', '冬'], moods: ['元気', 'リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: '親子丼', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '秋', '冬'], moods: ['疲れた', 'リラックス'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: '牛丼', category: 'ガッツリ', time_of_days: ['朝', '昼', '夜'], seasons: ['秋', '冬'], moods: ['疲れた', '元気'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり', 'タンパク質重視']},
-  {name: '焼きそば', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['夏', '秋'], moods: ['元気'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり']},
-  {name: 'お好み焼き', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '夏', '秋', '冬'], moods: ['元気'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり']},
-  {name: 'たこ焼き', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋', '冬'], moods: ['元気'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり']},
-  {name: 'かしみん焼き', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋', '冬'], moods: ['元気'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり', 'タンパク質重視']},
-  {name: 'エビフライ', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏'], moods: ['特別な日'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'チキンカツ', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '秋', '冬'], moods: ['元気'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり', 'タンパク質重視']},
-  {name: 'カツカレー', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '秋', '冬'], moods: ['元気'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'ロコモコ', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['元気'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり', 'タンパク質重視']},
-  {name: 'タコライス', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['野菜多め']},
+  { name: 'カレーライス', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ '元気', '疲れた' ], genres: [ 'その他' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: 'ラーメン', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ '疲れた', '元気' ], genres: [ '中華' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'とんかつ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気', '疲れた' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり', 'タンパク質重視' ] },
+  { name: 'ハンバーグ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり', 'タンパク質重視' ] },
+  { name: 'ステーキ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ '特別な日' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: '唐揚げ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり', 'タンパク質重視' ] },
+  { name: 'ピザ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], moods: [ '元気', '特別な日' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'ハンバーガー', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], moods: [ '元気' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'オムライス', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気', 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: '親子丼', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ '疲れた', 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: '牛丼', category: 'ガッツリ', time_of_days: [ '朝', '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ '疲れた', '元気' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり', 'タンパク質重視' ] },
+  { name: '焼きそば', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏', '秋' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'お好み焼き', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'たこ焼き', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'かしみん焼き', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり', 'タンパク質重視' ] },
+  { name: 'エビフライ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], moods: [ '特別な日' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'チキンカツ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり', 'タンパク質重視' ] },
+  { name: 'カツカレー', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'ロコモコ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり', 'タンパク質重視' ] },
+  { name: 'タコライス', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ '野菜多め' ] },
 
   # パスタ類
-  {name: 'ミートソースパスタ', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '秋', '冬'], moods: ['元気'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'カルボナーラ', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'ペペロンチーノ', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['春', '夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'ナポリタン', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋'], moods: ['元気'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり']},
-  {name: 'たらこパスタ', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり']},
-  {name: 'きのこパスタ', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー']},
+  { name: 'ミートソースパスタ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'カルボナーラ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'ペペロンチーノ', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '春', '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'ナポリタン', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], moods: [ '元気' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'たらこパスタ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'きのこパスタ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
 
   # 中華料理
-  {name: 'チャーハン', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '夏', '秋'], moods: ['元気'], genres: ['中華'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり']},
-  {name: '麻婆豆腐', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['秋', '冬'], moods: ['元気'], genres: ['中華'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'エビチリ', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['夏', '秋'], moods: ['元気'], genres: ['中華'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: '酢豚', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['夏'], moods: ['元気'], genres: ['中華'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['野菜多め']},
-  {name: '回鍋肉', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['夏', '秋'], moods: ['元気'], genres: ['中華'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['野菜多め']},
-  {name: '青椒肉絲', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['夏'], moods: ['元気'], genres: ['中華'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['野菜多め']},
-  {name: '餃子', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '秋', '冬'], moods: ['元気'], genres: ['中華'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: '春巻き', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋'], moods: ['元気'], genres: ['中華'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'エビマヨ', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏'], moods: ['元気'], genres: ['中華'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
+  { name: 'チャーハン', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], moods: [ '元気' ], genres: [ '中華' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: '麻婆豆腐', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ '元気' ], genres: [ '中華' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'エビチリ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏', '秋' ], moods: [ '元気' ], genres: [ '中華' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: '酢豚', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ '中華' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: '回鍋肉', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏', '秋' ], moods: [ '元気' ], genres: [ '中華' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: '青椒肉絲', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ '中華' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: '餃子', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気' ], genres: [ '中華' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: '春巻き', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], moods: [ '元気' ], genres: [ '中華' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'エビマヨ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], moods: [ '元気' ], genres: [ '中華' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
 
   # 洋食（煮込み・オーブン料理）
-  {name: 'グラタン', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'シチュー', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['野菜多め']},
-  {name: 'ドリア', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'ラザニア', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['特別な日'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'ローストチキン', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['特別な日'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: 'ローストビーフ', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['特別な日'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: 'チキンソテー', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '秋'], moods: ['元気'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['タンパク質重視']},
+  { name: 'グラタン', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'シチュー', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: 'ドリア', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'ラザニア', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ '特別な日' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'ローストチキン', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ '特別な日' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: 'ローストビーフ', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ '特別な日' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: 'チキンソテー', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋' ], moods: [ '元気' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
 
   # 和食（定番）
-  {name: '寿司', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '夏', '秋', '冬'], moods: ['特別な日'], genres: ['和食'], cooking_styles: ['本格的'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: '刺身', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['春', '夏', '秋'], moods: ['特別な日'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: '天ぷら', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '夏'], moods: ['特別な日'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'すき焼き', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['特別な日'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'しゃぶしゃぶ', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['特別な日'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: '焼き鳥', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['春', '夏', '秋'], moods: ['元気'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: 'うな重', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['夏'], moods: ['特別な日'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: 'かつ丼', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '秋', '冬'], moods: ['元気'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: '天丼', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏'], moods: ['元気'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: '海鮮丼', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['特別な日'], genres: ['和食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: '鉄火丼', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['特別な日'], genres: ['和食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: 'ちらし寿司', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春'], moods: ['特別な日'], genres: ['和食'], cooking_styles: ['本格的'], healthiness_types: ['ヘルシー']},
-  {name: '手巻き寿司', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '夏', '秋'], moods: ['特別な日'], genres: ['和食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー']},
-  {name: 'おでん', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: '肉じゃが', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['野菜多め']},
-  {name: '豚の角煮', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: '鶏の照り焼き', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '秋', '冬'], moods: ['元気'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: '生姜焼き', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '秋', '冬'], moods: ['元気'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: 'チキン南蛮', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏'], moods: ['元気'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: '山形風芋煮', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['特別な日', 'リラックス'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['野菜多め']},
-  {name: '宮城風芋煮', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['野菜多め', 'こってり']},
-  {name: '芋の子汁', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー', '野菜多め']},
+  { name: '寿司', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ '特別な日' ], genres: [ '和食' ], cooking_styles: [ '本格的' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: '刺身', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '春', '夏', '秋' ], moods: [ '特別な日' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: '天ぷら', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏' ], moods: [ '特別な日' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'すき焼き', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ '特別な日' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'しゃぶしゃぶ', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ '特別な日' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: '焼き鳥', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '春', '夏', '秋' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: 'うな重', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], moods: [ '特別な日' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: 'かつ丼', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: '天丼', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: '海鮮丼', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ '特別な日' ], genres: [ '和食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: '鉄火丼', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ '特別な日' ], genres: [ '和食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: 'ちらし寿司', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春' ], moods: [ '特別な日' ], genres: [ '和食' ], cooking_styles: [ '本格的' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: '手巻き寿司', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], moods: [ '特別な日' ], genres: [ '和食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'おでん', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: '肉じゃが', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: '豚の角煮', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: '鶏の照り焼き', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: '生姜焼き', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: 'チキン南蛮', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], moods: [ '元気' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: '山形風芋煮', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ '特別な日', 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: '宮城風芋煮', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ '野菜多め', 'こってり' ] },
+  { name: '芋の子汁', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー', '野菜多め' ] },
 
   # エスニック（メジャーなもの）
-  {name: 'グリーンカレー', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['夏'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['野菜多め']},
-  {name: 'ガパオライス', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['夏'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['野菜多め']},
-  {name: 'パッタイ', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['夏'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'トムヤムクン', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['夏'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'タンドリーチキン', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['夏'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: 'バターチキンカレー', category: 'ガッツリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['エスニック'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'キーマカレー', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['夏', '秋'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['野菜多め']},
-  {name: 'ナン', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['エスニック'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['こってり']},
-  {name: 'タコス', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['簡単'], healthiness_types: ['野菜多め']},
-  {name: 'ブリトー', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['簡単'], healthiness_types: ['野菜多め']},
-  {name: 'プルコギ', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['秋', '冬'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['タンパク質重視']},
-  {name: 'ビビンバ', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['春', '夏', '秋', '冬'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['野菜多め']},
-  {name: 'チヂミ', category: 'ガッツリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋', '冬'], moods: ['元気'], genres: ['エスニック'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['こってり']},
-  {name: 'フォー', category: 'ガッツリ', time_of_days: ['昼', '夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['エスニック'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー']},
+  { name: 'グリーンカレー', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: 'ガパオライス', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: 'パッタイ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'トムヤムクン', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'タンドリーチキン', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: 'バターチキンカレー', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ 'エスニック' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'キーマカレー', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏', '秋' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: 'ナン', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ 'エスニック' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'タコス', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '簡単' ], healthiness_types: [ '野菜多め' ] },
+  { name: 'ブリトー', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '簡単' ], healthiness_types: [ '野菜多め' ] },
+  { name: 'プルコギ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'タンパク質重視' ] },
+  { name: 'ビビンバ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ '野菜多め' ] },
+  { name: 'チヂミ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ '元気' ], genres: [ 'エスニック' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'こってり' ] },
+  { name: 'フォー', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ 'エスニック' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
 
   # サッパリ系 - 朝食
-  {name: 'おにぎり', category: 'サッパリ', time_of_days: ['朝'], seasons: ['春', '夏', '秋'], moods: ['集中したい'], genres: ['和食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー']},
-  {name: 'トースト', category: 'サッパリ', time_of_days: ['朝'], seasons: ['春', '夏', '秋'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: '納豆ご飯', category: 'サッパリ', time_of_days: ['朝'], seasons: ['春', '夏', '秋', '冬'], moods: ['集中したい'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: '卵かけご飯', category: 'サッパリ', time_of_days: ['朝'], seasons: ['春', '秋', '冬'], moods: ['集中したい'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: 'フルーツヨーグルト', category: 'サッパリ', time_of_days: ['朝'], seasons: ['春', '夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'シリアル', category: 'サッパリ', time_of_days: ['朝'], seasons: ['春', '夏', '秋'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'オートミール', category: 'サッパリ', time_of_days: ['朝'], seasons: ['秋', '冬'], moods: ['集中したい'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'おかゆ', category: 'サッパリ', time_of_days: ['朝'], seasons: ['秋', '冬'], moods: ['疲れた', 'リラックス'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'みそ汁', category: 'サッパリ', time_of_days: ['朝'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'スムージー', category: 'サッパリ', time_of_days: ['朝'], seasons: ['春', '夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー', '野菜多め']},
-  {name: 'フルーツサラダ', category: 'サッパリ', time_of_days: ['朝'], seasons: ['春', '夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
+  { name: 'おにぎり', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋' ], moods: [ '集中したい' ], genres: [ '和食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'トースト', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: '納豆ご飯', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ '集中したい' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: '卵かけご飯', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '秋', '冬' ], moods: [ '集中したい' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: 'フルーツヨーグルト', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'シリアル', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'オートミール', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], moods: [ '集中したい' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'おかゆ', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], moods: [ '疲れた', 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'みそ汁', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'スムージー', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー', '野菜多め' ] },
+  { name: 'フルーツサラダ', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
 
   # サッパリ系 - 昼食・夜食
-  {name: 'ざるそば', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'うどん', category: 'サッパリ', time_of_days: ['昼', '夜'], seasons: ['秋', '冬'], moods: ['疲れた'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'そうめん', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'ひやむぎ', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: '冷やし中華', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['中華'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'お茶漬け', category: 'サッパリ', time_of_days: ['夜'], seasons: ['春', '秋', '冬'], moods: ['疲れた', 'リラックス'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'サラダ', category: 'サッパリ', time_of_days: ['昼'], seasons: ['春', '夏'], moods: ['集中したい'], genres: ['洋食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー', '野菜多め']},
-  {name: 'シーザーサラダ', category: 'サッパリ', time_of_days: ['昼'], seasons: ['春', '夏'], moods: ['集中したい'], genres: ['洋食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー', '野菜多め']},
-  {name: 'コブサラダ', category: 'サッパリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋'], moods: ['元気'], genres: ['洋食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー', '野菜多め', 'タンパク質重視']},
-  {name: '豆腐サラダ', category: 'サッパリ', time_of_days: ['昼', '夜'], seasons: ['春', '夏', '秋'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: '海藻サラダ', category: 'サッパリ', time_of_days: ['昼', '夜'], seasons: ['春', '夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー', '野菜多め']},
-  {name: 'ポテトサラダ', category: 'サッパリ', time_of_days: ['昼', '夜'], seasons: ['春', '夏', '秋'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単'], healthiness_types: ['こってり']},
-  {name: '冷奴', category: 'サッパリ', time_of_days: ['夜'], seasons: ['夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: '湯豆腐', category: 'サッパリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: '野菜炒め', category: 'サッパリ', time_of_days: ['夜'], seasons: ['春', '夏', '秋'], moods: ['集中したい'], genres: ['中華'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー', '野菜多め']},
-  {name: '水ナスの浅漬け', category: 'サッパリ', time_of_days: ['昼', '夜'], seasons: ['夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー', '野菜多め']},
-  {name: '浅漬け', category: 'サッパリ', time_of_days: ['夜'], seasons: ['夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: '酢の物', category: 'サッパリ', time_of_days: ['夜'], seasons: ['夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
+  { name: 'ざるそば', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'うどん', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ '疲れた' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'そうめん', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'ひやむぎ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: '冷やし中華', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '中華' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'お茶漬け', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ '疲れた', 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'サラダ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], moods: [ '集中したい' ], genres: [ '洋食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー', '野菜多め' ] },
+  { name: 'シーザーサラダ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], moods: [ '集中したい' ], genres: [ '洋食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー', '野菜多め' ] },
+  { name: 'コブサラダ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], moods: [ '元気' ], genres: [ '洋食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー', '野菜多め', 'タンパク質重視' ] },
+  { name: '豆腐サラダ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: '海藻サラダ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー', '野菜多め' ] },
+  { name: 'ポテトサラダ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'こってり' ] },
+  { name: '冷奴', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: '湯豆腐', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: '野菜炒め', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏', '秋' ], moods: [ '集中したい' ], genres: [ '中華' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー', '野菜多め' ] },
+  { name: '水ナスの浅漬け', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー', '野菜多め' ] },
+  { name: '浅漬け', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: '酢の物', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
 
   # スープ類
-  {name: 'コンソメスープ', category: 'サッパリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'ミネストローネ', category: 'サッパリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー', '野菜多め']},
-  {name: 'コーンスープ', category: 'サッパリ', time_of_days: ['昼', '夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'わかめスープ', category: 'サッパリ', time_of_days: ['夜'], seasons: ['春', '夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: '春雨スープ', category: 'サッパリ', time_of_days: ['夜'], seasons: ['春', '夏'], moods: ['リラックス'], genres: ['中華'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: '卵スープ', category: 'サッパリ', time_of_days: ['夜'], seasons: ['春', '秋', '冬'], moods: ['リラックス'], genres: ['中華'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー']},
-  {name: 'クラムチャウダー', category: 'サッパリ', time_of_days: ['夜'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー']},
+  { name: 'コンソメスープ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'ミネストローネ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー', '野菜多め' ] },
+  { name: 'コーンスープ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'わかめスープ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: '春雨スープ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏' ], moods: [ 'リラックス' ], genres: [ '中華' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: '卵スープ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '中華' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'クラムチャウダー', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
 
   # その他サッパリ系
-  {name: '茶碗蒸し', category: 'サッパリ', time_of_days: ['夜'], seasons: ['春', '秋', '冬'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['本格的', '温かい'], healthiness_types: ['ヘルシー', 'タンパク質重視']},
-  {name: 'カプレーゼ', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー']},
-  {name: 'サンドイッチ', category: 'サッパリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋'], moods: ['集中したい'], genres: ['洋食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー']},
+  { name: '茶碗蒸し', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '本格的', '温かい' ], healthiness_types: [ 'ヘルシー', 'タンパク質重視' ] },
+  { name: 'カプレーゼ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'サンドイッチ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], moods: [ '集中したい' ], genres: [ '洋食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー' ] },
 
   # デザート
-  {name: 'かき氷', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'スパイスコーラ', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['その他'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー'], spices: ['シナモン', '生姜', 'ナツメグ']},
-  {name: 'アイスクリーム', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'フルーツサンド', category: 'サッパリ', time_of_days: ['昼'], seasons: ['春', '夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'プリン', category: 'サッパリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'ゼリー', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'チャイ', category: 'サッパリ', time_of_days: ['朝'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['その他'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー'], spices: ['シナモン', '生姜', 'ブラックペッパー']},
-  {name: 'スパイスクッキー', category: 'サッパリ', time_of_days: ['昼'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー'], spices: ['シナモン', 'ナツメグ', '生姜']}
+  { name: 'かき氷', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'スパイスコーラ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ 'その他' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ], spices: [ 'シナモン', '生姜', 'ナツメグ' ] },
+  { name: 'アイスクリーム', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'フルーツサンド', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'プリン', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'ゼリー', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'チャイ', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ 'その他' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ], spices: [ 'シナモン', '生姜', 'ブラックペッパー' ] },
+  { name: 'スパイスクッキー', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー' ], spices: [ 'シナモン', 'ナツメグ', '生姜' ] }
 ]
 
 foods_data.each do |food_data|
@@ -323,43 +323,43 @@ foods_data.each do |food_data|
       content_type: "image/svg+xml"
     )
   end
-  
+
   # 気分カテゴリ（ガッツリ/サッパリ）
   if food_data[:category]
     category = Category.find_by(name: food_data[:category])
     CategoryContent.find_or_create_by(dish: dish, category: category, label: "気分") if category
   end
-  
+
   # 時間帯
   food_data[:time_of_days]&.each do |time_name|
     category = Category.find_by(name: time_name)
     CategoryContent.find_or_create_by(dish: dish, category: category, label: "時間帯") if category
   end
-  
+
   # 季節
   food_data[:seasons]&.each do |season_name|
     category = Category.find_by(name: season_name)
     CategoryContent.find_or_create_by(dish: dish, category: category, label: "季節") if category
   end
-  
+
   # 気分詳細
   food_data[:moods]&.each do |mood_name|
     category = Category.find_by(name: mood_name)
     CategoryContent.find_or_create_by(dish: dish, category: category, label: "気分詳細") if category
   end
-  
+
   # ジャンル
   food_data[:genres]&.each do |genre_name|
     category = Category.find_by(name: genre_name)
     CategoryContent.find_or_create_by(dish: dish, category: category, label: "ジャンル") if category
   end
-  
+
   # 調理スタイル
   food_data[:cooking_styles]&.each do |style_name|
     category = Category.find_by(name: style_name)
     CategoryContent.find_or_create_by(dish: dish, category: category, label: "調理スタイル") if category
   end
-  
+
   # ヘルシーさ
   food_data[:healthiness_types]&.each do |health_name|
     category = Category.find_by(name: health_name)
@@ -381,4 +381,3 @@ puts "Total connections: #{CategoryContent.count}"
 SeedRun.create!(version: SEED_VERSION, applied_at: Time.current)
 puts "Seed version #{SEED_VERSION} recorded."
 puts "Seed data creation completed!"
-

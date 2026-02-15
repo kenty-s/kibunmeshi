@@ -29,7 +29,7 @@ Rails.application.configure do
       end
     end
   }
-  
+
   config.hosts << "kibunmeshi.onrender.com"
   config.action_controller.asset_host = "https://kibunmeshi.onrender.com"
 

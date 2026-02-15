@@ -15,10 +15,10 @@ class SearchResultController < ApplicationController
   def search_dishes
     # 検索条件を組み立て
     dishes = Dish.all
-    
+
     # パラメータに応じて検索条件を追加
     dishes = dishes.where(条件) if search_params[:条件].present?
-    
+
     dishes
   end
 
