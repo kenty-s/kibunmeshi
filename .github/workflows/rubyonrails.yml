@@ -20,7 +20,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: graduation_development_test
+          POSTGRES_DB: kibunmeshi_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
@@ -33,7 +33,7 @@ jobs:
 
     env:
       RAILS_ENV: test
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/graduation_development_test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/kibunmeshi_test
       POSTGRES_HOST: localhost
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

@@ -14,7 +14,12 @@ class SearchController < ApplicationController
   private
 
   def search_params
-    params.permit(:keyword, :category, :time_of_day, :season, :mood, :genre, :cooking_style, :healthiness_type, :spice_name)
+    permitted = params.permit(
+      :keyword, :category, :time_of_day, :season, :mood, :genre,
+      :cooking_style, :healthiness_type, :spice_name, :spice_names, :taste
+    )
+    permitted[:spice_name] = permitted[:spice_name].presence || permitted.delete(:spice_names)
+    permitted
   end
 
   def save_history(params_hash, dish)
