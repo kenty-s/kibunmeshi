@@ -22,13 +22,13 @@ default: &default
 
 development:
   <<: *default
-  database: graduation_development_development
+  database: kibunmeshi_development
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
   # When left blank, PostgreSQL will use the default role. This is
   # the same name as the operating system user running Rails.
-  #username: graduation_development
+  #username: kibunmeshi
 
   # The password associated with the PostgreSQL role (username).
   #password:
@@ -56,7 +56,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: graduation_development_test
+  database: kibunmeshi_test
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -87,18 +87,18 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: graduation_development_production
-    username: graduation_development
-    password: <%= ENV["GRADUATION_DEVELOPMENT_DATABASE_PASSWORD"] %>
+    database: kibunmeshi_production
+    username: kibunmeshi
+    password: <%= ENV["KIBUNMESHI_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
-    database: graduation_development_production_cache
+    database: kibunmeshi_production_cache
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: graduation_development_production_queue
+    database: kibunmeshi_production_queue
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: graduation_development_production_cable
+    database: kibunmeshi_production_cable
     migrations_paths: db/cable_migrate

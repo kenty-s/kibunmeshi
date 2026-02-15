@@ -4,11 +4,11 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: graduation_development_development
+      POSTGRES_DB: kibunmeshi_development
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d graduation_development_development -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -d kibunmeshi_development -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5

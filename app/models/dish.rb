@@ -1,5 +1,6 @@
 class Dish < ApplicationRecord
   SPICE_LABEL = "スパイス/ハーブ"
+  TASTE_LABEL = "味覚/刺激"
 
   has_many :category_contents, dependent: :destroy
   has_many :categories, through: :category_contents
@@ -25,6 +26,20 @@ class Dish < ApplicationRecord
                            .where(categories: { name: params[:spice_name] })
                            .select(:id)
       scope = scope.where(id: spice_dish_ids)
+    end
+    if params[:taste].present?
+      taste_name = params[:taste]
+      taste_dish_ids = Dish.joins(:category_contents)
+                           .joins(:categories)
+                           .where(category_contents: { label: TASTE_LABEL }, categories: { name: taste_name })
+                           .distinct
+                           .pluck(:id)
+      if taste_dish_ids.present?
+        scope = scope.where(id: taste_dish_ids)
+      else
+        fallback_ids = Dish.select(:id, :name).filter_map { |dish| dish.id if tastes_for_name(dish.name).include?(taste_name) }
+        scope = scope.where(id: fallback_ids)
+      end
     end
     scope
   end
@@ -56,7 +71,9 @@ class Dish < ApplicationRecord
         %w[唐辛子 ガーリック ブラックペッパー 生姜]
       when /オムライス/
         %w[ブラックペッパー パセリ バジル オレガノ]
-      when /パスタ|ピザ|ナポリタン|カプレーゼ|グラタン|ドリア|ラザニア|ミネストローネ|コンソメスープ|シチュー|クラムチャウダー|コーンスープ/
+      when /クラムチャウダー|コーンスープ|カルパッチョ/
+        %w[ホワイトペッパー ブラックペッパー]
+      when /パスタ|ピザ|ナポリタン|カプレーゼ|グラタン|ドリア|ラザニア|ミネストローネ|コンソメスープ|シチュー/
         %w[バジル オレガノ ローレル ブラックペッパー]
       when /ペペロンチーノ/
         %w[ガーリック 唐辛子 オレガノ ブラックペッパー]
@@ -83,6 +100,19 @@ class Dish < ApplicationRecord
       end
 
     spices.uniq
+  end
+
+  def self.tastes_for_name(dish_name)
+    return [] if dish_name.blank?
+
+    return %w[甘い] if dish_name.match?(/パンケーキ|フレンチトースト|かき氷|アイス|プリン|ゼリー|フルーツ|シリアル|スムージー|チャイ|スパイスコーラ|スパイスクッキー/)
+
+    tastes = []
+    tastes << "すっぱい" if dish_name.match?(/酢豚|酢の物|浅漬け|冷やし中華|トムヤムクン|カプレーゼ|カルパッチョ/)
+    tastes << "辛い" if dish_name.match?(/カレー|タンドリー|麻婆|エビチリ|ペペロンチーノ|担々|ガパオ|トムヤムクン|タコス|ブリトー|タコライス|ビビンバ|チヂミ|プルコギ|キムチ/)
+    tastes << "苦い" if dish_name.match?(/海藻サラダ|シーザーサラダ|コブサラダ|豆腐サラダ|サラダ|ゴーヤ/)
+    tastes << "しょっぱい"
+    tastes.uniq
   end
   # PostgreSQLのRANDOM関数でランダムに並び替えて1件取得
   def self.random_by_category(category_name)

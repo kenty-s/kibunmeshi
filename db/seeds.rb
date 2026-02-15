@@ -2,7 +2,7 @@ require "cgi"
 require "stringio"
 require "zlib"
 
-SEED_VERSION = "2026-01-22-spice-cola"
+SEED_VERSION = "2026-02-16-taste-filter"
 
 unless ActiveRecord::Base.connection.data_source_exists?("seed_runs")
   puts "seed_runs table is missing. Run db:migrate before db:seed."
@@ -54,11 +54,13 @@ def dish_placeholder_svg(name)
 end
 
 SPICE_LABEL = "スパイス/ハーブ"
+TASTE_LABEL = "味覚/刺激"
 SPICE_NAMES = [
   "ブラックペッパー", "ガーリック", "生姜", "唐辛子", "クミン", "コリアンダー", "ターメリック", "パプリカ",
   "オレガノ", "ローズマリー", "タイム", "パセリ", "ローレル", "ナツメグ", "クローブ", "山椒",
-  "カルダモン", "シナモン", "バジル", "五香粉"
+  "わさび", "からし", "マスタード", "カルダモン", "シナモン", "バジル", "五香粉", "ホワイトペッパー"
 ].freeze
+TASTE_NAMES = ["甘い", "すっぱい", "しょっぱい", "苦い", "辛い"].freeze
 
 def spices_for_dish(name)
   spices =
@@ -75,7 +77,9 @@ def spices_for_dish(name)
       %w[唐辛子 ガーリック ブラックペッパー 生姜]
     when /オムライス/
       %w[ブラックペッパー パセリ バジル オレガノ]
-    when /パスタ|ピザ|ナポリタン|カプレーゼ|グラタン|ドリア|ラザニア|ミネストローネ|コンソメスープ|シチュー|クラムチャウダー|コーンスープ/
+    when /クラムチャウダー|コーンスープ|カルパッチョ/
+      %w[ホワイトペッパー ブラックペッパー]
+    when /パスタ|ピザ|ナポリタン|カプレーゼ|グラタン|ドリア|ラザニア|ミネストローネ|コンソメスープ|シチュー/
       %w[バジル オレガノ ローレル ブラックペッパー]
     when /ペペロンチーノ/
       %w[ガーリック 唐辛子 オレガノ ブラックペッパー]
@@ -100,6 +104,19 @@ def spices_for_dish(name)
     end
 
   spices.uniq
+end
+
+def tastes_for_dish(name)
+  return [] if name.blank?
+
+  return %w[甘い] if name.match?(/パンケーキ|フレンチトースト|かき氷|アイス|プリン|ゼリー|フルーツ|シリアル|スムージー|チャイ|スパイスコーラ|スパイスクッキー/)
+
+  tastes = []
+  tastes << "すっぱい" if name.match?(/酢豚|酢の物|浅漬け|冷やし中華|トムヤムクン|カプレーゼ|カルパッチョ/)
+  tastes << "辛い" if name.match?(/カレー|タンドリー|麻婆|エビチリ|ペペロンチーノ|担々|ガパオ|トムヤムクン|タコス|ブリトー|タコライス|ビビンバ|チヂミ|プルコギ|キムチ/)
+  tastes << "苦い" if name.match?(/海藻サラダ|シーザーサラダ|コブサラダ|豆腐サラダ|サラダ|ゴーヤ/)
+  tastes << "しょっぱい"
+  tastes.uniq
 end
 
 # カテゴリを作成（全てのタグをCategoryとして統合）
@@ -140,6 +157,8 @@ end
 
 # スパイス/ハーブ
 SPICE_NAMES.each { |name| Category.find_or_create_by(name: name) }
+# 味覚/刺激
+TASTE_NAMES.each { |name| Category.find_or_create_by(name: name) }
 
 puts "Categories created!"
 
@@ -294,13 +313,13 @@ foods_data = [
 
   # デザート
   {name: 'かき氷', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['和食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'スパイスコーラ', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['その他'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー'], spices: ['シナモン', '生姜', 'ナツメグ']},
+  {name: 'スパイスコーラ', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['その他'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー'], spices: ['シナモン', 'クローブ', 'カルダモン']},
   {name: 'アイスクリーム', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
   {name: 'フルーツサンド', category: 'サッパリ', time_of_days: ['昼'], seasons: ['春', '夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
   {name: 'プリン', category: 'サッパリ', time_of_days: ['昼'], seasons: ['春', '夏', '秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['本格的', '冷たい'], healthiness_types: ['ヘルシー']},
   {name: 'ゼリー', category: 'サッパリ', time_of_days: ['昼'], seasons: ['夏'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単', '冷たい'], healthiness_types: ['ヘルシー']},
-  {name: 'チャイ', category: 'サッパリ', time_of_days: ['朝'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['その他'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー'], spices: ['シナモン', '生姜', 'ブラックペッパー']},
-  {name: 'スパイスクッキー', category: 'サッパリ', time_of_days: ['昼'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー'], spices: ['シナモン', 'ナツメグ', '生姜']}
+  {name: 'チャイ', category: 'サッパリ', time_of_days: ['朝'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['その他'], cooking_styles: ['簡単', '温かい'], healthiness_types: ['ヘルシー'], spices: ['シナモン', 'カルダモン', 'クローブ']},
+  {name: 'スパイスクッキー', category: 'サッパリ', time_of_days: ['昼'], seasons: ['秋', '冬'], moods: ['リラックス'], genres: ['洋食'], cooking_styles: ['簡単'], healthiness_types: ['ヘルシー'], spices: ['シナモン', 'ナツメグ', 'クローブ']}
 ]
 
 foods_data.each do |food_data|
@@ -371,6 +390,13 @@ foods_data.each do |food_data|
   spice_names.each do |spice_name|
     category = Category.find_by(name: spice_name)
     CategoryContent.find_or_create_by(dish: dish, category: category, label: SPICE_LABEL) if category
+  end
+
+  taste_names = Array(food_data[:tastes]).presence || tastes_for_dish(dish.name)
+  CategoryContent.where(dish: dish, label: TASTE_LABEL).delete_all
+  taste_names.each do |taste_name|
+    category = Category.find_by(name: taste_name)
+    CategoryContent.find_or_create_by(dish: dish, category: category, label: TASTE_LABEL) if category
   end
 end
 

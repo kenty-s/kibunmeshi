@@ -33,26 +33,15 @@ class SearchHistoriesController < ApplicationController
       end
       next unless mood_labels.include?(mood)
 
-      times = Array(params["time_of_day"]).compact_blank
-      if times.blank?
-        times = Array(history.dish&.time_of_days).compact_blank
-      end
-      if times.blank?
-        times = history.dish&.category_contents&.select { |cc| cc.label == "時間帯" }&.map { |cc| cc.category&.name }
-        times = Array(times).compact_blank
-      end
+      time = time_label_from_timestamp(history.executed_at || history.created_at)
+      next unless time_labels.include?(time)
 
-      times = times & time_labels
-      next if times.empty?
-
-      times.each do |time|
-        counts[[time, mood]] += 1
-      end
+      counts[[ time, mood ]] += 1
     end
 
     cells = mood_labels.to_h do |mood|
-      row = time_labels.to_h { |time| [time, counts[[time, mood]] || 0] }
-      [mood, row]
+      row = time_labels.to_h { |time| [ time, counts[[ time, mood ]] || 0 ] }
+      [ mood, row ]
     end
 
     color_set = {
@@ -65,7 +54,7 @@ class SearchHistoriesController < ApplicationController
       datasets: mood_labels.map do |mood|
         {
           label: mood,
-          data: time_labels.map { |time| counts[[time, mood]] || 0 },
+          data: time_labels.map { |time| counts[[ time, mood ]] || 0 },
           backgroundColor: color_set[mood][:fill],
           borderColor: color_set[mood][:border],
           borderWidth: 1
@@ -81,6 +70,14 @@ class SearchHistoriesController < ApplicationController
       total: counts.values.sum,
       chart_data: chart_data
     }
+  end
+
+  def time_label_from_timestamp(timestamp)
+    hour = timestamp.in_time_zone.hour
+    return "朝" if hour >= 5 && hour < 11
+    return "昼" if hour >= 11 && hour < 17
+
+    "夜"
   end
 
   def build_spice_summary(scope)

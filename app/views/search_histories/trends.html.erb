@@ -28,21 +28,8 @@
     <section class="<%= section_class %>">
       <div class="<%= section_header_class %>">
         <div>
-          <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">🖥️ デスクトップアプリとして使うには</h2>
-          <p class="text-sm text-gray-600 mt-1.5">ブラウザからこのサイトをアプリのように追加できます。</p>
-        </div>
-      </div>
-      <ul class="text-sm text-gray-700 space-y-2 list-disc pl-5">
-        <li>Chrome（PC）: 右上のメニュー → 「キャスト、保存、共有」→「ページをアプリとしてインストール」</li>
-        <li>iPhone（Safari）: 共有 →「ホーム画面に追加」→「Webアプリとして開く」→ 追加</li>
-      </ul>
-    </section>
-
-    <section class="<%= section_class %>">
-      <div class="<%= section_header_class %>">
-        <div>
           <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">📊 時間帯別キブングラフ</h2>
-          <p class="text-sm text-gray-600 mt-1.5">全期間の検索履歴から「どの時間帯」に「どんな気分」を選びやすいかを可視化します。</p>
+          <p class="text-sm text-gray-600 mt-1.5">全期間の検索履歴から「実際に検索した時間帯」に「どんな気分」を選びやすいかを可視化します。</p>
         </div>
         <div class="px-4 py-2 bg-gradient-to-r from-[#ff8142] to-[#ff6b2c] text-white text-sm font-semibold rounded-full shadow-md">
           集計件数: <%= @heatmap[:total] %>
@@ -68,51 +55,112 @@
     </section>
 
     <% if @heatmap[:total].positive? %>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
       <script>
-        document.addEventListener("turbo:load", () => {
-          const canvas = document.getElementById("time-mood-chart");
-          if (!canvas) return;
-          const data = JSON.parse(canvas.dataset.chart);
-          const context = canvas.getContext("2d");
+        (() => {
+          const stateKey = "__timeMoodChartState";
+          if (!window[stateKey]) {
+            window[stateKey] = { chart: null, chartLibPromise: null, bound: false };
+          }
+          const state = window[stateKey];
 
-          new Chart(context, {
-            type: "bar",
-            data: data,
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                x: {
-                  stacked: false,
-                  grid: { display: false },
-                  border: { display: false },
-                  ticks: { font: { size: 11 } }
-                },
-                y: {
-                  stacked: false,
-                  beginAtZero: true,
-                  ticks: { precision: 0, font: { size: 11 } },
-                  grid: { color: "rgba(0, 0, 0, 0.05)" },
-                  border: { display: false }
+          const destroyChart = () => {
+            if (state.chart) {
+              state.chart.destroy();
+              state.chart = null;
+            }
+          };
+
+          const loadChartJs = () => {
+            if (window.Chart) return Promise.resolve(window.Chart);
+            if (state.chartLibPromise) return state.chartLibPromise;
+
+            state.chartLibPromise = new Promise((resolve, reject) => {
+              const existing = document.querySelector("script[data-chartjs-lib='true']");
+              if (existing) {
+                if (window.Chart) {
+                  resolve(window.Chart);
+                  return;
                 }
-              },
-              plugins: {
-                legend: {
-                  position: "bottom",
-                  labels: { boxWidth: 12, padding: 15, font: { size: 12 } }
+                existing.addEventListener("load", () => resolve(window.Chart), { once: true });
+                existing.addEventListener("error", () => reject(new Error("Chart.js load failed")), { once: true });
+                return;
+              }
+
+              const script = document.createElement("script");
+              script.src = "https://cdn.jsdelivr.net/npm/chart.js";
+              script.async = true;
+              script.dataset.chartjsLib = "true";
+              script.addEventListener("load", () => resolve(window.Chart), { once: true });
+              script.addEventListener("error", () => reject(new Error("Chart.js load failed")), { once: true });
+              document.head.appendChild(script);
+            });
+
+            return state.chartLibPromise;
+          };
+
+          const renderChart = async () => {
+            const canvas = document.getElementById("time-mood-chart");
+            if (!canvas || !canvas.dataset.chart) return;
+
+            try {
+              await loadChartJs();
+            } catch (error) {
+              console.error(error);
+              return;
+            }
+
+            destroyChart();
+
+            const data = JSON.parse(canvas.dataset.chart);
+            const context = canvas.getContext("2d");
+
+            state.chart = new window.Chart(context, {
+              type: "bar",
+              data: data,
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  x: {
+                    stacked: false,
+                    grid: { display: false },
+                    border: { display: false },
+                    ticks: { font: { size: 11 } }
+                  },
+                  y: {
+                    stacked: false,
+                    beginAtZero: true,
+                    ticks: { precision: 0, font: { size: 11 } },
+                    grid: { color: "rgba(0, 0, 0, 0.05)" },
+                    border: { display: false }
+                  }
                 },
-                tooltip: {
-                  mode: "index",
-                  intersect: false,
-                  backgroundColor: "rgba(0, 0, 0, 0.8)",
-                  padding: 12,
-                  cornerRadius: 8
+                plugins: {
+                  legend: {
+                    position: "bottom",
+                    labels: { boxWidth: 12, padding: 15, font: { size: 12 } }
+                  },
+                  tooltip: {
+                    mode: "index",
+                    intersect: false,
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                    padding: 12,
+                    cornerRadius: 8
+                  }
                 }
               }
-            }
-          });
-        });
+            });
+          };
+
+          if (!state.bound) {
+            document.addEventListener("turbo:load", renderChart);
+            document.addEventListener("turbo:render", renderChart);
+            document.addEventListener("turbo:before-cache", destroyChart);
+            state.bound = true;
+          }
+
+          renderChart();
+        })();
       </script>
     <% end %>
 
