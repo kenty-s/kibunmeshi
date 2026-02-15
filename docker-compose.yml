@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: graduation_development
+      POSTGRES_DB: kibunmeshi_development
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
