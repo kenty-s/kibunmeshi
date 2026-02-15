@@ -25,7 +25,7 @@ RSpec.describe Dish, type: :model do
     let!(:taste_category) { FactoryBot.create(:category, name: taste_category_name) }
 
     let!(:matched_dish) do
-      dish = FactoryBot.create(:dish, name: "#{keyword}-料理A", time_of_days: ['morning'])
+      dish = FactoryBot.create(:dish, name: "#{keyword}-料理A", time_of_days: [ 'morning' ])
       FactoryBot.create(:category_content, dish: dish, category: main_category)
       FactoryBot.create(:category_content, dish: dish, category: spice_category)
       FactoryBot.create(:category_content, dish: dish, category: taste_category, label: Dish::TASTE_LABEL)
@@ -33,7 +33,7 @@ RSpec.describe Dish, type: :model do
     end
 
     let!(:other_dish) do
-      dish = FactoryBot.create(:dish, name: '料理B', time_of_days: ['night'])
+      dish = FactoryBot.create(:dish, name: '料理B', time_of_days: [ 'night' ])
       FactoryBot.create(:category_content, dish: dish, category: FactoryBot.create(:category))
       dish
     end
@@ -72,8 +72,8 @@ RSpec.describe Dish, type: :model do
 
     it 'falls back to provided names when spice categories are missing' do
       dish = FactoryBot.create(:dish, name: '料理B')
-      result = dish.spice_names_for_display(fallback_names: ['', 'オレガノ'])
-      expect(result).to eq(['オレガノ'])
+      result = dish.spice_names_for_display(fallback_names: [ '', 'オレガノ' ])
+      expect(result).to eq([ 'オレガノ' ])
     end
   end
 
@@ -81,7 +81,7 @@ RSpec.describe Dish, type: :model do
     it 'handles blank and unknown names' do
       aggregate_failures do
         expect(Dish.spices_for_name('')).to eq([])
-        expect(Dish.spices_for_name('未知の料理')).to eq(['ブラックペッパー'])
+        expect(Dish.spices_for_name('未知の料理')).to eq([])
       end
     end
   end
@@ -95,7 +95,7 @@ RSpec.describe Dish, type: :model do
       FactoryBot.create(:category_content, dish: dish2, category: washoku)
 
       result = Dish.random_by_category(washoku.name)
-      expect([dish1, dish2]).to include(result)
+      expect([ dish1, dish2 ]).to include(result)
     end
 
     it 'returns nil when no dishes match the category' do

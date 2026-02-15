@@ -16,7 +16,7 @@ gem "turbo-rails"
 gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
-#検索機能
+# 検索機能
 gem "ransack", "~> 4.0"
 # 日本語翻訳
 gem "rails-i18n", "~> 7.0.0"
@@ -60,10 +60,10 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Use RSpec for testing [https://rspec.info/]
-  gem 'rspec-rails'
+  gem "rspec-rails"
 
   # Use Factory Bot for fixtures replacement [
-  gem 'factory_bot_rails'
+  gem "factory_bot_rails"
 end
 
 group :development do

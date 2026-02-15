@@ -8,7 +8,7 @@ class SearchController < ApplicationController
     return redirect_to root_path, alert: "条件に合う料理が見つかりませんでした" if @dish.nil?
 
     save_history(@selected_conditions, @dish)  # 呼び出し名
-    render 'dishes/result'
+    render "dishes/result"
   end
 
   private
