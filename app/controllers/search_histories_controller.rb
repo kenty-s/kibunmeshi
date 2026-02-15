@@ -46,13 +46,13 @@ class SearchHistoriesController < ApplicationController
       next if times.empty?
 
       times.each do |time|
-        counts[[time, mood]] += 1
+        counts[[ time, mood ]] += 1
       end
     end
 
     cells = mood_labels.to_h do |mood|
-      row = time_labels.to_h { |time| [time, counts[[time, mood]] || 0] }
-      [mood, row]
+      row = time_labels.to_h { |time| [ time, counts[[ time, mood ]] || 0 ] }
+      [ mood, row ]
     end
 
     color_set = {
@@ -65,7 +65,7 @@ class SearchHistoriesController < ApplicationController
       datasets: mood_labels.map do |mood|
         {
           label: mood,
-          data: time_labels.map { |time| counts[[time, mood]] || 0 },
+          data: time_labels.map { |time| counts[[ time, mood ]] || 0 },
           backgroundColor: color_set[mood][:fill],
           borderColor: color_set[mood][:border],
           borderWidth: 1

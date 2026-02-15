@@ -7,6 +7,6 @@ class CreateSearchHistories < ActiveRecord::Migration[7.2]
       t.datetime :executed_at, null: false                        # いつ検索したかを保持（並び替え用）
       t.timestamps                                                # created_at/updated_at
     end
-    add_index :search_histories, [:user_id, :executed_at]         # ユーザーごとの履歴を時系列で高速に取得
+    add_index :search_histories, [ :user_id, :executed_at ]         # ユーザーごとの履歴を時系列で高速に取得
   end
 end
