@@ -1,5 +1,9 @@
+require "yaml"
+
 class Dish < ApplicationRecord
   SPICE_LABEL = "スパイス/ハーブ"
+  TASTE_LABEL = "味覚/刺激"
+  SPICE_PAIRINGS_PATH = Rails.root.join("config/spice_pairings.yml")
 
   has_many :category_contents, dependent: :destroy
   has_many :categories, through: :category_contents
@@ -26,6 +30,20 @@ class Dish < ApplicationRecord
                            .select(:id)
       scope = scope.where(id: spice_dish_ids)
     end
+    if params[:taste].present?
+      taste_name = params[:taste]
+      taste_dish_ids = Dish.joins(:category_contents)
+                           .joins(:categories)
+                           .where(category_contents: { label: TASTE_LABEL }, categories: { name: taste_name })
+                           .distinct
+                           .pluck(:id)
+      if taste_dish_ids.present?
+        scope = scope.where(id: taste_dish_ids)
+      else
+        fallback_ids = Dish.select(:id, :name).filter_map { |dish| dish.id if tastes_for_name(dish.name).include?(taste_name) }
+        scope = scope.where(id: fallback_ids)
+      end
+    end
     scope
   end
 
@@ -42,91 +60,58 @@ class Dish < ApplicationRecord
   def self.spices_for_name(dish_name)
     return [] if dish_name.blank?
 
-    spices =
-      case dish_name
-      when /カレーライス|グリーンカレー|バターチキンカレー|キーマカレー|カツカレー|タンドリーチキン/
-        %w[クミン コリアンダー ターメリック カルダモン 唐辛子]
-      when /タコス|タコライス|ブリトー/
-        %w[クミン コリアンダー パプリカ]
-      when /ガパオライス|トムヤムクン|パッタイ|フォー/
-        %w[唐辛子 コリアンダー バジル]
-      when /麻婆豆腐/
-        %w[五香粉 山椒 唐辛子]
-      when /エビチリ/
-        %w[唐辛子]
-      when /酢豚|回鍋肉|青椒肉絲|餃子|春巻き|エビマヨ|野菜炒め/
-        %w[ガーリック]
-      when /チャーハン/
-        %w[ガーリック ブラックペッパー]
-      when /焼売|シュウマイ/
-        %w[からし]
-      when /卵スープ/
-        %w[ブラックペッパー]
-      when /ペペロンチーノ/
-        %w[ガーリック 唐辛子]
-      when /たらこパスタ/
-        %w[わさび]
-      when /ミートソースパスタ|ナポリタン|ピザ/
-        %w[オレガノ バジル]
-      when /カルボナーラ/
-        %w[ブラックペッパー]
-      when /きのこパスタ/
-        %w[タイム]
-      when /グラタン|シチュー|ドリア|ラザニア/
-        %w[ナツメグ]
-      when /コンソメスープ|ミネストローネ/
-        %w[ローレル]
-      when /コーンスープ|クラムチャウダー/
-        %w[ホワイトペッパー]
-      when /ハンバーグ/
-        %w[ナツメグ ブラックペッパー]
-      when /ステーキ|ローストチキン|ローストビーフ|チキンソテー/
-        %w[ローズマリー ブラックペッパー]
-      when /ロコモコ|ベーコンエッグ|オムレツ|オムライス|ハンバーガー/
-        %w[ブラックペッパー]
-      when /ホットドッグ|ホットサンド|サンドイッチ/
-        %w[マスタード]
-      when /とんかつ|おでん/
-        %w[からし]
-      when /唐揚げ/
-        %w[ガーリック 生姜]
-      when /チキンカツ/
-        %w[からし]
-      when /チキン南蛮|エビフライ|かつ丼|天ぷら|天丼/
-        %w[唐辛子]
-      when /寿司|刺身|海鮮丼|鉄火丼|手巻き寿司|ちらし寿司/
-        %w[わさび]
-      when /カルパッチョ/
-        %w[ホワイトペッパー ブラックペッパー]
-      when /うな重|焼き魚/
-        %w[山椒]
-      when /豚の角煮/
-        %w[ガーリック 生姜 からし]
-      when /親子丼/
-        %w[唐辛子]
-      when /牛丼|肉じゃが|豚の角煮|鶏の照り焼き|生姜焼き|山形風芋煮|宮城風芋煮|芋の子汁|茶碗蒸し|お茶漬け|おかゆ|みそ汁|わかめスープ|春雨スープ|湯豆腐|冷奴|水ナスの浅漬け|浅漬け|酢の物|納豆ご飯|卵かけご飯|おにぎり/
-        %w[生姜]
-      when /ラーメン|冷やし中華|焼きそば|お好み焼き|たこ焼き|かしみん焼き|ざるそば|うどん|そうめん|ひやむぎ|焼き鳥/
-        %w[唐辛子]
-      when /ナン/
-        %w[カルダモン]
-      when /プルコギ|ビビンバ|チヂミ/
-        %w[唐辛子 ガーリック]
-      when /サラダ|シーザーサラダ|コブサラダ|豆腐サラダ|海藻サラダ|ポテトサラダ|カプレーゼ|フルーツサンド/
-        %w[パセリ]
-      when /パンケーキ|フレンチトースト|フルーツヨーグルト|シリアル|オートミール|スムージー|フルーツサラダ|かき氷|アイスクリーム|プリン|ゼリー|トースト/
-        %w[シナモン]
-      when /スパイスコーラ/
-        %w[シナモン クローブ カルダモン]
-      when /チャイ/
-        %w[シナモン カルダモン]
-      when /スパイスクッキー/
-        %w[シナモン ナツメグ]
-      else
-        []
-      end
+    spice_pairings.fetch(dish_name.to_s, [])
+  end
 
-    spices.uniq
+  def self.spice_pairings
+    @spice_pairings ||= begin
+      raw = YAML.safe_load(File.read(SPICE_PAIRINGS_PATH), permitted_classes: [], aliases: false) || {}
+      raw.transform_values { |names| Array(names).compact_blank.uniq }
+    end
+  rescue Errno::ENOENT
+    {}
+  end
+
+  def self.reload_spice_pairings!
+    @spice_pairings = nil
+    spice_pairings
+  end
+
+  def self.sync_spice_pairings!(dish_names: nil)
+    mappings = spice_pairings
+    target_names = Array(dish_names).compact_blank
+    scope = target_names.present? ? where(name: target_names) : all
+    synced = 0
+
+    scope.find_each do |dish|
+      spice_names = Array(mappings[dish.name]).compact_blank.uniq
+      existing_names = dish.category_contents.includes(:category).where(label: SPICE_LABEL).map { |cc| cc.category.name }.uniq
+      next if existing_names.sort == spice_names.sort
+
+      transaction do
+        CategoryContent.where(dish: dish, label: SPICE_LABEL).delete_all
+        spice_names.each do |spice_name|
+          category = Category.find_or_create_by!(name: spice_name)
+          CategoryContent.create!(dish: dish, category: category, label: SPICE_LABEL)
+        end
+      end
+      synced += 1
+    end
+
+    synced
+  end
+
+  def self.tastes_for_name(dish_name)
+    return [] if dish_name.blank?
+
+    return %w[甘い] if dish_name.match?(/パンケーキ|フレンチトースト|かき氷|アイス|プリン|ゼリー|フルーツ|シリアル|スムージー|チャイ|スパイスコーラ|スパイスクッキー/)
+
+    tastes = []
+    tastes << "すっぱい" if dish_name.match?(/酢豚|酢の物|浅漬け|冷やし中華|トムヤムクン|カプレーゼ|カルパッチョ/)
+    tastes << "辛い" if dish_name.match?(/カレー|タンドリー|麻婆|エビチリ|ペペロンチーノ|担々|ガパオ|トムヤムクン|タコス|ブリトー|タコライス|ビビンバ|チヂミ|プルコギ|キムチ/)
+    tastes << "苦い" if dish_name.match?(/海藻サラダ|シーザーサラダ|コブサラダ|豆腐サラダ|サラダ|ゴーヤ/)
+    tastes << "しょっぱい"
+    tastes.uniq
   end
   # PostgreSQLのRANDOM関数でランダムに並び替えて1件取得
   def self.random_by_category(category_name)
