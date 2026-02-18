@@ -126,6 +126,7 @@
   <% share_text = "今日のキブンは「#{@dish.name}」！ #キブンメシ" %>
   <% share_url = "https://kibunmeshi.onrender.com/" %>
   <% x_share_url = "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(share_text)}&url=#{ERB::Util.url_encode(share_url)}" %>
+  <% cookpad_url = cookpad_search_url(@dish.name) %>
 
   <!-- ボタンエリア -->
   <div class="flex flex-wrap justify-center gap-4 mb-12">
@@ -151,5 +152,10 @@
         target: "_blank",
         rel: "noopener noreferrer",
         class: "px-6 py-3 bg-black text-white rounded-lg border border-black hover:bg-gray-900 transition-all duration-200" %>
+
+    <%= link_to "クックパッドで検索", cookpad_url,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        class: "px-6 py-3 bg-orange-500 text-white rounded-lg border border-orange-500 hover:bg-orange-600 transition-all duration-200" %>
   </div>
 </div>

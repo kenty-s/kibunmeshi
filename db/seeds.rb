@@ -2,7 +2,7 @@ require "cgi"
 require "stringio"
 require "zlib"
 
-SEED_VERSION = "2026-02-15-spice-pairing-plausible-v8"
+SEED_VERSION = "2026-02-19-spice-pairings-per-dish-v1"
 
 unless ActiveRecord::Base.connection.data_source_exists?("seed_runs")
   puts "seed_runs table is missing. Run db:migrate before db:seed."
@@ -54,99 +54,7 @@ def dish_placeholder_svg(name)
 end
 
 SPICE_LABEL = "スパイス/ハーブ"
-SPICE_NAMES = [
-  "ブラックペッパー", "ガーリック", "生姜", "唐辛子", "クミン", "コリアンダー", "ターメリック", "パプリカ",
-  "オレガノ", "ローズマリー", "タイム", "パセリ", "ローレル", "ナツメグ", "クローブ", "山椒",
-  "わさび", "からし", "マスタード", "カルダモン", "シナモン", "バジル", "五香粉", "ホワイトペッパー"
-].freeze
-
-def spices_for_dish(name)
-  spices =
-    case name
-    when /カレーライス|グリーンカレー|バターチキンカレー|キーマカレー|カツカレー|タンドリーチキン/
-      %w[クミン コリアンダー ターメリック カルダモン 唐辛子]
-    when /タコス|タコライス|ブリトー/
-      %w[クミン コリアンダー パプリカ]
-    when /ガパオライス|トムヤムクン|パッタイ|フォー/
-      %w[唐辛子 コリアンダー バジル]
-    when /麻婆豆腐/
-      %w[五香粉 山椒 唐辛子]
-    when /エビチリ/
-      %w[唐辛子]
-    when /酢豚|回鍋肉|青椒肉絲|餃子|春巻き|エビマヨ|野菜炒め/
-      %w[ガーリック]
-    when /チャーハン/
-      %w[ガーリック ブラックペッパー]
-    when /焼売|シュウマイ/
-      %w[からし]
-    when /卵スープ/
-      %w[ブラックペッパー]
-    when /ペペロンチーノ/
-      %w[ガーリック 唐辛子]
-    when /たらこパスタ/
-      %w[わさび]
-    when /ミートソースパスタ|ナポリタン|ピザ/
-      %w[オレガノ バジル]
-    when /カルボナーラ/
-      %w[ブラックペッパー]
-    when /きのこパスタ/
-      %w[タイム]
-    when /グラタン|シチュー|ドリア|ラザニア/
-      %w[ナツメグ]
-    when /コンソメスープ|ミネストローネ/
-      %w[ローレル]
-    when /コーンスープ|クラムチャウダー/
-      %w[ホワイトペッパー]
-    when /ハンバーグ/
-      %w[ナツメグ ブラックペッパー]
-    when /ステーキ|ローストチキン|ローストビーフ|チキンソテー/
-      %w[ローズマリー ブラックペッパー]
-    when /ロコモコ|ベーコンエッグ|オムレツ|オムライス|ハンバーガー/
-      %w[ブラックペッパー]
-    when /ホットドッグ|ホットサンド|サンドイッチ/
-      %w[マスタード]
-    when /とんかつ|おでん/
-      %w[からし]
-    when /唐揚げ/
-      %w[ガーリック 生姜]
-    when /チキンカツ/
-      %w[からし]
-    when /チキン南蛮|エビフライ|かつ丼|天ぷら|天丼/
-      %w[唐辛子]
-    when /寿司|刺身|海鮮丼|鉄火丼|手巻き寿司|ちらし寿司/
-      %w[わさび]
-    when /カルパッチョ/
-      %w[ホワイトペッパー ブラックペッパー]
-    when /うな重|焼き魚/
-      %w[山椒]
-    when /豚の角煮/
-      %w[ガーリック 生姜 からし]
-    when /親子丼/
-      %w[唐辛子]
-    when /牛丼|肉じゃが|豚の角煮|鶏の照り焼き|生姜焼き|山形風芋煮|宮城風芋煮|芋の子汁|茶碗蒸し|お茶漬け|おかゆ|みそ汁|わかめスープ|春雨スープ|湯豆腐|冷奴|水ナスの浅漬け|浅漬け|酢の物|納豆ご飯|卵かけご飯|おにぎり/
-      %w[生姜]
-    when /ラーメン|冷やし中華|焼きそば|お好み焼き|たこ焼き|かしみん焼き|ざるそば|うどん|そうめん|ひやむぎ|焼き鳥/
-      %w[唐辛子]
-    when /ナン/
-      %w[カルダモン]
-    when /プルコギ|ビビンバ|チヂミ/
-      %w[唐辛子 ガーリック]
-    when /サラダ|シーザーサラダ|コブサラダ|豆腐サラダ|海藻サラダ|ポテトサラダ|カプレーゼ|フルーツサンド/
-      %w[パセリ]
-    when /パンケーキ|フレンチトースト|フルーツヨーグルト|シリアル|オートミール|スムージー|フルーツサラダ|かき氷|アイスクリーム|プリン|ゼリー|トースト/
-      %w[シナモン]
-    when /スパイスコーラ/
-      %w[シナモン クローブ カルダモン]
-    when /チャイ/
-      %w[シナモン カルダモン]
-    when /スパイスクッキー/
-      %w[シナモン ナツメグ]
-    else
-      []
-    end
-
-  spices.uniq
-end
+SPICE_NAMES = Dish.spice_pairings.values.flatten.uniq.freeze
 
 # カテゴリを作成（全てのタグをCategoryとして統合）
 puts "Creating categories..."
@@ -350,13 +258,13 @@ foods_data = [
 
   # デザート
   { name: 'かき氷', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
-  { name: 'スパイスコーラ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ 'その他' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ], spices: [ 'シナモン', '生姜', 'ナツメグ' ] },
+  { name: 'スパイスコーラ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ 'その他' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'アイスクリーム', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'フルーツサンド', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'プリン', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'ゼリー', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
-  { name: 'チャイ', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ 'その他' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ], spices: [ 'シナモン', '生姜', 'ブラックペッパー' ] },
-  { name: 'スパイスクッキー', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー' ], spices: [ 'シナモン', 'ナツメグ', '生姜' ] }
+  { name: 'チャイ', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ 'その他' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'スパイスクッキー', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー' ] }
 ]
 
 foods_data.each do |food_data|
@@ -422,7 +330,7 @@ foods_data.each do |food_data|
     CategoryContent.find_or_create_by(dish: dish, category: category, label: "ヘルシーさ") if category
   end
 
-  spice_names = Array(food_data[:spices]).presence || spices_for_dish(dish.name)
+  spice_names = Dish.spices_for_name(dish.name)
   CategoryContent.where(dish: dish, label: SPICE_LABEL).delete_all
   spice_names.each do |spice_name|
     category = Category.find_by(name: spice_name)

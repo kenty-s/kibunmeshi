@@ -8,7 +8,8 @@
   <% time_of_days    = ['朝', '昼', '夜'] %>
   <% seasons         = ['春', '夏', '秋', '冬'] %>
   <% genres          = ['和食', '洋食', '中華', 'エスニック', 'その他'] %>
-  <% spices          = ['ブラックペッパー', 'ガーリック', '生姜', '唐辛子', 'クミン', 'コリアンダー', 'ターメリック', 'パプリカ', 'オレガノ', 'ローズマリー', 'タイム', 'パセリ', 'ローレル', 'ナツメグ', 'クローブ', '山椒', 'ディル', 'わさび', 'からし', 'マスタード', 'カルダモン', 'シナモン', 'バジル', '五香粉'] %>
+  <% spices          = ['ブラックペッパー', 'ガーリック', '生姜', '唐辛子', 'クミン', 'コリアンダー', 'ターメリック', 'パプリカ', 'オレガノ', 'ローズマリー', 'タイム', 'パセリ', 'ローレル', 'ナツメグ', 'クローブ', '山椒', 'わさび', 'からし', 'マスタード', 'カルダモン', 'シナモン', 'バジル', '五香粉', 'ホワイトペッパー'] %>
+  <% taste_options   = [['甘い', '甘い'], ['すっぱい', 'すっぱい'], ['しょっぱい', 'しょっぱい'], ['苦い', '苦い'], ['辛い（刺激）', '辛い']] %>
   <% common_option_classes = "rounded-xl px-4 py-3 text-center border border-gray-300 bg-white text-gray-700 shadow-sm transition hover:shadow-md hover:border-gray-400 peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 peer-checked:shadow peer-checked:ring-2 peer-checked:ring-orange-200 min-h-[3.25rem] flex items-center justify-center" %>
   <% section_card_classes  = "space-y-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm" %>
   <% section_title_classes = "text-lg font-semibold text-gray-800" %>
@@ -16,6 +17,24 @@
   <% option_text_classes   = "font-medium peer-checked:font-semibold" %>
 
   <%= form_with url: advanced_search_path, method: :get, local: true, data: { turbo: false }, class: "space-y-6" do |f| %>
+    <div class="<%= section_card_classes %>">
+      <div class="flex items-center gap-3">
+        <span class="<%= section_title_classes %>">スパイス/ハーブ</span>
+        <span class="<%= section_badge_classes %>">1つまで</span>
+      </div>
+      <p class="text-sm text-orange-500">キブンを変えるきっかけにスパイスを選んでみませんか？</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <% spices.each do |spice| %>
+          <label class="cursor-pointer">
+            <%= f.radio_button :spice_name, spice, class: "hidden peer" %>
+            <div class="<%= common_option_classes %>">
+              <span class="<%= option_text_classes %>"><%= spice %></span>
+            </div>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
     <div class="<%= section_card_classes %>">
       <div class="flex items-center gap-3">
         <span class="<%= section_title_classes %>">カテゴリ</span>
@@ -27,6 +46,24 @@
             <%= f.radio_button :category, cat, class: "hidden peer" %>
             <div class="<%= common_option_classes %>">
               <span class="<%= option_text_classes %>"><%= cat %></span>
+            </div>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="<%= section_card_classes %>">
+      <div class="flex items-center gap-3">
+        <span class="<%= section_title_classes %>">味覚/刺激</span>
+        <span class="<%= section_badge_classes %>">1つまで</span>
+      </div>
+      <p class="text-sm text-orange-500">辛いは味覚ではなく刺激ですが、キブンの変化として一緒に選べます。</p>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <% taste_options.each do |label, value| %>
+          <label class="cursor-pointer">
+            <%= f.radio_button :taste, value, class: "hidden peer" %>
+            <div class="<%= common_option_classes %>">
+              <span class="<%= option_text_classes %>"><%= label %></span>
             </div>
           </label>
         <% end %>
@@ -84,22 +121,6 @@
       </div>
     </div>
 
-    <div class="<%= section_card_classes %>">
-      <div class="flex items-center gap-3">
-        <span class="<%= section_title_classes %>">スパイス/ハーブ</span>
-        <span class="<%= section_badge_classes %>">1つまで</span>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <% spices.each do |spice| %>
-          <label class="cursor-pointer">
-            <%= f.radio_button :spice_name, spice, class: "hidden peer" %>
-            <div class="<%= common_option_classes %>">
-              <span class="<%= option_text_classes %>"><%= spice %></span>
-            </div>
-          </label>
-        <% end %>
-      </div>
-    </div>
     <div class="flex gap-4 pt-4">
       <%= f.submit "条件で検索する", class: "flex-1 py-3 px-4 bg-orange-500 text-white font-bold rounded-lg shadow hover:bg-orange-600 transition" %>
       <%= link_to "クリア", advanced_search_path, class: "py-3 px-4 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition" %>
