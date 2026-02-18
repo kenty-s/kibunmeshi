@@ -116,10 +116,6 @@
     </div>
   </div>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 914f22e (クックパッド検索,スパイス調整)
   <% repeat_params = params.to_unsafe_h.slice(
         "keyword", "category", "time_of_day", "season", "mood",
         "genre", "cooking_style", "healthiness_type", "spice_name", "spice_names", "taste"
@@ -130,21 +126,7 @@
   <% share_text = "今日のキブンは「#{@dish.name}」！ #キブンメシ" %>
   <% share_url = "https://kibunmeshi.onrender.com/" %>
   <% x_share_url = "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(share_text)}&url=#{ERB::Util.url_encode(share_url)}" %>
-<<<<<<< HEAD
-=======
-  <% repeat_params = params.to_unsafe_h.slice(
-        "keyword", "category", "time_of_day", "season", "mood",
-        "genre", "cooking_style", "healthiness_type", "spice_names"
-      ) %>
-  <% only_category = repeat_params.except("category").values.all?(&:blank?) %>
-  <% share_text = "今日のキブンは「#{@dish.name}」！ #キブンメシ" %>
-  <% share_url = "https://kibunmeshi.onrender.com/" %>
-  <% x_share_url = "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(share_text)}&url=#{ERB::Util.url_encode(share_url)}" %>
   <% cookpad_url = cookpad_search_url(@dish.name) %>
->>>>>>> 6e7457c (62_coockpad)
-=======
-  <% cookpad_url = cookpad_search_url(@dish.name) %>
->>>>>>> 914f22e (クックパッド検索,スパイス調整)
 
   <!-- ボタンエリア -->
   <div class="flex flex-wrap justify-center gap-4 mb-12">
