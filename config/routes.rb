@@ -31,6 +31,10 @@ Rails.application.routes.draw do
     end
   end
 
+  # マイページ
+  get "mypage", to: "mypages#show", as: :mypage
+  patch "mypage", to: "mypages#update"
+
   # SNS投稿（X投稿機能）
   # post 'share/twitter', to: 'share#twitter'
 

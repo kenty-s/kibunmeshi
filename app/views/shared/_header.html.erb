@@ -16,9 +16,8 @@
           <span class="text-white/90">
             <%= current_user.name %>さん
           </span>
-          <% if user_signed_in? %>
-            <%= link_to "検索履歴", search_histories_path, class: "px-4 py-2 text-sm font-medium text-orange-700 bg-white/90 rounded-md hover:bg-white transition-colors" %>
-          <% end %>
+          <%= link_to "マイページ", mypage_path, class: "px-4 py-2 text-sm font-medium text-orange-700 bg-white/90 rounded-md hover:bg-white transition-colors" %>
+          <%= link_to "検索履歴", search_histories_path, class: "px-4 py-2 text-sm font-medium text-orange-700 bg-white/90 rounded-md hover:bg-white transition-colors" %>
           <%= button_to "ログアウト", destroy_user_session_path, 
               method: :delete, 
               class: "px-4 py-2 text-sm font-medium text-white bg-orange-700/90 rounded-md hover:bg-orange-700 transition-colors",
