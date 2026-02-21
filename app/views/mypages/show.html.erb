@@ -1,0 +1,69 @@
+<div class="bg-[#f8efe4] min-h-screen py-10">
+  <div class="max-w-4xl mx-auto px-4 space-y-6">
+    <header class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+      <p class="text-sm text-gray-500 mb-2">マイページ</p>
+      <h1 class="text-2xl font-bold text-gray-800"><%= @user.name.presence || "ユーザー" %>さん</h1>
+      <p class="text-sm text-gray-600 mt-1"><%= @user.email %></p>
+    </header>
+
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <p class="text-xs text-gray-500">検索回数</p>
+        <p class="text-2xl font-bold text-gray-800 mt-1"><%= @search_count %></p>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-xl p-5 sm:col-span-2">
+        <p class="text-xs text-gray-500">最終検索日時</p>
+        <p class="text-lg font-semibold text-gray-800 mt-1">
+          <%= @last_executed_at.present? ? @last_executed_at.in_time_zone.strftime("%Y/%m/%d %H:%M") : "まだ検索履歴がありません" %>
+        </p>
+      </div>
+    </section>
+
+    <section class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-4">
+      <div class="flex flex-wrap gap-3">
+        <%= link_to "検索履歴を見る", search_histories_path, class: "px-4 py-2 text-sm font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors" %>
+        <%= link_to "キブン傾向を見る", trends_search_histories_path, class: "px-4 py-2 text-sm font-semibold text-orange-700 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-colors" %>
+      </div>
+    </section>
+
+    <section class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-4">
+      <h2 class="text-lg font-bold text-gray-800">アカウント編集</h2>
+
+      <% if @account_errors.present? %>
+        <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+          <p class="text-sm font-semibold text-red-800 mb-2">入力内容を確認してください</p>
+          <ul class="list-disc list-inside text-sm text-red-700 space-y-1">
+            <% @account_errors.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= form_with model: @user, url: mypage_path, method: :patch, local: true, class: "space-y-4" do |f| %>
+        <div>
+          <%= f.label :name, "表示名", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :name, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-800 focus:border-orange-400 focus:ring-orange-400", autocomplete: "name" %>
+        </div>
+
+        <div>
+          <%= f.label :email, "メールアドレス", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.email_field :email, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-800 focus:border-orange-400 focus:ring-orange-400", autocomplete: "email" %>
+        </div>
+
+        <div class="pt-1">
+          <%= f.submit "保存する", class: "px-5 py-2.5 text-sm font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors" %>
+        </div>
+      <% end %>
+
+      <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-4">
+        <p class="text-sm font-semibold text-gray-800">セキュリティ設定</p>
+        <p class="text-xs text-gray-500 mt-1">パスワード変更は専用画面で行います。</p>
+        <div class="pt-3">
+          <%= link_to "パスワード変更はこちら", edit_user_registration_path, class: "inline-flex px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors" %>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
