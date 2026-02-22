@@ -1,0 +1,51 @@
+<% search_active = current_page?(root_path) || current_page?(advanced_search_path) || current_page?(result_path) %>
+<% history_path = user_signed_in? ? search_histories_path : new_user_session_path %>
+<% trends_path = user_signed_in? ? trends_search_histories_path : new_user_session_path %>
+<% mypage_path_or_login = user_signed_in? ? mypage_path : new_user_session_path %>
+<% history_active = user_signed_in? && current_page?(search_histories_path) %>
+<% trends_active = user_signed_in? && current_page?(trends_search_histories_path) %>
+<% mypage_active = (user_signed_in? && current_page?(mypage_path)) || current_page?(edit_user_registration_path) %>
+
+<nav class="mobile-bottom-nav">
+  <div class="mobile-bottom-nav__bar">
+    <div class="mobile-bottom-nav__inner">
+      <div class="mobile-bottom-nav__grid">
+        <%= link_to advanced_search_path, class: "mobile-bottom-nav__item" do %>
+          <span class="mobile-bottom-nav__icon <%= search_active ? 'is-active' : '' %>">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mobile-bottom-nav__svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35m0 0A7.5 7.5 0 1 0 6.04 6.04a7.5 7.5 0 0 0 10.61 10.61Z" />
+            </svg>
+          </span>
+          <span class="mobile-bottom-nav__label <%= search_active ? 'is-active' : '' %>">検索</span>
+        <% end %>
+
+        <%= link_to history_path, class: "mobile-bottom-nav__item" do %>
+          <span class="mobile-bottom-nav__icon <%= history_active ? 'is-active' : '' %>">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mobile-bottom-nav__svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M6 3h12a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2-3-2V5a2 2 0 0 1 2-2Z" />
+            </svg>
+          </span>
+          <span class="mobile-bottom-nav__label <%= history_active ? 'is-active' : '' %>">履歴</span>
+        <% end %>
+
+        <%= link_to trends_path, class: "mobile-bottom-nav__item" do %>
+          <span class="mobile-bottom-nav__icon <%= trends_active ? 'is-active' : '' %>">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mobile-bottom-nav__svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 19h16M7 16V9m5 7V5m5 11v-4" />
+            </svg>
+          </span>
+          <span class="mobile-bottom-nav__label <%= trends_active ? 'is-active' : '' %>">傾向</span>
+        <% end %>
+
+        <%= link_to mypage_path_or_login, class: "mobile-bottom-nav__item" do %>
+          <span class="mobile-bottom-nav__icon <%= mypage_active ? 'is-active' : '' %>">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mobile-bottom-nav__svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 8.5a4 4 0 1 1-8 0 4 4 0 0 1 8 0Zm-10 9a6 6 0 0 1 12 0" />
+            </svg>
+          </span>
+          <span class="mobile-bottom-nav__label <%= mypage_active ? 'is-active' : '' %>">マイページ</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>
