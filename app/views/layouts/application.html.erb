@@ -55,10 +55,11 @@
       </div>
     <% end %>
 
-    <main class="w-full">
+    <main class="w-full app-main">
       <%= yield %>
     </main>
 
+    <%= render 'shared/mobile_bottom_nav' %>
     <%= render 'shared/footer' %>
   </body>
 </html>
