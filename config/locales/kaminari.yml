@@ -1,0 +1,17 @@
+ja:
+  views:
+    pagination:
+      first: "«"
+      previous: "‹"
+      next: "›"
+      last: "»"
+      truncate: "…"
+
+en:
+  views:
+    pagination:
+      first: "«"
+      previous: "‹"
+      next: "›"
+      last: "»"
+      truncate: "…"

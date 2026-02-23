@@ -70,7 +70,51 @@ body {
 }
 
 .app-main {
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 4rem);
+  background-color: #f8efe4;
+  background-image:
+    radial-gradient(circle at 10% 12rem, rgba(254, 215, 170, 0.7) 0, rgba(254, 215, 170, 0.7) 8rem, transparent 8.2rem),
+    radial-gradient(circle at 88% calc(100% - 6rem), rgba(253, 186, 116, 0.6) 0, rgba(253, 186, 116, 0.6) 6rem, transparent 6.2rem);
   padding-bottom: 6.5rem;
+}
+
+.app-main::before,
+.app-main::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-main::before {
+  top: -8rem;
+  right: -12%;
+  width: 80vw;
+  max-width: 900px;
+  height: 70vh;
+  border-radius: 5rem;
+  transform: rotate(12deg);
+  background: linear-gradient(to bottom right, #fb923c, #fb923c, #fdba74);
+  box-shadow: 0 30px 80px rgba(214, 117, 60, 0.22);
+}
+
+.app-main::after {
+  bottom: -7rem;
+  left: -18%;
+  width: 75vw;
+  max-width: 900px;
+  height: 60vh;
+  border-radius: 5rem;
+  transform: rotate(-12deg);
+  background: linear-gradient(to bottom right, #fb923c, #f97316, #fb923c);
+  box-shadow: 0 30px 80px rgba(214, 117, 60, 0.18);
+}
+
+.app-main > * {
+  position: relative;
+  z-index: 1;
 }
 
 .home-hero-title {
@@ -147,6 +191,109 @@ body {
 
 .mobile-bottom-nav__label.is-active {
   color: #9a3412;
+}
+
+.kibun-card-submit {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.kibun-card-submit--gattsuri {
+  background-color: #b3120b;
+}
+
+.kibun-card-submit--gattsuri:hover {
+  background-color: #980f09;
+}
+
+.kibun-card-submit--sappari {
+  background-color: #35af07;
+}
+
+.kibun-card-submit--sappari:hover {
+  background-color: #2e9606;
+}
+
+.kibun-trend-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 210px;
+  padding: 1.25rem 2.5rem;
+  border-radius: 0.75rem;
+  background-color: #f97316;
+  color: #ffffff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(194, 65, 12, 0.28);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.kibun-trend-link:hover {
+  background-color: #ea580c;
+  transform: translateY(-1px);
+}
+
+.kibun-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.kibun-pagination .pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.kibun-pagination .pagination > * {
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid #fdba74;
+  background-color: #fff7ed;
+  color: #9a3412;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kibun-pagination .pagination a {
+  text-decoration: none;
+}
+
+.kibun-pagination .pagination a:hover {
+  background-color: #fed7aa;
+  border-color: #fb923c;
+}
+
+.kibun-pagination .pagination .current {
+  background-color: #f97316;
+  border-color: #ea580c;
+  color: #ffffff;
+}
+
+.kibun-pagination .pagination .gap {
+  border-color: transparent;
+  background-color: transparent;
+  min-width: auto;
+  padding: 0;
 }
 
 @media (min-width: 768px) {

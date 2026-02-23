@@ -1,12 +1,7 @@
 <!-- ホーム画面 -->
-<section class="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-[#f8efe4]">
-  <!-- Background shapes -->
-  <div class="pointer-events-none absolute -top-32 right-[-12%] h-[70vh] w-[80vw] max-w-[900px] rotate-[12deg] rounded-[5rem] bg-gradient-to-br from-orange-400 via-orange-400 to-orange-300 shadow-[0_30px_80px_rgba(214,117,60,0.22)]"></div>
-  <div class="pointer-events-none absolute -bottom-28 left-[-18%] h-[60vh] w-[75vw] max-w-[900px] -rotate-[12deg] rounded-[5rem] bg-gradient-to-br from-orange-350 via-orange-450 to-orange-400 shadow-[0_30px_80px_rgba(214,117,60,0.18)]"></div>
-  <div class="pointer-events-none absolute top-24 left-[10%] h-64 w-64 rounded-full bg-orange-100/70 blur-[1px]"></div>
-  <div class="pointer-events-none absolute bottom-24 right-[12%] h-48 w-48 rounded-full bg-orange-200/60"></div>
+<section class="relative min-h-[calc(100vh-4rem)] overflow-hidden">
 
-  <div class="relative z-10 w-full max-w-6xl mx-auto px-4 pt-12 pb-16 md:pt-16">
+  <div class="relative z-10 w-full max-w-7xl mx-auto px-4 pt-12 pb-16 md:pt-16">
   <!-- タイトルセクション -->
   <div class="text-center mb-12">
     <h1 class="home-hero-title text-3xl sm:text-4xl font-bold mb-4 leading-tight">今日は何を食べたいですか？</h1>
@@ -16,42 +11,50 @@
   </div>
 
   <!-- 基本選択 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-start">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full items-start">
   <!-- ガッツリ -->
       <div class="bg-red-50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-red-200 p-8">
-        <div class="flex justify-center mb-4">
-          <%= image_tag 'gattsuri.png', class: 'w-16 h-16 object-contain' %>
+        <div class="flex flex-col sm:flex-row items-start gap-5 sm:gap-7 mb-0">
+          <%= image_tag 'gattsuri.png', width: 96, height: 96, class: 'object-contain shrink-0' %>
+          <div class="flex-1 sm:pr-3">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+              <h3 class="text-3xl sm:text-4xl font-extrabold leading-tight whitespace-nowrap text-gray-800">ガッツリ</h3>
+              <p class="text-gray-600 text-base sm:text-lg leading-snug mt-2 sm:mt-0">お腹いっぱい食べたい！<br>ボリューム満点の料理</p>
+            </div>
+            <div class="flex gap-3 mt-4">
+              <span class="flex-1 px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium text-center">とんかつ</span>
+              <span class="flex-1 px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium text-center">ステーキ</span>
+              <span class="flex-1 px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium text-center">カレー</span>
+            </div>
+          </div>
         </div>
-        <h3 class="text-2xl font-bold mb-2 text-center text-gray-800">ガッツリ</h3>
-        <p class="text-gray-600 text-sm text-center mb-6">お腹いっぱい食べたい！<br>ボリューム満点の料理</p>
-        <div class="flex justify-center gap-2 mb-8 flex-wrap">
-          <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">とんかつ</span>
-          <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">ステーキ</span>
-          <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">カレー</span>
-        </div>
-        <%= form_with url: result_path, method: :get, local: true, class: "w-full" do |form| %>
+        <%= form_with url: result_path, method: :get, local: true, class: "w-full mt-4" do |form| %>
           <%= form.hidden_field :category, value: "ガッツリ" %>
-          <%= form.submit "この気分ですぐ検索",
-              class: "block w-full py-2.5 px-4 text-sm text-red-800 font-bold bg-red-100 hover:bg-red-200 rounded-lg text-center border border-red-300 cursor-pointer transition-all duration-200" %>
+          <%= form.submit "このキブンですぐ検索",
+              class: "kibun-card-submit kibun-card-submit--gattsuri" %>
         <% end %>
       </div>
 
       <!-- サッパリ -->
       <div class="bg-green-50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-green-200 p-8">
-        <div class="flex justify-center mb-4">
-          <%= image_tag 'sappari.png', class: 'w-16 h-16 object-contain' %>
+        <div class="flex flex-col sm:flex-row items-start gap-5 sm:gap-7 mb-0">
+          <%= image_tag 'sappari.png', width: 96, height: 96, class: 'object-contain shrink-0' %>
+          <div class="flex-1 sm:pr-3">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+              <h3 class="text-3xl sm:text-4xl font-extrabold leading-tight whitespace-nowrap text-gray-800">サッパリ</h3>
+              <p class="text-gray-600 text-base sm:text-lg leading-snug mt-2 sm:mt-0">軽やかに食べたい！<br>あっさりとした料理</p>
+            </div>
+            <div class="flex gap-3 mt-4">
+              <span class="flex-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium text-center">そば</span>
+              <span class="flex-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium text-center">サラダ</span>
+              <span class="flex-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium text-center">スープ</span>
+            </div>
+          </div>
         </div>
-        <h3 class="text-2xl font-bold mb-2 text-center text-gray-800">サッパリ</h3>
-        <p class="text-gray-600 text-sm text-center mb-6">軽やかに食べたい！<br>あっさりとした料理</p>
-        <div class="flex justify-center gap-2 mb-8 flex-wrap">
-          <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">そば</span>
-          <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">サラダ</span>
-          <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">スープ</span>
-        </div>
-        <%= form_with url: result_path, method: :get, local: true, class: "w-full" do |form| %>
+        <%= form_with url: result_path, method: :get, local: true, class: "w-full mt-4" do |form| %>
           <%= form.hidden_field :category, value: "サッパリ" %>
-          <%= form.submit "この気分ですぐ検索",
-              class: "block w-full py-2.5 px-4 text-sm text-green-800 font-bold bg-green-100 hover:bg-green-200 rounded-lg text-center border border-green-300 cursor-pointer transition-all duration-200" %>
+          <%= form.submit "このキブンですぐ検索",
+              class: "kibun-card-submit kibun-card-submit--sappari" %>
         <% end %>
       </div>
     </div>
@@ -61,16 +64,16 @@
     <p class="text-gray-600">もっと細かく条件を指定したい方は</p>
     <button type="button"
       class="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-full shadow-md hover:bg-orange-800 transition"
-      onclick="const p=document.getElementById('advanced-search-panel'); p.classList.toggle('hidden'); p.scrollIntoView({behavior:'smooth'});">
+      onclick="const p=document.getElementById('advanced-search-panel'); p.classList.toggle('hidden');">
       <span class="text-lg">⚙ 詳細条件を設定する</span> 
     </button>
   </div>
 
   <div id="advanced-search-panel" class="mt-10 hidden">
-    <%= render template: "search/multiple_conditions" %>
+    <%= render template: "search/multiple_conditions", locals: { embedded_in_home: true } %>
   </div>
 
-  <div class="mt-14">
+  <div class="mt-14 w-full">
     <section class="bg-white/95 border border-gray-200/80 rounded-2xl shadow-lg p-6 md:p-8">
       <div class="flex flex-col gap-2">
         <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">🖥️ デスクトップアプリとして使うには</h2>

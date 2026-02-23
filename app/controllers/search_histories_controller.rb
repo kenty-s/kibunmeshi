@@ -2,7 +2,11 @@ class SearchHistoriesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @search_histories = current_user.search_histories.recent.includes(dish: { category_contents: :category })
+    @search_histories = current_user.search_histories
+      .recent
+      .includes(dish: { category_contents: :category })
+      .page(params[:page])
+      .per(10)
   end
 
   def trends
