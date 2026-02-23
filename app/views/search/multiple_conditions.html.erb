@@ -1,4 +1,5 @@
-<div class="max-w-6xl mx-auto px-4 py-10 space-y-8">
+<% embedded_in_home = local_assigns.fetch(:embedded_in_home, false) %>
+<div class="<%= embedded_in_home ? 'w-full py-10 space-y-8' : 'max-w-7xl mx-auto px-4 py-10 space-y-8' %>">
   <div class="text-center space-y-2">
     <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">条件で検索</h1>
     <p class="text-sm text-gray-500">各項目は1つまで選択できます（未選択でもOK）</p>
@@ -8,7 +9,32 @@
   <% time_of_days    = ['朝', '昼', '夜'] %>
   <% seasons         = ['春', '夏', '秋', '冬'] %>
   <% genres          = ['和食', '洋食', '中華', 'エスニック', 'その他'] %>
-  <% spices          = ['ブラックペッパー', 'ガーリック', '生姜', '唐辛子', 'クミン', 'コリアンダー', 'ターメリック', 'パプリカ', 'オレガノ', 'ローズマリー', 'タイム', 'パセリ', 'ローレル', 'ナツメグ', 'クローブ', '山椒', 'わさび', 'からし', 'マスタード', 'カルダモン', 'シナモン', 'バジル', '五香粉', 'ホワイトペッパー'] %>
+  <% spice_groups    = [
+      {
+        title: "パンチ・刺激系",
+        description: "刺激やキレを加えやすい料理で親しまれています",
+        title_class: "text-red-700",
+        spices: ['ブラックペッパー', 'ガーリック', '唐辛子', 'からし', 'マスタード', '山椒', 'わさび']
+      },
+      {
+        title: "香り・コク系",
+        description: "香りの厚みやコク感を出しやすい料理で親しまれています",
+        title_class: "text-amber-700",
+        spices: ['ローレル', 'ナツメグ', 'クローブ', 'シナモン', 'パプリカ', 'ターメリック']
+      },
+      {
+        title: "爽やか・軽やか系",
+        description: "軽やかな香りを活かす料理で親しまれています",
+        title_class: "text-green-700",
+        spices: ['生姜', 'ミント', 'パセリ', 'ディル', 'オレガノ', 'ローズマリー', 'バジル']
+      },
+      {
+        title: "エキゾチック系",
+        description: "異国感のある香りを活かす料理で親しまれています",
+        title_class: "text-indigo-700",
+        spices: ['クミン', 'コリアンダー', 'カルダモン', '五香粉']
+      }
+    ] %>
   <% taste_options   = [['甘い', '甘い'], ['すっぱい', 'すっぱい'], ['しょっぱい', 'しょっぱい'], ['苦い', '苦い'], ['辛い（刺激）', '辛い']] %>
   <% common_option_classes = "rounded-xl px-4 py-3 text-center border border-gray-300 bg-white text-gray-700 shadow-sm transition hover:shadow-md hover:border-gray-400 peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 peer-checked:shadow peer-checked:ring-2 peer-checked:ring-orange-200 min-h-[3.25rem] flex items-center justify-center" %>
   <% section_card_classes  = "space-y-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm" %>
@@ -17,24 +43,6 @@
   <% option_text_classes   = "font-medium peer-checked:font-semibold" %>
 
   <%= form_with url: advanced_search_path, method: :get, local: true, data: { turbo: false }, class: "space-y-6" do |f| %>
-    <div class="<%= section_card_classes %>">
-      <div class="flex items-center gap-3">
-        <span class="<%= section_title_classes %>">スパイス/ハーブ</span>
-        <span class="<%= section_badge_classes %>">1つまで</span>
-      </div>
-      <p class="text-sm text-orange-500">キブンを変えるきっかけにスパイスを選んでみませんか？</p>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <% spices.each do |spice| %>
-          <label class="cursor-pointer">
-            <%= f.radio_button :spice_name, spice, class: "hidden peer" %>
-            <div class="<%= common_option_classes %>">
-              <span class="<%= option_text_classes %>"><%= spice %></span>
-            </div>
-          </label>
-        <% end %>
-      </div>
-    </div>
-
     <div class="<%= section_card_classes %>">
       <div class="flex items-center gap-3">
         <span class="<%= section_title_classes %>">カテゴリ</span>
@@ -51,6 +59,34 @@
         <% end %>
       </div>
     </div>
+
+    <div class="<%= section_card_classes %>">
+      <div class="flex items-center gap-3">
+        <span class="<%= section_title_classes %>">スパイス・ハーブ</span>
+        <span class="<%= section_badge_classes %>">1つまで</span>
+        <span class="text-sm text-orange-500">キブンを変えるきっかけにスパイスを選んでみませんか？</span>
+      </div>
+
+      <div class="space-y-5">
+        <% spice_groups.each do |group| %>
+          <section class="space-y-2">
+            <p class="text-sm font-semibold <%= group[:title_class] %>"><%= group[:title] %></p>
+            <p class="text-xs text-gray-500"><%= group[:description] %></p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <% group[:spices].each do |spice| %>
+                <label class="cursor-pointer">
+                  <%= f.radio_button :spice_name, spice, class: "hidden peer" %>
+                  <div class="<%= common_option_classes %>">
+                    <span class="<%= option_text_classes %>"><%= spice %></span>
+                  </div>
+                </label>
+              <% end %>
+            </div>
+          </section>
+        <% end %>
+      </div>
+      <p class="text-xs text-gray-500">※香りや風味の印象からみた料理との相性の目安です。</p>
+      </div>
 
     <div class="<%= section_card_classes %>">
       <div class="flex items-center gap-3">
@@ -109,7 +145,7 @@
         <span class="<%= section_title_classes %>">ジャンル</span>
         <span class="<%= section_badge_classes %>">1つまで</span>
       </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <% genres.each do |g| %>
           <label class="cursor-pointer">
             <%= f.radio_button :genre, g, class: "hidden peer" %>

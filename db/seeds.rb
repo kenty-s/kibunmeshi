@@ -2,7 +2,7 @@ require "cgi"
 require "stringio"
 require "zlib"
 
-SEED_VERSION = "2026-02-19-spice-pairings-per-dish-v1"
+SEED_VERSION = "2026-02-22-mint-lineup-v2"
 
 unless ActiveRecord::Base.connection.data_source_exists?("seed_runs")
   puts "seed_runs table is missing. Run db:migrate before db:seed."
@@ -260,12 +260,17 @@ foods_data = [
   { name: 'かき氷', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '和食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'スパイスコーラ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ 'その他' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'アイスクリーム', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'ミントアイス', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'フルーツサンド', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'プリン', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '本格的', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'ゼリー', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単', '冷たい' ], healthiness_types: [ 'ヘルシー' ] },
+  { name: 'ハーブティー', category: 'サッパリ', time_of_days: [ '朝', '昼' ], seasons: [ '春', '夏', '秋', '冬' ], moods: [ 'リラックス' ], genres: [ 'その他' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'チャイ', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ 'その他' ], cooking_styles: [ '簡単', '温かい' ], healthiness_types: [ 'ヘルシー' ] },
   { name: 'スパイスクッキー', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '秋', '冬' ], moods: [ 'リラックス' ], genres: [ '洋食' ], cooking_styles: [ '簡単' ], healthiness_types: [ 'ヘルシー' ] }
 ]
+
+# 廃止した料理を明示的に削除
+Dish.where(name: [ 'ミントゼリー' ]).destroy_all
 
 foods_data.each do |food_data|
   dish = Dish.find_or_initialize_by(name: food_data[:name])
