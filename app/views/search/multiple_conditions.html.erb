@@ -76,7 +76,11 @@
               <% group[:spices].each do |spice| %>
                 <label class="cursor-pointer">
                   <%= f.radio_button :spice_name, spice, class: "hidden peer" %>
-                  <div class="<%= common_option_classes %>">
+                  <div class="<%= common_option_classes %> gap-2">
+                    <% spice_icon = spice_icon_path(spice) %>
+                    <% if spice_icon.present? %>
+                      <%= image_tag spice_icon, alt: spice, class: "w-5 h-5 object-contain shrink-0" %>
+                    <% end %>
                     <span class="<%= option_text_classes %>"><%= spice %></span>
                   </div>
                 </label>

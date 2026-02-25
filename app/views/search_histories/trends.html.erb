@@ -34,12 +34,44 @@
       </div>
 
       <% if @heatmap[:total].positive? %>
+        <% mood_labels = Array(@heatmap[:mood_labels]) %>
+        <% cells = @heatmap[:cells] || {} %>
+        <% totals_by_mood = mood_labels.to_h { |mood| [ mood, (cells[mood] || {}).values.sum ] } %>
+        <% dominant_mood, dominant_count = totals_by_mood.max_by { |_, count| count } || ["未分類", 0] %>
+        <% secondary_mood, secondary_count = totals_by_mood.reject { |mood, _| mood == dominant_mood }.max_by { |_, count| count } || ["-", 0] %>
+        <% dominant_ratio = @heatmap[:total].positive? ? (dominant_count.to_f / @heatmap[:total] * 100.0) : 0.0 %>
+        <% secondary_ratio = @heatmap[:total].positive? ? (secondary_count.to_f / @heatmap[:total] * 100.0) : 0.0 %>
+        <% gap = (dominant_ratio - secondary_ratio).abs %>
+        <% tendency_label =
+          if gap >= 20
+            "かなり#{dominant_mood}派"
+          elsif gap >= 8
+            "やや#{dominant_mood}派"
+          else
+            "拮抗"
+          end %>
+        <% dominant_tone = dominant_mood == "ガッツリ" ? "text-red-700 bg-red-50 border-red-200" : "text-green-700 bg-green-50 border-green-200" %>
+        <div class="mt-2 rounded-2xl border p-4 <%= dominant_tone %>">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-semibold tracking-wide">全時間帯の総合判定</p>
+              <p class="text-lg font-bold mt-1"><%= tendency_label %></p>
+            </div>
+            <div class="text-right text-sm">
+              <p><span class="font-semibold"><%= dominant_mood %></span>: <%= dominant_count %>回（<%= dominant_ratio.round(1) %>%）</p>
+              <p class="text-gray-600"><%= secondary_mood %>: <%= secondary_count %>回（<%= secondary_ratio.round(1) %>%）</p>
+            </div>
+          </div>
+          <div class="mt-3 h-2.5 w-full bg-white/70 rounded-full overflow-hidden border border-white/60">
+            <div class="h-full <%= dominant_mood == 'ガッツリ' ? 'bg-red-500' : 'bg-green-500' %>" data-bar-width="<%= dominant_ratio.round(1) %>"></div>
+          </div>
+        </div>
+
         <div class="mt-8 bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-gray-100">
           <div class="h-80">
             <canvas
               id="time-mood-chart"
               class="w-full h-full"
-              height="320"
               data-chart="<%= json_escape(@heatmap[:chart_data].to_json) %>">
             </canvas>
           </div>
@@ -56,11 +88,15 @@
         (() => {
           const stateKey = "__timeMoodChartState";
           if (!window[stateKey]) {
-            window[stateKey] = { chart: null, chartLibPromise: null, bound: false };
+            window[stateKey] = { chart: null, chartLibPromise: null, bound: false, resizeObserver: null };
           }
           const state = window[stateKey];
 
           const destroyChart = () => {
+            if (state.resizeObserver) {
+              state.resizeObserver.disconnect();
+              state.resizeObserver = null;
+            }
             if (state.chart) {
               state.chart.destroy();
               state.chart = null;
@@ -109,7 +145,17 @@
             destroyChart();
 
             const data = JSON.parse(canvas.dataset.chart);
+            const totalLabel = "全時間帯";
+            if (!data.labels.includes(totalLabel)) {
+              data.labels = [...data.labels, totalLabel];
+              data.datasets = (data.datasets || []).map((dataset) => {
+                const values = Array.isArray(dataset.data) ? dataset.data.map((v) => Number(v || 0)) : [];
+                const total = values.reduce((sum, value) => sum + value, 0);
+                return { ...dataset, data: [...values, total] };
+              });
+            }
             const context = canvas.getContext("2d");
+            const dpr = Math.min(2, window.devicePixelRatio || 1);
 
             state.chart = new window.Chart(context, {
               type: "bar",
@@ -117,6 +163,7 @@
               options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                devicePixelRatio: dpr,
                 scales: {
                   x: {
                     stacked: false,
@@ -147,6 +194,17 @@
                 }
               }
             });
+
+            requestAnimationFrame(() => state.chart && state.chart.resize());
+            setTimeout(() => state.chart && state.chart.resize(), 120);
+
+            if (window.ResizeObserver) {
+              state.resizeObserver = new ResizeObserver(() => {
+                if (state.chart) state.chart.resize();
+              });
+              const container = canvas.parentElement;
+              if (container) state.resizeObserver.observe(container);
+            }
           };
 
           if (!state.bound) {
@@ -164,6 +222,129 @@
     <section class="<%= section_class %>">
       <div class="<%= section_header_class %>">
         <div>
+          <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">🧭 時間帯×キブン×スパイス ヒートマップ</h2>
+          <p class="text-sm text-gray-600 mt-1.5">朝・昼・夜で、どのスパイスが選ばれやすいかをキブン別に可視化しています（各キブン上位8種）。</p>
+        </div>
+        <div class="text-xs text-gray-500 font-medium bg-gray-100 px-4 py-2 rounded-full">スパイス登場回数: <%= @time_mood_spice_heatmap[:total] %></div>
+      </div>
+
+      <% if @time_mood_spice_heatmap[:total].to_i > 0 %>
+        <div class="mb-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+          <div class="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+            <span class="font-semibold">見方:</span>
+            <span>色が濃いほど登場回数が多い</span>
+            <span class="text-gray-400">・</span>
+            <span>「時間帯合計」で朝/昼/夜の強さを比較</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <% @time_mood_spice_heatmap[:mood_labels].each do |mood| %>
+            <% rows = @time_mood_spice_heatmap[:rows_by_mood][mood] || [] %>
+            <% tone = mood == "ガッツリ" ? { head: "text-red-800", border: "border-red-100", bg: "bg-red-50" } : { head: "text-green-800", border: "border-green-100", bg: "bg-green-50" } %>
+            <% time_labels = @time_mood_spice_heatmap[:time_labels] %>
+            <% time_totals = time_labels.to_h { |time| [ time, rows.sum { |row| row[:counts][time].to_i } ] } %>
+            <% peak_time, peak_count = time_totals.max_by { |_, count| count } || ["-", 0] %>
+            <% top_row = rows.max_by { |row| row[:total].to_i } %>
+            <% intensity_scale = mood == "ガッツリ" ? %w[bg-red-100 bg-red-200 bg-red-300 bg-red-400 bg-red-500] : %w[bg-green-100 bg-green-200 bg-green-300 bg-green-400 bg-green-500] %>
+            <article class="rounded-2xl border <%= tone[:border] %> <%= tone[:bg] %> p-4">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold <%= tone[:head] %>"><%= mood %>で選ばれやすいスパイス</h3>
+                <span class="text-xs text-gray-500">登場回数: <%= @time_mood_spice_heatmap[:totals_by_mood][mood].to_i %></span>
+              </div>
+
+              <% if rows.any? %>
+                <div class="mb-3 flex flex-wrap gap-2 text-xs">
+                  <span class="inline-flex items-center rounded-full bg-white/80 px-2.5 py-1 text-gray-700 border border-gray-200">ピーク時間帯: <%= peak_time %>（<%= peak_count %>回）</span>
+                  <% if top_row %>
+                    <span class="inline-flex items-center rounded-full bg-white/80 px-2.5 py-1 text-gray-700 border border-gray-200">最多スパイス: <%= top_row[:name] %>（<%= top_row[:total] %>回）</span>
+                  <% end %>
+                </div>
+                <div class="mb-2 flex items-center gap-1 text-[11px] text-gray-500">
+                  <span>薄</span>
+                  <% intensity_scale.each do |bg_class| %>
+                    <span class="inline-block h-3.5 w-3.5 rounded-sm border border-white/60 <%= bg_class %>"></span>
+                  <% end %>
+                  <span>濃</span>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="min-w-full text-sm border-separate border-spacing-y-1">
+                    <thead>
+                      <tr class="text-xs text-gray-500">
+                        <th class="text-left px-2 py-1">スパイス</th>
+                        <% time_labels.each do |time| %>
+                          <th class="text-center px-2 py-1">
+                            <div><%= time %></div>
+                            <div class="text-[10px] text-gray-400 mt-0.5"><%= time_totals[time] %>回</div>
+                          </th>
+                        <% end %>
+                        <th class="text-right px-2 py-1">合計</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% rows.each do |row| %>
+                        <tr>
+                          <td class="px-2 py-1.5 font-semibold text-gray-800 whitespace-nowrap">
+                            <span><%= row[:name] %></span>
+                          </td>
+                          <% time_labels.each do |time| %>
+                            <% count = row[:counts][time].to_i %>
+                            <% max_count = @time_mood_spice_heatmap[:max_count].to_i %>
+                            <% ratio = max_count.positive? ? (count.to_f / max_count.to_f) : 0.0 %>
+                            <% intensity_index =
+                              if ratio >= 0.8
+                                4
+                              elsif ratio >= 0.6
+                                3
+                              elsif ratio >= 0.4
+                                2
+                              elsif ratio >= 0.2
+                                1
+                              else
+                                0
+                              end %>
+                            <% cell_bg = count.positive? ? intensity_scale[intensity_index] : "bg-gray-100" %>
+                            <% cell_text = if count.zero?
+                                             "text-gray-400"
+                                           elsif intensity_index >= 3
+                                             "text-white"
+                                           else
+                                             "text-gray-800"
+                                           end %>
+                            <td class="px-2 py-1.5 text-center rounded-lg font-semibold <%= cell_bg %> <%= cell_text %>">
+                              <%= count.positive? ? count : "–" %>
+                            </td>
+                          <% end %>
+                          <td class="px-2 py-1.5 text-right font-bold text-gray-700"><%= row[:total] %></td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                    <tfoot>
+                      <tr class="text-xs text-gray-600">
+                        <td class="px-2 py-1.5 font-semibold">時間帯合計</td>
+                        <% time_labels.each do |time| %>
+                          <td class="px-2 py-1.5 text-center font-semibold"><%= time_totals[time] %></td>
+                        <% end %>
+                        <td class="px-2 py-1.5 text-right font-bold text-gray-700"><%= rows.sum { |row| row[:total].to_i } %></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              <% else %>
+                <p class="text-sm text-gray-500 py-8 text-center">このキブンで集計できるスパイス履歴がありません。</p>
+              <% end %>
+            </article>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-sm text-gray-500 mt-4 text-center py-12 bg-gray-50 rounded-2xl">
+          まだスパイスの時間帯データがありません。
+        </div>
+      <% end %>
+    </section>
+
+    <section class="<%= section_class %>">
+      <div class="<%= section_header_class %>">
+        <div>
           <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">🏆 あなたのスパイスTop5</h2>
           <p class="text-sm text-gray-600 mt-1.5">過去の検索履歴から、よく登場するスパイスを集計しています。</p>
         </div>
@@ -172,28 +353,6 @@
 
       <% if @spice_summary[:total].to_i > 0 %>
         <div class="hidden bg-amber-800 border-amber-800 text-amber-800 bg-orange-800 border-orange-800 text-orange-800 bg-amber-700 border-amber-700 text-amber-700 bg-orange-700 border-orange-700 text-orange-700 bg-yellow-700 border-yellow-700 text-yellow-700"></div>
-        <% spice_image_map = {
-          "ブラックペッパー" => "black_pepper.png",
-          "ガーリック" => "garlic.png",
-          "生姜" => "ginger.png",
-          "唐辛子" => "chili.png",
-          "クミン" => "cumin.png",
-          "コリアンダー" => "coriander.png",
-          "ターメリック" => "turmeric.png",
-          "パプリカ" => "paprika.png",
-          "オレガノ" => "oregano.png",
-          "ローズマリー" => "rosemary.png",
-          "タイム" => "thyme.png",
-          "パセリ" => "parsley.png",
-          "ローレル" => "laurel.png",
-          "ナツメグ" => "nutmeg.png",
-          "クローブ" => "clove.png",
-          "山椒" => "sansho.png",
-          "カルダモン" => "cardamom.png",
-          "シナモン" => "cinnamon.png",
-          "バジル" => "basil.png",
-          "五香粉" => "gokohfun.png"
-        } %>
         <% items = @spice_summary[:items] %>
         <% top_items = items.reject { |item| item[:name] == "その他" } %>
         <% other_item = items.find { |item| item[:name] == "その他" } %>
@@ -211,7 +370,7 @@
             <% top_items.first(3).each_with_index do |item, index| %>
               <% name = item[:name] %>
               <% color = palette[index % palette.length] %>
-              <% spice_image = spice_image_map[name] %>
+              <% spice_image = spice_icon_path(name) %>
               <% ratio_value = item[:ratio] || item[:ratio_display] || 0 %>
               <div class="relative bg-gradient-to-br from-white via-white to-gray-50 rounded-2xl p-6 border-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 <%= color[:border] %>">
                 <div class="absolute -top-3 -right-3 w-12 h-12 rounded-full bg-white border-2 border-gray-200 shadow-lg flex items-center justify-center text-2xl">
@@ -223,7 +382,7 @@
                 <div class="flex items-center gap-3 mb-4">
                   <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white border border-gray-100 shadow-sm">
                     <% if spice_image.present? %>
-                      <%= image_tag spice_image, alt: name, size: "32x32", class: "object-contain", style: "width:32px;height:32px;max-width:32px;max-height:32px;" %>
+                      <%= image_tag spice_image, alt: name, class: "w-8 h-8 object-contain" %>
                     <% else %>
                       <span class="text-sm text-gray-600"><%= name.first %></span>
                     <% end %>
@@ -254,7 +413,7 @@
                 <% actual_index = offset + 3 %>
                 <% name = item[:name] %>
                 <% color = palette[actual_index % palette.length] %>
-                <% spice_image = spice_image_map[name] %>
+                <% spice_image = spice_icon_path(name) %>
                 <% ratio_value = item[:ratio] || item[:ratio_display] || 0 %>
                 <div class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-5 border-2 border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-300">
                   <div class="flex items-center gap-4">
@@ -264,7 +423,7 @@
                     <div class="flex items-center gap-3 flex-1 min-w-0">
                       <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white border border-gray-100 shadow-sm">
                         <% if spice_image.present? %>
-                          <%= image_tag spice_image, alt: name, size: "28x28", class: "object-contain", style: "width:28px;height:28px;max-width:28px;max-height:28px;" %>
+                          <%= image_tag spice_image, alt: name, class: "w-7 h-7 object-contain" %>
                         <% else %>
                           <span class="text-xs text-gray-600"><%= name.first %></span>
                         <% end %>
@@ -287,6 +446,7 @@
               <% end %>
             </div>
           <% end %>
+        </div>
 
       <% else %>
         <div class="text-sm text-gray-500 mt-4 text-center py-12 bg-gray-50 rounded-2xl">
@@ -295,16 +455,143 @@
       <% end %>
     </section>
 
-    <% if @spice_summary[:total].to_i > 0 %>
-      <script>
-        document.addEventListener("turbo:load", () => {
-          document.querySelectorAll("[data-bar-width]").forEach((el) => {
-            const value = Number(el.dataset.barWidth || 0);
-            const safeValue = Math.max(0, Math.min(100, value));
-            el.style.width = `${safeValue}%`;
-          });
+    <section class="<%= section_class %>">
+      <div class="<%= section_header_class %>">
+        <div>
+          <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">🍽️ あなたのキブンメシTop10</h2>
+          <p class="text-sm text-gray-600 mt-1.5">提案された回数が多い料理をランキング表示しています。</p>
+        </div>
+        <div class="text-xs text-gray-500 font-medium bg-gray-100 px-4 py-2 rounded-full">対象: 全期間</div>
+      </div>
+
+      <% if @kibunmeshi_summary[:total].to_i > 0 %>
+        <% kibun_items = @kibunmeshi_summary[:items] %>
+        <% kibun_top3 = kibun_items.first(3) %>
+        <% kibun_rest = kibun_items.drop(3) %>
+        <% kibun_palette = [
+          { bg: "bg-amber-800", border: "border-amber-800", text: "text-amber-800" },
+          { bg: "bg-orange-800", border: "border-orange-800", text: "text-orange-800" },
+          { bg: "bg-amber-700", border: "border-amber-700", text: "text-amber-700" },
+          { bg: "bg-orange-700", border: "border-orange-700", text: "text-orange-700" },
+          { bg: "bg-yellow-700", border: "border-yellow-700", text: "text-yellow-700" }
+        ] %>
+        <% rank_medals = ["🥇", "🥈", "🥉"] %>
+
+        <div class="mt-5 space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <% kibun_top3.each_with_index do |item, index| %>
+              <% color = kibun_palette[index % kibun_palette.length] %>
+              <% mood = item[:mood] %>
+              <% mood_style =
+                if mood == "ガッツリ"
+                  "bg-red-100 text-red-700"
+                elsif mood == "サッパリ"
+                  "bg-green-100 text-green-700"
+                else
+                  "bg-gray-100 text-gray-600"
+                end %>
+              <article class="relative bg-gradient-to-br from-white via-white to-gray-50 rounded-2xl p-4 border-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 <%= color[:border] %>">
+                <div class="absolute -top-3 -right-3 w-12 h-12 rounded-full bg-white border-2 border-gray-200 shadow-lg flex items-center justify-center text-2xl">
+                  <%= rank_medals[index] || "" %>
+                </div>
+                <div class="inline-flex items-center justify-center w-9 h-9 rounded-full text-white font-bold text-base shadow-md mb-2 <%= color[:bg] %>">
+                  <%= item[:rank] %>
+                </div>
+                <div class="space-y-1.5 mb-3">
+                  <h3 class="font-bold text-base text-gray-800 truncate"><%= item[:name] %></h3>
+                  <div>
+                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold <%= mood_style %>"><%= mood.presence || "未分類" %></span>
+                  </div>
+                  <p class="text-sm text-gray-500"><%= item[:count] %>回登場</p>
+                </div>
+              </article>
+            <% end %>
+          </div>
+
+          <% if kibun_rest.any? %>
+            <% kibun_rest_top = kibun_rest.first(4) %>
+            <% kibun_rest_bottom = kibun_rest.drop(4) %>
+            <div class="space-y-2">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <% kibun_rest_top.each do |item| %>
+                  <% color = kibun_palette[(item[:rank] - 1) % kibun_palette.length] %>
+                  <% mood = item[:mood] %>
+                  <% mood_style =
+                    if mood == "ガッツリ"
+                      "bg-red-100 text-red-700"
+                    elsif mood == "サッパリ"
+                      "bg-green-100 text-green-700"
+                    else
+                      "bg-gray-100 text-gray-600"
+                    end %>
+                  <article class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-3 border-2 border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all duration-300 min-w-0">
+                    <div class="flex items-start gap-2">
+                      <div class="flex-shrink-0 w-8 h-8 rounded-full text-white text-sm font-bold flex items-center justify-center shadow-sm <%= color[:bg] %>">
+                        <%= item[:rank] %>
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <div class="font-bold text-sm text-gray-800 leading-tight break-words"><%= item[:name] %></div>
+                        <div class="mt-1">
+                          <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold <%= mood_style %>"><%= mood.presence || "未分類" %></span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1"><%= item[:count] %>回</div>
+                      </div>
+                    </div>
+                  </article>
+                <% end %>
+              </div>
+
+              <% if kibun_rest_bottom.any? %>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                  <% kibun_rest_bottom.each do |item| %>
+                    <% color = kibun_palette[(item[:rank] - 1) % kibun_palette.length] %>
+                    <% mood = item[:mood] %>
+                    <% mood_style =
+                      if mood == "ガッツリ"
+                        "bg-red-100 text-red-700"
+                      elsif mood == "サッパリ"
+                        "bg-green-100 text-green-700"
+                      else
+                        "bg-gray-100 text-gray-600"
+                      end %>
+                    <article class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-3 border-2 border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all duration-300 min-w-0">
+                      <div class="flex items-start gap-2">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full text-white text-sm font-bold flex items-center justify-center shadow-sm <%= color[:bg] %>">
+                          <%= item[:rank] %>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <div class="font-bold text-sm text-gray-800 leading-tight break-words"><%= item[:name] %></div>
+                          <div class="mt-1">
+                            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold <%= mood_style %>"><%= mood.presence || "未分類" %></span>
+                          </div>
+                          <div class="text-xs text-gray-500 mt-1"><%= item[:count] %>回</div>
+                        </div>
+                      </div>
+                    </article>
+                  <% end %>
+                  <% (4 - kibun_rest_bottom.length).times do %>
+                    <div class="hidden md:block" aria-hidden="true"></div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-sm text-gray-500 mt-4 text-center py-12 bg-gray-50 rounded-2xl">
+          まだキブンメシの履歴がありません。
+        </div>
+      <% end %>
+    </section>
+
+    <script>
+      document.addEventListener("turbo:load", () => {
+        document.querySelectorAll("[data-bar-width]").forEach((el) => {
+          const value = Number(el.dataset.barWidth || 0);
+          const safeValue = Math.max(0, Math.min(100, value));
+          el.style.width = `${safeValue}%`;
         });
-      </script>
-    <% end %>
+      });
+    </script>
   </div>
 </div>
