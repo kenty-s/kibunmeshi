@@ -12,7 +12,7 @@ class SearchHistoriesController < ApplicationController
   def trends
     scope = current_user.search_histories.includes(dish: [ :categories, { category_contents: :category } ])
     cache_key = [
-      "search_histories/trends/v3",
+      "search_histories/trends/v4",
       current_user.id,
       current_user.search_histories.maximum(:updated_at)&.to_i,
       current_user.search_histories.count
@@ -20,6 +20,8 @@ class SearchHistoriesController < ApplicationController
     summaries = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
       build_trend_summaries(scope)
     end
+    summaries = normalize_trend_summaries(summaries)
+
     @heatmap = summaries[:heatmap]
     @time_mood_spice_heatmap = summaries[:time_mood_spice_heatmap]
     @spice_summary = summaries[:spice_summary]
@@ -207,6 +209,42 @@ class SearchHistoriesController < ApplicationController
       time_mood_spice_heatmap: build_time_mood_spice_heatmap_from_counts(mood_time_spice_counts, time_labels, mood_labels),
       spice_summary: build_spice_summary_from_counts(spice_counts),
       kibunmeshi_summary: build_kibunmeshi_summary_from_counts(dish_counts, dishes_by_id)
+    }
+  end
+
+  def normalize_trend_summaries(raw_summaries)
+    summaries = raw_summaries.is_a?(Hash) ? raw_summaries.deep_symbolize_keys : {}
+
+    heatmap = summaries[:heatmap].is_a?(Hash) ? summaries[:heatmap].deep_symbolize_keys : {}
+    time_mood_spice_heatmap = summaries[:time_mood_spice_heatmap].is_a?(Hash) ? summaries[:time_mood_spice_heatmap].deep_symbolize_keys : {}
+    spice_summary = summaries[:spice_summary].is_a?(Hash) ? summaries[:spice_summary].deep_symbolize_keys : {}
+    kibunmeshi_summary = summaries[:kibunmeshi_summary].is_a?(Hash) ? summaries[:kibunmeshi_summary].deep_symbolize_keys : {}
+
+    {
+      heatmap: {
+        time_labels: Array(heatmap[:time_labels]),
+        mood_labels: Array(heatmap[:mood_labels]),
+        cells: heatmap[:cells].is_a?(Hash) ? heatmap[:cells] : {},
+        max_count: heatmap[:max_count].to_i,
+        total: heatmap[:total].to_i,
+        chart_data: heatmap[:chart_data].is_a?(Hash) ? heatmap[:chart_data] : { labels: [], datasets: [] }
+      },
+      time_mood_spice_heatmap: {
+        time_labels: Array(time_mood_spice_heatmap[:time_labels]),
+        mood_labels: Array(time_mood_spice_heatmap[:mood_labels]),
+        rows_by_mood: time_mood_spice_heatmap[:rows_by_mood].is_a?(Hash) ? time_mood_spice_heatmap[:rows_by_mood] : {},
+        totals_by_mood: time_mood_spice_heatmap[:totals_by_mood].is_a?(Hash) ? time_mood_spice_heatmap[:totals_by_mood] : {},
+        max_count: time_mood_spice_heatmap[:max_count].to_i,
+        total: time_mood_spice_heatmap[:total].to_i
+      },
+      spice_summary: {
+        items: Array(spice_summary[:items]),
+        total: spice_summary[:total].to_i
+      },
+      kibunmeshi_summary: {
+        items: Array(kibunmeshi_summary[:items]),
+        total: kibunmeshi_summary[:total].to_i
+      }
     }
   end
 
