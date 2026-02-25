@@ -33,14 +33,15 @@
         </div>
       </div>
 
-      <% if @heatmap[:total].positive? %>
+      <% if @heatmap[:total].to_i.positive? %>
         <% mood_labels = Array(@heatmap[:mood_labels]) %>
         <% cells = @heatmap[:cells] || {} %>
         <% totals_by_mood = mood_labels.to_h { |mood| [ mood, (cells[mood] || {}).values.sum ] } %>
         <% dominant_mood, dominant_count = totals_by_mood.max_by { |_, count| count } || ["未分類", 0] %>
         <% secondary_mood, secondary_count = totals_by_mood.reject { |mood, _| mood == dominant_mood }.max_by { |_, count| count } || ["-", 0] %>
-        <% dominant_ratio = @heatmap[:total].positive? ? (dominant_count.to_f / @heatmap[:total] * 100.0) : 0.0 %>
-        <% secondary_ratio = @heatmap[:total].positive? ? (secondary_count.to_f / @heatmap[:total] * 100.0) : 0.0 %>
+        <% total_count = @heatmap[:total].to_i %>
+        <% dominant_ratio = total_count.positive? ? (dominant_count.to_f / total_count * 100.0) : 0.0 %>
+        <% secondary_ratio = total_count.positive? ? (secondary_count.to_f / total_count * 100.0) : 0.0 %>
         <% gap = (dominant_ratio - secondary_ratio).abs %>
         <% tendency_label =
           if gap >= 20
@@ -83,7 +84,7 @@
       <% end %>
     </section>
 
-    <% if @heatmap[:total].positive? %>
+    <% if @heatmap[:total].to_i.positive? %>
       <script>
         (() => {
           const stateKey = "__timeMoodChartState";
@@ -238,18 +239,18 @@
           </div>
         </div>
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <% @time_mood_spice_heatmap[:mood_labels].each do |mood| %>
-            <% rows = @time_mood_spice_heatmap[:rows_by_mood][mood] || [] %>
+          <% Array(@time_mood_spice_heatmap[:mood_labels]).each do |mood| %>
+            <% rows = @time_mood_spice_heatmap.dig(:rows_by_mood, mood) || [] %>
             <% tone = mood == "ガッツリ" ? { head: "text-red-800", border: "border-red-100", bg: "bg-red-50" } : { head: "text-green-800", border: "border-green-100", bg: "bg-green-50" } %>
-            <% time_labels = @time_mood_spice_heatmap[:time_labels] %>
-            <% time_totals = time_labels.to_h { |time| [ time, rows.sum { |row| row[:counts][time].to_i } ] } %>
+            <% time_labels = Array(@time_mood_spice_heatmap[:time_labels]) %>
+            <% time_totals = time_labels.to_h { |time| [ time, rows.sum { |row| row.dig(:counts, time).to_i } ] } %>
             <% peak_time, peak_count = time_totals.max_by { |_, count| count } || ["-", 0] %>
             <% top_row = rows.max_by { |row| row[:total].to_i } %>
             <% intensity_scale = mood == "ガッツリ" ? %w[bg-red-100 bg-red-200 bg-red-300 bg-red-400 bg-red-500] : %w[bg-green-100 bg-green-200 bg-green-300 bg-green-400 bg-green-500] %>
             <article class="rounded-2xl border <%= tone[:border] %> <%= tone[:bg] %> p-4">
               <div class="flex items-center justify-between mb-3">
                 <h3 class="font-bold <%= tone[:head] %>"><%= mood %>で選ばれやすいスパイス</h3>
-                <span class="text-xs text-gray-500">登場回数: <%= @time_mood_spice_heatmap[:totals_by_mood][mood].to_i %></span>
+                <span class="text-xs text-gray-500">登場回数: <%= @time_mood_spice_heatmap.dig(:totals_by_mood, mood).to_i %></span>
               </div>
 
               <% if rows.any? %>
@@ -287,7 +288,7 @@
                             <span><%= row[:name] %></span>
                           </td>
                           <% time_labels.each do |time| %>
-                            <% count = row[:counts][time].to_i %>
+                            <% count = row.dig(:counts, time).to_i %>
                             <% max_count = @time_mood_spice_heatmap[:max_count].to_i %>
                             <% ratio = max_count.positive? ? (count.to_f / max_count.to_f) : 0.0 %>
                             <% intensity_index =

@@ -12,7 +12,7 @@ class SearchHistoriesController < ApplicationController
   def trends
     scope = current_user.search_histories.includes(dish: [ :categories, { category_contents: :category } ])
     cache_key = [
-      "search_histories/trends/v3",
+      "search_histories/trends/v4",
       current_user.id,
       current_user.search_histories.maximum(:updated_at)&.to_i,
       current_user.search_histories.count
