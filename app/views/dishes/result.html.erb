@@ -76,31 +76,9 @@
         <span class="text-xl font-bold text-gray-900 min-w-[6rem]">スパイス</span>
         <div class="flex flex-wrap gap-2">
           <% spice_names = @dish.spice_names_for_display(fallback_names: params[:spice_name]).first(4) %>
-          <% spice_image_map = {
-            "ブラックペッパー" => "black_pepper.png",
-            "ガーリック" => "garlic.png",
-            "生姜" => "ginger.png",
-            "唐辛子" => "chili.png",
-            "クミン" => "cumin.png",
-            "コリアンダー" => "coriander.png",
-            "ターメリック" => "turmeric.png",
-            "パプリカ" => "paprika.png",
-            "オレガノ" => "oregano.png",
-            "ローズマリー" => "rosemary.png",
-            "タイム" => "thyme.png",
-            "パセリ" => "parsley.png",
-            "ローレル" => "laurel.png",
-            "ナツメグ" => "nutmeg.png",
-            "クローブ" => "clove.png",
-            "山椒" => "sansho.png",
-            "カルダモン" => "cardamom.png",
-            "シナモン" => "cinnamon.png",
-            "バジル" => "basil.png",
-            "五香粉" => "gokohfun.png"
-          } %>
           <% if spice_names.present? %>
             <% spice_names.each do |spice_name| %>
-              <% spice_image = spice_image_map[spice_name] %>
+              <% spice_image = spice_icon_path(spice_name) %>
               <span class="inline-flex items-center gap-3 px-4 py-2 text-base">
                 <% if spice_image.present? %>
                   <%= image_tag spice_image, alt: spice_name, class: "w-16 h-16 shrink-0 object-contain" %>
@@ -122,12 +100,43 @@
       ) %>
   <% repeat_params["spice_name"] = repeat_params["spice_name"].presence || repeat_params["spice_names"] %>
   <% repeat_params.delete("spice_names") %>
+  <% current_spice = repeat_params["spice_name"].to_s %>
+  <% spice_focus_candidates = @dish.spice_names_for_display(fallback_names: current_spice).first(4) %>
+  <% if spice_focus_candidates.blank? %>
+    <% spice_focus_candidates =
+      if main_category&.name == "ガッツリ"
+        ["ブラックペッパー", "ガーリック", "唐辛子", "クミン"]
+      else
+        ["生姜", "ミント", "バジル", "コリアンダー"]
+      end %>
+  <% end %>
   <% only_category = repeat_params.except("category").values.all?(&:blank?) %>
   <% share_text = "今日のキブンは「#{@dish.name}」！ #キブンメシ" %>
   <% share_url = "https://kibunmeshi.onrender.com/" %>
   <% x_share_url = "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(share_text)}&url=#{ERB::Util.url_encode(share_url)}" %>
   <% cookpad_url = cookpad_search_url(@dish.name) %>
   <% tabelog_url = tabelog_search_url(@dish.name) %>
+
+  <% if spice_focus_candidates.present? %>
+    <div class="mb-8 rounded-2xl border border-orange-200 bg-orange-50 p-6 shadow-sm">
+      <h2 class="text-lg font-bold text-orange-800">🧂 スパイスでキブン微調整</h2>
+      <p class="mt-2 text-sm text-gray-700">同じキブンでも、スパイスを変えると料理候補が変わります。気になるスパイスを押すと、今の条件のまま再検索できます。</p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <% spice_focus_candidates.each do |spice_name| %>
+          <% tuned_params = repeat_params.merge("spice_name" => spice_name) %>
+          <% active = current_spice == spice_name %>
+          <% spice_image = spice_icon_path(spice_name) %>
+          <%= link_to advanced_search_path(tuned_params),
+              class: "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border transition-colors #{active ? 'bg-orange-500 border-orange-500 text-white' : 'bg-white border-orange-300 text-orange-700 hover:bg-orange-100'}" do %>
+            <% if spice_image.present? %>
+              <%= image_tag spice_image, alt: spice_name, class: "w-5 h-5 object-contain" %>
+            <% end %>
+            <span><%= spice_name %></span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 
   <!-- ボタンエリア -->
   <div class="flex flex-wrap justify-center gap-4 mb-12">

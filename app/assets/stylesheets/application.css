@@ -112,6 +112,24 @@ body {
   box-shadow: 0 30px 80px rgba(214, 117, 60, 0.18);
 }
 
+@media (max-width: 768px) {
+  .app-main::before {
+    top: -4rem;
+    right: -20%;
+    width: 72vw;
+    height: 72vw;
+    opacity: 0.12;
+  }
+
+  .app-main::after {
+    bottom: -4rem;
+    left: -22%;
+    width: 66vw;
+    height: 66vw;
+    opacity: 0.11;
+  }
+}
+
 .app-main > * {
   position: relative;
   z-index: 1;
