@@ -2,6 +2,7 @@ require "yaml"
 
 class Dish < ApplicationRecord
   SPICE_LABEL = "スパイス/ハーブ"
+  LEGACY_SPICE_LABEL = "スパイス・ハーブ"
   TASTE_LABEL = "味覚/刺激"
   SPICE_PAIRINGS_PATH = Rails.root.join("config/spice_pairings.yml")
 
@@ -26,9 +27,11 @@ class Dish < ApplicationRecord
     scope = scope.where("healthiness_types @> ?", [ params[:healthiness_type] ].to_json)   if params[:healthiness_type].present?
     selected_spice = Array(params[:spice_name]).compact_blank.first
     if selected_spice.present?
+      spice_labels = [ SPICE_LABEL, LEGACY_SPICE_LABEL, nil, "" ]
       spice_dish_ids = Dish.joins(:category_contents)
                            .joins(:categories)
-                           .where(category_contents: { label: SPICE_LABEL }, categories: { name: selected_spice })
+                           .where(categories: { name: selected_spice })
+                           .where(category_contents: { label: spice_labels })
                            .distinct
                            .pluck(:id)
       if spice_dish_ids.present?
