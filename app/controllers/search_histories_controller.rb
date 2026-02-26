@@ -222,39 +222,115 @@ class SearchHistoriesController < ApplicationController
   end
 
   def normalize_trend_summaries(raw_summaries)
-    summaries = raw_summaries.is_a?(Hash) ? raw_summaries.deep_symbolize_keys : {}
+    summaries = raw_summaries.is_a?(Hash) ? raw_summaries : {}
 
-    heatmap = summaries[:heatmap].is_a?(Hash) ? summaries[:heatmap].deep_symbolize_keys : {}
-    time_mood_spice_heatmap = summaries[:time_mood_spice_heatmap].is_a?(Hash) ? summaries[:time_mood_spice_heatmap].deep_symbolize_keys : {}
-    spice_summary = summaries[:spice_summary].is_a?(Hash) ? summaries[:spice_summary].deep_symbolize_keys : {}
-    kibunmeshi_summary = summaries[:kibunmeshi_summary].is_a?(Hash) ? summaries[:kibunmeshi_summary].deep_symbolize_keys : {}
+    heatmap = fetch_hash_value(summaries, :heatmap)
+    time_mood_spice_heatmap = fetch_hash_value(summaries, :time_mood_spice_heatmap)
+    spice_summary = fetch_hash_value(summaries, :spice_summary)
+    kibunmeshi_summary = fetch_hash_value(summaries, :kibunmeshi_summary)
 
     {
       heatmap: {
-        time_labels: Array(heatmap[:time_labels]),
-        mood_labels: Array(heatmap[:mood_labels]),
-        cells: heatmap[:cells].is_a?(Hash) ? heatmap[:cells] : {},
-        max_count: heatmap[:max_count].to_i,
-        total: heatmap[:total].to_i,
-        chart_data: heatmap[:chart_data].is_a?(Hash) ? heatmap[:chart_data] : { labels: [], datasets: [] }
+        time_labels: Array(fetch_value(heatmap, :time_labels)).map(&:to_s),
+        mood_labels: Array(fetch_value(heatmap, :mood_labels)).map(&:to_s),
+        cells: normalize_cells(fetch_value(heatmap, :cells, {})),
+        max_count: fetch_value(heatmap, :max_count).to_i,
+        total: fetch_value(heatmap, :total).to_i,
+        chart_data: fetch_hash_value(heatmap, :chart_data).presence || { labels: [], datasets: [] }
       },
       time_mood_spice_heatmap: {
-        time_labels: Array(time_mood_spice_heatmap[:time_labels]),
-        mood_labels: Array(time_mood_spice_heatmap[:mood_labels]),
-        rows_by_mood: time_mood_spice_heatmap[:rows_by_mood].is_a?(Hash) ? time_mood_spice_heatmap[:rows_by_mood] : {},
-        totals_by_mood: time_mood_spice_heatmap[:totals_by_mood].is_a?(Hash) ? time_mood_spice_heatmap[:totals_by_mood] : {},
-        max_count: time_mood_spice_heatmap[:max_count].to_i,
-        total: time_mood_spice_heatmap[:total].to_i
+        time_labels: Array(fetch_value(time_mood_spice_heatmap, :time_labels)).map(&:to_s),
+        mood_labels: Array(fetch_value(time_mood_spice_heatmap, :mood_labels)).map(&:to_s),
+        rows_by_mood: normalize_rows_by_mood(fetch_value(time_mood_spice_heatmap, :rows_by_mood, {})),
+        totals_by_mood: normalize_numeric_hash(fetch_value(time_mood_spice_heatmap, :totals_by_mood, {})),
+        max_count: fetch_value(time_mood_spice_heatmap, :max_count).to_i,
+        total: fetch_value(time_mood_spice_heatmap, :total).to_i
       },
       spice_summary: {
-        items: Array(spice_summary[:items]),
-        total: spice_summary[:total].to_i
+        items: normalize_spice_items(fetch_value(spice_summary, :items, [])),
+        total: fetch_value(spice_summary, :total).to_i
       },
       kibunmeshi_summary: {
-        items: Array(kibunmeshi_summary[:items]),
-        total: kibunmeshi_summary[:total].to_i
+        items: normalize_kibunmeshi_items(fetch_value(kibunmeshi_summary, :items, [])),
+        total: fetch_value(kibunmeshi_summary, :total).to_i
       }
     }
+  end
+
+  def fetch_value(hash, key, default = nil)
+    return default unless hash.is_a?(Hash)
+
+    return hash[key] if hash.key?(key)
+
+    string_key = key.to_s
+    return hash[string_key] if hash.key?(string_key)
+
+    symbol_key = string_key.to_sym
+    return hash[symbol_key] if hash.key?(symbol_key)
+
+    default
+  end
+
+  def fetch_hash_value(hash, key)
+    value = fetch_value(hash, key, {})
+    value.is_a?(Hash) ? value : {}
+  end
+
+  def normalize_string_key_hash(value)
+    return {} unless value.is_a?(Hash)
+
+    value.each_with_object({}) do |(key, item), result|
+      result[key.to_s] = item
+    end
+  end
+
+  def normalize_numeric_hash(value)
+    normalize_string_key_hash(value).transform_values(&:to_i)
+  end
+
+  def normalize_cells(value)
+    normalize_string_key_hash(value).transform_values do |row|
+      normalize_numeric_hash(row)
+    end
+  end
+
+  def normalize_rows_by_mood(value)
+    normalize_string_key_hash(value).transform_values do |rows|
+      Array(rows).map do |row|
+        row_hash = row.is_a?(Hash) ? row : {}
+        {
+          name: fetch_value(row_hash, :name).to_s,
+          counts: normalize_numeric_hash(fetch_value(row_hash, :counts, {})),
+          total: fetch_value(row_hash, :total).to_i
+        }
+      end
+    end
+  end
+
+  def normalize_spice_items(items)
+    Array(items).map do |item|
+      row = item.is_a?(Hash) ? item : {}
+      {
+        name: fetch_value(row, :name).to_s,
+        count: fetch_value(row, :count).to_i,
+        ratio: fetch_value(row, :ratio).to_f,
+        ratio_display: fetch_value(row, :ratio_display).to_i
+      }
+    end
+  end
+
+  def normalize_kibunmeshi_items(items)
+    Array(items).map do |item|
+      row = item.is_a?(Hash) ? item : {}
+      {
+        rank: fetch_value(row, :rank).to_i,
+        dish: fetch_value(row, :dish),
+        name: fetch_value(row, :name).to_s,
+        mood: fetch_value(row, :mood).to_s,
+        count: fetch_value(row, :count).to_i,
+        ratio: fetch_value(row, :ratio).to_f
+      }
+    end
   end
 
   def extract_spice_names(history, dish_metadata_cache = nil)
