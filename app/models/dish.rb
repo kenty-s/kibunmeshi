@@ -24,11 +24,21 @@ class Dish < ApplicationRecord
     scope = scope.where("genres @> ?",            [ params[:genre] ].to_json)              if params[:genre].present?
     scope = scope.where("cooking_styles @> ?",    [ params[:cooking_style] ].to_json)      if params[:cooking_style].present?
     scope = scope.where("healthiness_types @> ?", [ params[:healthiness_type] ].to_json)   if params[:healthiness_type].present?
-    if params[:spice_name].present?
-      spice_dish_ids = Dish.joins(:categories)
-                           .where(categories: { name: params[:spice_name] })
-                           .select(:id)
-      scope = scope.where(id: spice_dish_ids)
+    selected_spice = Array(params[:spice_name]).compact_blank.first
+    if selected_spice.present?
+      spice_dish_ids = Dish.joins(:category_contents)
+                           .joins(:categories)
+                           .where(category_contents: { label: SPICE_LABEL }, categories: { name: selected_spice })
+                           .distinct
+                           .pluck(:id)
+      if spice_dish_ids.present?
+        scope = scope.where(id: spice_dish_ids)
+      else
+        fallback_names = spice_pairings.filter_map do |dish_name, spice_names|
+          dish_name if Array(spice_names).include?(selected_spice)
+        end
+        scope = fallback_names.present? ? scope.where(name: fallback_names) : scope.none
+      end
     end
     if params[:taste].present?
       taste_name = params[:taste]
