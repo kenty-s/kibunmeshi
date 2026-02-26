@@ -17,8 +17,17 @@ class SearchHistoriesController < ApplicationController
       current_user.search_histories.maximum(:updated_at)&.to_i,
       current_user.search_histories.count
     ]
-    summaries = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
-      build_trend_summaries(scope)
+    summaries = begin
+      Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
+        build_trend_summaries(scope)
+      end
+    rescue ArgumentError => e
+      if e.message.include?("No unique index found for key_hash")
+        Rails.logger.warn("[trends] cache fetch skipped: #{e.class}: #{e.message}")
+        build_trend_summaries(scope)
+      else
+        raise
+      end
     end
     summaries = normalize_trend_summaries(summaries)
 
