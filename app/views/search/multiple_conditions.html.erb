@@ -6,6 +6,7 @@
   </div>
 
   <% categories      = ['ガッツリ', 'サッパリ'] %>
+  <% scenes          = ['外食', '弁当', '内食'] %>
   <% time_of_days    = ['朝', '昼', '夜'] %>
   <% seasons         = ['春', '夏', '秋', '冬'] %>
   <% genres          = ['和食', '洋食', '中華', 'エスニック', 'その他'] %>
@@ -91,6 +92,23 @@
       </div>
       <p class="text-xs text-gray-500">※香りや風味の印象からみた料理との相性の目安です。</p>
       </div>
+
+    <div class="<%= section_card_classes %>">
+      <div class="flex items-center gap-3">
+        <span class="<%= section_title_classes %>">シーン</span>
+        <span class="<%= section_badge_classes %>">1つまで</span>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <% scenes.each do |scene| %>
+          <label class="cursor-pointer">
+            <%= f.radio_button :scene, scene, class: "hidden peer" %>
+            <div class="<%= common_option_classes %>">
+              <span class="<%= option_text_classes %>"><%= scene %></span>
+            </div>
+          </label>
+        <% end %>
+      </div>
+    </div>
 
     <div class="<%= section_card_classes %>">
       <div class="flex items-center gap-3">

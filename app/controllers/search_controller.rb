@@ -15,7 +15,7 @@ class SearchController < ApplicationController
 
   def search_params
     permitted = params.permit(
-      :keyword, :category, :time_of_day, :season, :mood, :genre,
+      :keyword, :category, :scene, :time_of_day, :season, :mood, :genre,
       :cooking_style, :healthiness_type, :spice_name, :spice_names, :taste
     )
     permitted[:spice_name] = permitted[:spice_name].presence || permitted.delete(:spice_names)

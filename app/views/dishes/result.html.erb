@@ -28,6 +28,24 @@
       </div>
     </div>
 
+    <!-- シーン -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+      <div class="flex flex-wrap items-center gap-4">
+        <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">シーン</span>
+        <div class="flex flex-wrap gap-2">
+          <% scene_names = @dish.category_contents.includes(:category).where(label: "シーン").map { |cc| cc.category.name } %>
+          <% scene_names = Array(params[:scene]).compact_blank if scene_names.blank? %>
+          <% if scene_names.present? %>
+            <% scene_names.each do |scene_name| %>
+              <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm"><%= scene_name %></span>
+            <% end %>
+          <% else %>
+            <span class="text-sm text-gray-500">未設定</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
     <!-- 季節 -->
     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
       <div class="flex flex-wrap items-center gap-4">
@@ -95,7 +113,7 @@
   </div>
 
   <% repeat_params = params.to_unsafe_h.slice(
-        "keyword", "category", "time_of_day", "season", "mood",
+        "keyword", "category", "scene", "time_of_day", "season", "mood",
         "genre", "cooking_style", "healthiness_type", "spice_name", "spice_names", "taste"
       ) %>
   <% repeat_params["spice_name"] = repeat_params["spice_name"].presence || repeat_params["spice_names"] %>

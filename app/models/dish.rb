@@ -4,6 +4,7 @@ class Dish < ApplicationRecord
   SPICE_LABEL = "スパイス/ハーブ"
   LEGACY_SPICE_LABEL = "スパイス・ハーブ"
   TASTE_LABEL = "味覚/刺激"
+  SCENE_LABEL = "シーン"
   SPICE_PAIRINGS_PATH = Rails.root.join("config/spice_pairings.yml")
 
   has_many :category_contents, dependent: :destroy
@@ -19,6 +20,7 @@ class Dish < ApplicationRecord
     scope = Dish.all
     scope = scope.where("dishes.name ILIKE ?", "%#{params[:keyword]}%")   if params[:keyword].present?
     scope = scope.by_category(params[:category])                          if params[:category].present?
+    scope = filter_by_scene(scope, params[:scene])                        if params[:scene].present?
     scope = scope.where("time_of_days @> ?",      [ params[:time_of_day] ].to_json)        if params[:time_of_day].present?
     scope = scope.where("seasons @> ?",           [ params[:season] ].to_json)             if params[:season].present?
     scope = scope.where("moods @> ?",             [ params[:mood] ].to_json)               if params[:mood].present?
@@ -58,6 +60,26 @@ class Dish < ApplicationRecord
       end
     end
     scope
+  end
+
+  def self.filter_by_scene(scope, scene)
+    scene_dish_ids = Dish.joins(:category_contents)
+                         .joins(:categories)
+                         .where(category_contents: { label: SCENE_LABEL }, categories: { name: scene })
+                         .distinct
+                         .pluck(:id)
+    return scope.where(id: scene_dish_ids) if scene_dish_ids.present?
+
+    case scene
+    when "外食"
+      scope.where("time_of_days @> ? OR time_of_days @> ?", [ "昼" ].to_json, [ "夜" ].to_json)
+    when "弁当"
+      scope.where("time_of_days @> ?", [ "昼" ].to_json)
+    when "内食"
+      scope.where("time_of_days @> ? OR time_of_days @> ?", [ "朝" ].to_json, [ "夜" ].to_json)
+    else
+      scope
+    end
   end
 
   def spice_names_for_display(fallback_names: [])

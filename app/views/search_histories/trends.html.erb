@@ -222,6 +222,43 @@
     <section class="<%= section_class %>">
       <div class="<%= section_header_class %>">
         <div>
+          <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">🏙️ シーン傾向</h2>
+          <p class="text-sm text-gray-600 mt-1.5">外食・弁当・内食の選ばれやすさを表示します（過去履歴を含む）。</p>
+        </div>
+        <div class="text-xs text-gray-500 font-medium bg-gray-100 px-4 py-2 rounded-full">集計件数: <%= @scene_summary[:total] %></div>
+      </div>
+
+      <% if @scene_summary[:total].to_i > 0 %>
+        <% tone_map = {
+          "外食" => { from: "from-rose-50", to: "to-rose-100", border: "border-rose-200", text: "text-rose-800", bar: "bg-rose-500" },
+          "弁当" => { from: "from-amber-50", to: "to-amber-100", border: "border-amber-200", text: "text-amber-800", bar: "bg-amber-500" },
+          "内食" => { from: "from-emerald-50", to: "to-emerald-100", border: "border-emerald-200", text: "text-emerald-800", bar: "bg-emerald-500" }
+        } %>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <% @scene_summary[:items].each do |item| %>
+            <% tone = tone_map[item[:name]] || { from: "from-gray-50", to: "to-gray-100", border: "border-gray-200", text: "text-gray-800", bar: "bg-gray-500" } %>
+            <article class="rounded-2xl border bg-gradient-to-br <%= tone[:from] %> <%= tone[:to] %> <%= tone[:border] %> p-4 shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="font-bold <%= tone[:text] %>"><%= item[:name] %></h3>
+                <span class="text-sm font-semibold <%= tone[:text] %>"><%= item[:ratio_display] %>%</span>
+              </div>
+              <p class="text-sm text-gray-600 mb-3"><%= item[:count] %>回</p>
+              <div class="h-2.5 w-full bg-white/80 rounded-full overflow-hidden">
+                <div class="h-full <%= tone[:bar] %>" data-bar-width="<%= item[:ratio] %>"></div>
+              </div>
+            </article>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-sm text-gray-500 mt-4 text-center py-12 bg-gray-50 rounded-2xl">
+          まだシーンの履歴がありません。
+        </div>
+      <% end %>
+    </section>
+
+    <section class="<%= section_class %>">
+      <div class="<%= section_header_class %>">
+        <div>
           <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">🧭 時間帯×キブン×スパイス ヒートマップ</h2>
           <p class="text-sm text-gray-600 mt-1.5">朝・昼・夜で、どのスパイスが選ばれやすいかをキブン別に可視化しています（各キブン上位8種）。</p>
         </div>
