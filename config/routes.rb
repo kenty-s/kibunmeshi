@@ -4,21 +4,15 @@ Rails.application.routes.draw do
   end
 
   devise_for :users, controllers: {
+    registrations: "users/registrations",
     omniauth_callbacks: "users/omniauth_callbacks"
   }
-  # ========================================
-  # MVP機能（現在実装中）
-  # ========================================
 
   # ホーム（ガッツリ/サッパリのボタンがある）
   root "home#index"
 
   # 検索結果（料理1件をランダム表示）
   get "result", to: "dishes#result"
-
-  # ========================================
-  # MVP後の拡張機能（ルーティングのみ先行定義）
-  # ========================================
 
   # 詳細条件検索
   get "search/multiple_conditions", to: "search#multiple_conditions", as: :advanced_search
@@ -34,9 +28,6 @@ Rails.application.routes.draw do
   # マイページ
   get "mypage", to: "mypages#show", as: :mypage
   patch "mypage", to: "mypages#update"
-
-  # SNS投稿（X投稿機能）
-  # post 'share/twitter', to: 'share#twitter'
 
   # 管理者画面
   # namespace :admin do
