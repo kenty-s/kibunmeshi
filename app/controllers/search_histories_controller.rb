@@ -12,7 +12,7 @@ class SearchHistoriesController < ApplicationController
   def trends
     scope = current_user.search_histories.includes(dish: [ :categories, { category_contents: :category } ])
     cache_key = [
-      "search_histories/trends/v4",
+      "search_histories/trends/v5",
       current_user.id,
       current_user.search_histories.maximum(:updated_at)&.to_i,
       current_user.search_histories.count
@@ -34,6 +34,7 @@ class SearchHistoriesController < ApplicationController
     @heatmap = summaries[:heatmap]
     @time_mood_spice_heatmap = summaries[:time_mood_spice_heatmap]
     @spice_summary = summaries[:spice_summary]
+    @scene_summary = summaries[:scene_summary]
     @kibunmeshi_summary = summaries[:kibunmeshi_summary]
   end
 
@@ -150,6 +151,23 @@ class SearchHistoriesController < ApplicationController
     }
   end
 
+  def build_scene_summary_from_counts(counts)
+    order = %w[外食 弁当 内食]
+    total = counts.values.sum
+    items = order.map do |scene|
+      count = counts[scene].to_i
+      ratio = total.positive? ? (count.to_f / total * 100.0) : 0.0
+      {
+        name: scene,
+        count: count,
+        ratio: ratio.round(2),
+        ratio_display: ratio.round
+      }
+    end
+
+    { items: items, total: total }
+  end
+
   def build_kibunmeshi_summary_from_counts(dish_counts, dishes_by_id)
     total = dish_counts.values.sum
     sorted = dish_counts
@@ -185,6 +203,7 @@ class SearchHistoriesController < ApplicationController
     time_mood_counts = Hash.new(0)
     mood_time_spice_counts = Hash.new(0)
     spice_counts = Hash.new(0)
+    scene_counts = Hash.new(0)
     dish_counts = Hash.new(0)
     dishes_by_id = {}
     dish_metadata_cache = {}
@@ -192,6 +211,7 @@ class SearchHistoriesController < ApplicationController
     scope.find_each do |history|
       spice_names = extract_spice_names(history, dish_metadata_cache)
       spice_names.each { |name| spice_counts[name] += 1 }
+      extract_scenes(history, dish_metadata_cache).each { |name| scene_counts[name] += 1 }
 
       dish = history.dish
       if dish
@@ -217,6 +237,7 @@ class SearchHistoriesController < ApplicationController
       heatmap: build_time_mood_heatmap_from_counts(time_mood_counts, time_labels, mood_labels),
       time_mood_spice_heatmap: build_time_mood_spice_heatmap_from_counts(mood_time_spice_counts, time_labels, mood_labels),
       spice_summary: build_spice_summary_from_counts(spice_counts),
+      scene_summary: build_scene_summary_from_counts(scene_counts),
       kibunmeshi_summary: build_kibunmeshi_summary_from_counts(dish_counts, dishes_by_id)
     }
   end
@@ -227,6 +248,7 @@ class SearchHistoriesController < ApplicationController
     heatmap = fetch_hash_value(summaries, :heatmap)
     time_mood_spice_heatmap = fetch_hash_value(summaries, :time_mood_spice_heatmap)
     spice_summary = fetch_hash_value(summaries, :spice_summary)
+    scene_summary = fetch_hash_value(summaries, :scene_summary)
     kibunmeshi_summary = fetch_hash_value(summaries, :kibunmeshi_summary)
 
     {
@@ -249,6 +271,10 @@ class SearchHistoriesController < ApplicationController
       spice_summary: {
         items: normalize_spice_items(fetch_value(spice_summary, :items, [])),
         total: fetch_value(spice_summary, :total).to_i
+      },
+      scene_summary: {
+        items: normalize_scene_items(fetch_value(scene_summary, :items, [])),
+        total: fetch_value(scene_summary, :total).to_i
       },
       kibunmeshi_summary: {
         items: normalize_kibunmeshi_items(fetch_value(kibunmeshi_summary, :items, [])),
@@ -319,6 +345,18 @@ class SearchHistoriesController < ApplicationController
     end
   end
 
+  def normalize_scene_items(items)
+    Array(items).map do |item|
+      row = item.is_a?(Hash) ? item : {}
+      {
+        name: fetch_value(row, :name).to_s,
+        count: fetch_value(row, :count).to_i,
+        ratio: fetch_value(row, :ratio).to_f,
+        ratio_display: fetch_value(row, :ratio_display).to_i
+      }
+    end
+  end
+
   def normalize_kibunmeshi_items(items)
     Array(items).map do |item|
       row = item.is_a?(Hash) ? item : {}
@@ -372,8 +410,19 @@ class SearchHistoriesController < ApplicationController
     times & time_labels
   end
 
+  def extract_scenes(history, dish_metadata_cache = nil)
+    params = history.query_params || {}
+    scenes = Array(params["scene"]).compact_blank
+
+    if scenes.blank?
+      scenes = Array(dish_metadata(history.dish, dish_metadata_cache)[:scenes]).compact_blank
+    end
+
+    scenes.uniq
+  end
+
   def dish_metadata(dish, dish_metadata_cache = nil)
-    return { mood: nil, spice_names: [], times: [] } unless dish
+    return { mood: nil, spice_names: [], times: [], scenes: [] } unless dish
 
     cache = dish_metadata_cache || {}
     cache[dish.id] ||= begin
@@ -396,10 +445,17 @@ class SearchHistoriesController < ApplicationController
           .compact_blank
       end
 
+      scenes = contents
+        .select { |cc| cc.label == "シーン" }
+        .map { |cc| cc.category&.name.to_s }
+        .compact_blank
+        .uniq
+
       {
         mood: mood,
         spice_names: spice_names,
-        times: times
+        times: times,
+        scenes: scenes
       }
     end
   end

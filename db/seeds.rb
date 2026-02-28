@@ -2,7 +2,7 @@ require "cgi"
 require "stringio"
 require "zlib"
 
-SEED_VERSION = "2026-02-22-mint-lineup-v2"
+SEED_VERSION = "2026-02-28-scene-tagging-v1"
 
 unless ActiveRecord::Base.connection.data_source_exists?("seed_runs")
   puts "seed_runs table is missing. Run db:migrate before db:seed."
@@ -55,6 +55,55 @@ end
 
 SPICE_LABEL = "スパイス/ハーブ"
 SPICE_NAMES = Dish.spice_pairings.values.flatten.uniq.freeze
+SCENE_LABEL = "シーン"
+SCENE_NAMES = [ "外食", "弁当", "内食" ].freeze
+
+SCENE_OVERRIDES = {
+  "生姜焼き" => [ "外食", "弁当", "内食" ],
+  "唐揚げ" => [ "外食", "弁当", "内食" ],
+  "ハンバーグ" => [ "外食", "弁当", "内食" ],
+  "オムライス" => [ "外食", "弁当", "内食" ],
+  "焼きそば" => [ "外食", "弁当", "内食" ],
+  "チャーハン" => [ "外食", "弁当", "内食" ],
+  "お好み焼き" => [ "外食", "内食" ],
+  "ナン" => [ "外食" ],
+  "豚の角煮" => [ "内食" ],
+  "親子丼" => [ "外食", "内食" ],
+  "牛丼" => [ "外食", "内食" ],
+  "みそ汁" => [ "内食" ],
+  "おかゆ" => [ "内食" ],
+  "納豆ご飯" => [ "内食" ],
+  "卵かけご飯" => [ "内食" ],
+  "スムージー" => [ "内食" ],
+  "ハーブティー" => [ "内食" ],
+  "チャイ" => [ "内食" ]
+}.freeze
+
+BENTO_EXCLUDE_PATTERN = /ラーメン|うどん|そうめん|ひやむぎ|ざるそば|冷やし中華|スープ|みそ汁|おでん|すき焼き|しゃぶしゃぶ|刺身|寿司|海鮮丼|鉄火丼|ちらし寿司|手巻き寿司|かき氷|アイス|ゼリー|プリン|スムージー|ハーブティー|チャイ|スパイスコーラ/
+EATING_OUT_PATTERN = /寿司|刺身|天ぷら|すき焼き|しゃぶしゃぶ|焼き鳥|うな重|ラーメン|ピザ|ハンバーガー|ステーキ|グラタン|ドリア|ラザニア|ローストチキン|ローストビーフ|エビチリ|麻婆豆腐|トムヤムクン/
+HOME_ONLY_PATTERN = /みそ汁|おかゆ|納豆ご飯|卵かけご飯|スムージー|ハーブティー|チャイ/
+
+def infer_scenes(food_data)
+  name = food_data[:name].to_s
+  return SCENE_OVERRIDES[name] if SCENE_OVERRIDES.key?(name)
+
+  time_of_days = Array(food_data[:time_of_days]).map(&:to_s)
+  moods = Array(food_data[:moods]).map(&:to_s)
+  cooking_styles = Array(food_data[:cooking_styles]).map(&:to_s)
+
+  scenes = []
+  scenes << "弁当" if time_of_days.include?("昼") && !name.match?(BENTO_EXCLUDE_PATTERN)
+  scenes << "内食" if cooking_styles.include?("簡単") || time_of_days.include?("朝") || time_of_days.include?("夜")
+  scenes << "外食" if moods.include?("特別な日") || cooking_styles.include?("本格的") || name.match?(EATING_OUT_PATTERN)
+
+  if name.match?(HOME_ONLY_PATTERN)
+    scenes -= [ "外食" ]
+    scenes << "内食"
+  end
+
+  scenes = [ "内食" ] if scenes.empty?
+  scenes.uniq
+end
 
 # カテゴリを作成（全てのタグをCategoryとして統合）
 puts "Creating categories..."
@@ -98,6 +147,9 @@ end
 
 # ヘルシーさ
 [ 'ヘルシー', 'こってり', '野菜多め', 'タンパク質重視' ].each { |name| Category.find_or_create_by(name: name) }
+
+# シーン
+SCENE_NAMES.each { |name| Category.find_or_create_by(name: name) }
 
 # スパイス/ハーブ
 SPICE_NAMES.each { |name| Category.find_or_create_by(name: name) }
@@ -336,6 +388,14 @@ foods_data.each do |food_data|
   food_data[:healthiness_types]&.each do |health_name|
     category = Category.find_by(name: health_name)
     CategoryContent.find_or_create_by(dish: dish, category: category, label: "ヘルシーさ") if category
+  end
+
+  # シーン
+  scene_names = infer_scenes(food_data)
+  CategoryContent.where(dish: dish, label: SCENE_LABEL).delete_all
+  scene_names.each do |scene_name|
+    category = Category.find_by(name: scene_name)
+    CategoryContent.find_or_create_by(dish: dish, category: category, label: SCENE_LABEL) if category
   end
 
   spice_names = Dish.spices_for_name(dish.name)
