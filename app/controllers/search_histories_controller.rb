@@ -437,13 +437,10 @@ class SearchHistoriesController < ApplicationController
         .compact_blank
         .uniq
 
-      times = Array(dish.time_of_days).compact_blank
-      if times.blank?
-        times = contents
-          .select { |cc| cc.label == "時間帯" }
-          .map { |cc| cc.category&.name.to_s }
-          .compact_blank
-      end
+      times = contents
+        .select { |cc| cc.label == "時間帯" }
+        .map { |cc| cc.category&.name.to_s }
+        .compact_blank
 
       scenes = contents
         .select { |cc| cc.label == "シーン" }

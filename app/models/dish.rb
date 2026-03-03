@@ -5,6 +5,9 @@ class Dish < ApplicationRecord
   LEGACY_SPICE_LABEL = "スパイス・ハーブ"
   TASTE_LABEL = "味覚/刺激"
   SCENE_LABEL = "シーン"
+  TIME_LABEL = "時間帯"
+  SEASON_LABEL = "季節"
+  GENRE_LABEL = "ジャンル"
   SPICE_PAIRINGS_PATH = Rails.root.join("config/spice_pairings.yml")
 
   has_many :category_contents, dependent: :destroy
@@ -21,12 +24,9 @@ class Dish < ApplicationRecord
     scope = scope.where("dishes.name ILIKE ?", "%#{params[:keyword]}%")   if params[:keyword].present?
     scope = scope.by_category(params[:category])                          if params[:category].present?
     scope = filter_by_scene(scope, params[:scene])                        if params[:scene].present?
-    scope = scope.where("time_of_days @> ?",      [ params[:time_of_day] ].to_json)        if params[:time_of_day].present?
-    scope = scope.where("seasons @> ?",           [ params[:season] ].to_json)             if params[:season].present?
-    scope = scope.where("moods @> ?",             [ params[:mood] ].to_json)               if params[:mood].present?
-    scope = scope.where("genres @> ?",            [ params[:genre] ].to_json)              if params[:genre].present?
-    scope = scope.where("cooking_styles @> ?",    [ params[:cooking_style] ].to_json)      if params[:cooking_style].present?
-    scope = scope.where("healthiness_types @> ?", [ params[:healthiness_type] ].to_json)   if params[:healthiness_type].present?
+    scope = filter_by_label(scope, TIME_LABEL, params[:time_of_day])      if params[:time_of_day].present?
+    scope = filter_by_label(scope, SEASON_LABEL, params[:season])         if params[:season].present?
+    scope = filter_by_label(scope, GENRE_LABEL, params[:genre])           if params[:genre].present?
     selected_spice = Array(params[:spice_name]).compact_blank.first
     if selected_spice.present?
       spice_labels = [ SPICE_LABEL, LEGACY_SPICE_LABEL, nil, "" ]
@@ -36,14 +36,7 @@ class Dish < ApplicationRecord
                            .where(category_contents: { label: spice_labels })
                            .distinct
                            .pluck(:id)
-      if spice_dish_ids.present?
-        scope = scope.where(id: spice_dish_ids)
-      else
-        fallback_names = spice_pairings.filter_map do |dish_name, spice_names|
-          dish_name if Array(spice_names).include?(selected_spice)
-        end
-        scope = fallback_names.present? ? scope.where(name: fallback_names) : scope.none
-      end
+      scope = scope.where(id: spice_dish_ids)
     end
     if params[:taste].present?
       taste_name = params[:taste]
@@ -52,12 +45,7 @@ class Dish < ApplicationRecord
                            .where(category_contents: { label: TASTE_LABEL }, categories: { name: taste_name })
                            .distinct
                            .pluck(:id)
-      if taste_dish_ids.present?
-        scope = scope.where(id: taste_dish_ids)
-      else
-        fallback_ids = Dish.select(:id, :name).filter_map { |dish| dish.id if tastes_for_name(dish.name).include?(taste_name) }
-        scope = scope.where(id: fallback_ids)
-      end
+      scope = scope.where(id: taste_dish_ids)
     end
     scope
   end
@@ -68,18 +56,16 @@ class Dish < ApplicationRecord
                          .where(category_contents: { label: SCENE_LABEL }, categories: { name: scene })
                          .distinct
                          .pluck(:id)
-    return scope.where(id: scene_dish_ids) if scene_dish_ids.present?
+    scope.where(id: scene_dish_ids)
+  end
 
-    case scene
-    when "外食"
-      scope.where("time_of_days @> ? OR time_of_days @> ?", [ "昼" ].to_json, [ "夜" ].to_json)
-    when "弁当"
-      scope.where("time_of_days @> ?", [ "昼" ].to_json)
-    when "内食"
-      scope.where("time_of_days @> ? OR time_of_days @> ?", [ "朝" ].to_json, [ "夜" ].to_json)
-    else
-      scope
-    end
+  def self.filter_by_label(scope, label, name)
+    ids = Dish.joins(:category_contents)
+              .joins(:categories)
+              .where(category_contents: { label: label }, categories: { name: name })
+              .distinct
+              .pluck(:id)
+    scope.where(id: ids)
   end
 
   def spice_names_for_display(fallback_names: [])

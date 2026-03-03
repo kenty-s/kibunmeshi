@@ -1,4 +1,6 @@
 class SearchController < ApplicationController
+  before_action :disable_search_page_cache, only: :multiple_conditions
+
   def multiple_conditions
     @selected_conditions = search_params.compact_blank
     return if @selected_conditions.blank?
@@ -15,8 +17,8 @@ class SearchController < ApplicationController
 
   def search_params
     permitted = params.permit(
-      :keyword, :category, :scene, :time_of_day, :season, :mood, :genre,
-      :cooking_style, :healthiness_type, :spice_name, :spice_names, :taste
+      :keyword, :category, :scene, :time_of_day, :season, :genre,
+      :spice_name, :spice_names, :taste
     )
     permitted[:spice_name] = permitted[:spice_name].presence || permitted.delete(:spice_names)
     permitted
@@ -29,5 +31,9 @@ class SearchController < ApplicationController
       dish: dish,
       executed_at: Time.current
     )
+  end
+
+  def disable_search_page_cache
+    response.headers["Cache-Control"] = "no-store"
   end
 end
