@@ -4,6 +4,9 @@
     <title><%= content_for?(:page_title) ? yield(:page_title) : "kibunmeshi" %></title>
     <meta name="application-name" content="kibunmeshi">
     <meta name="apple-mobile-web-app-title" content="kibunmeshi">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#f97316">
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
     <% og_title = content_for?(:og_title) ? yield(:og_title) : "kibunmeshi" %>
@@ -37,6 +40,8 @@
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application" %>
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <%= tag.link rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" %>
     <%= favicon_link_tag 'favicon.png' %>
     <%= javascript_importmap_tags %>
   </head>

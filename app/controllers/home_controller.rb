@@ -1,4 +1,6 @@
 class HomeController < ApplicationController
+  before_action :disable_home_cache, only: :index
+
   def index
       @current_time = Time.current
       @time_of_days = case @current_time.hour
@@ -9,5 +11,11 @@ class HomeController < ApplicationController
       else
         "夜"
       end
+  end
+
+  private
+
+  def disable_home_cache
+    response.headers["Cache-Control"] = "no-store"
   end
 end

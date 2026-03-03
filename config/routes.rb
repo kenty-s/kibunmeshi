@@ -10,6 +10,8 @@ Rails.application.routes.draw do
 
   # ホーム（ガッツリ/サッパリのボタンがある）
   root "home#index"
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   # 検索結果（料理1件をランダム表示）
   get "result", to: "dishes#result"

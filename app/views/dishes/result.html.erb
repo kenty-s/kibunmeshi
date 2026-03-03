@@ -14,107 +14,99 @@
     <% end %>
   </div>
 
-  <!-- カード部分（1列レイアウト） -->
-  <div class="space-y-6 mb-8">
-    <!-- 時間帯 -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-      <div class="flex flex-wrap items-center gap-4">
-        <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">時間帯</span>
-        <div class="flex flex-wrap gap-2">
-          <% @dish.category_contents.includes(:category).where(label: "時間帯").each do |cc| %>
-            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"><%= cc.category.name %></span>
-          <% end %>
-        </div>
-      </div>
-    </div>
-
-    <!-- シーン -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-      <div class="flex flex-wrap items-center gap-4">
-        <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">シーン</span>
-        <div class="flex flex-wrap gap-2">
-          <% scene_names = @dish.category_contents.includes(:category).where(label: "シーン").map { |cc| cc.category.name } %>
-          <% scene_names = Array(params[:scene]).compact_blank if scene_names.blank? %>
-          <% if scene_names.present? %>
-            <% scene_names.each do |scene_name| %>
-              <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm"><%= scene_name %></span>
+  <!-- カード部分（md以上で2列3行） -->
+  <div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
+    <div class="space-y-4">
+      <!-- 時間帯 -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+        <div class="flex flex-wrap items-center gap-4">
+          <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">時間帯</span>
+          <div class="flex flex-wrap gap-2">
+            <% @dish.category_contents.includes(:category).where(label: "時間帯").each do |cc| %>
+              <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"><%= cc.category.name %></span>
             <% end %>
-          <% else %>
-            <span class="text-sm text-gray-500">未設定</span>
-          <% end %>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- 季節 -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-      <div class="flex flex-wrap items-center gap-4">
-        <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">季節</span>
-        <div class="flex flex-wrap gap-2">
-          <% @dish.category_contents.includes(:category).where(label: "季節").each do |cc| %>
-            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm"><%= cc.category.name %></span>
-          <% end %>
-        </div>
-      </div>
-    </div>
-
-    <!-- ジャンル -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-      <div class="flex flex-wrap items-center gap-4">
-        <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">ジャンル</span>
-        <div class="flex flex-wrap gap-2">
-          <% @dish.category_contents.includes(:category).where(label: "ジャンル").each do |cc| %>
-            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"><%= cc.category.name %></span>
-          <% end %>
-        </div>
-      </div>
-    </div>
-
-    <!-- 味覚/刺激 -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-      <div class="flex flex-wrap items-center gap-4">
-        <span class="text-xl font-bold text-gray-900 min-w-[6rem]">味覚/刺激</span>
-        <div class="flex flex-wrap gap-2">
-          <% taste_names = @dish.category_contents.includes(:category).where(label: Dish::TASTE_LABEL).map { |cc| cc.category.name } %>
-          <% taste_names = Array(params[:taste]).compact_blank if taste_names.blank? %>
-          <% if taste_names.present? %>
-            <% taste_names.each do |taste_name| %>
-              <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-sm"><%= taste_name %></span>
+      <!-- シーン -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+        <div class="flex flex-wrap items-center gap-4">
+          <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">シーン</span>
+          <div class="flex flex-wrap gap-2">
+            <% @dish.category_contents.includes(:category).where(label: Dish::SCENE_LABEL).each do |cc| %>
+              <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm"><%= cc.category.name %></span>
             <% end %>
-          <% else %>
-            <span class="text-sm text-gray-500">未設定</span>
-          <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- 季節 -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+        <div class="flex flex-wrap items-center gap-4">
+          <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">季節</span>
+          <div class="flex flex-wrap gap-2">
+            <% @dish.category_contents.includes(:category).where(label: "季節").each do |cc| %>
+              <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm"><%= cc.category.name %></span>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- スパイス/ハーブ -->
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-      <div class="flex flex-wrap items-center gap-4">
-        <span class="text-xl font-bold text-gray-900 min-w-[6rem]">スパイス</span>
-        <div class="flex flex-wrap gap-2">
-          <% spice_names = @dish.spice_names_for_display(fallback_names: params[:spice_name]).first(4) %>
-          <% if spice_names.present? %>
-            <% spice_names.each do |spice_name| %>
-              <% spice_image = spice_icon_path(spice_name) %>
-              <span class="inline-flex items-center gap-3 px-4 py-2 text-base">
-                <% if spice_image.present? %>
-                  <%= image_tag spice_image, alt: spice_name, class: "w-16 h-16 shrink-0 object-contain" %>
-                <% end %>
-                <span><%= spice_name %></span>
-              </span>
+    <div class="space-y-4">
+      <!-- ジャンル -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+        <div class="flex flex-wrap items-center gap-4">
+          <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">ジャンル</span>
+          <div class="flex flex-wrap gap-2">
+            <% @dish.category_contents.includes(:category).where(label: "ジャンル").each do |cc| %>
+              <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"><%= cc.category.name %></span>
             <% end %>
-          <% else %>
-            <span class="text-sm text-gray-500">未設定</span>
-          <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- 味覚/刺激 -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+        <div class="flex flex-wrap items-center gap-4">
+          <span class="text-xl font-bold text-gray-900 min-w-[6rem]">味覚/刺激</span>
+          <div class="flex flex-wrap gap-2">
+            <% @dish.category_contents.includes(:category).where(label: Dish::TASTE_LABEL).each do |cc| %>
+              <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-sm"><%= cc.category.name %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- スパイス/ハーブ -->
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+        <div class="flex flex-wrap items-center gap-4">
+          <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">スパイス</span>
+          <div class="flex flex-nowrap items-center gap-3 overflow-x-auto">
+            <% spice_names = @dish.spice_names_for_display(fallback_names: params[:spice_name]).first(4) %>
+            <% if spice_names.present? %>
+              <% spice_names.each do |spice_name| %>
+                <% spice_image = spice_icon_path(spice_name) %>
+                <span class="inline-flex shrink-0 items-center gap-1.5 text-xs leading-tight">
+                  <% if spice_image.present? %>
+                    <%= image_tag spice_image, alt: spice_name, class: "w-7 h-7 shrink-0 object-contain" %>
+                  <% end %>
+                  <span><%= spice_name %></span>
+                </span>
+              <% end %>
+            <% else %>
+              <span class="text-sm text-gray-500">未設定</span>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <% repeat_params = params.to_unsafe_h.slice(
-        "keyword", "category", "scene", "time_of_day", "season", "mood",
-        "genre", "cooking_style", "healthiness_type", "spice_name", "spice_names", "taste"
+        "keyword", "category", "scene", "time_of_day", "season",
+        "genre", "spice_name", "spice_names", "taste"
       ) %>
   <% repeat_params["spice_name"] = repeat_params["spice_name"].presence || repeat_params["spice_names"] %>
   <% repeat_params.delete("spice_names") %>

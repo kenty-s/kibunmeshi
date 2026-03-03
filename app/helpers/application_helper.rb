@@ -1,7 +1,7 @@
 module ApplicationHelper
   SPICE_ICON_MAP = {
     "ブラックペッパー" => "black_pepper.png",
-    "ホワイトペッパー" => "black_pepper.png",
+    "ホワイトペッパー" => "white_pepper.webp",
     "ガーリック" => "garlic.png",
     "生姜" => "ginger.png",
     "唐辛子" => "chili.png",
@@ -17,7 +17,6 @@ module ApplicationHelper
     "ナツメグ" => "nutmeg.png",
     "クローブ" => "clove.png",
     "山椒" => "sansho.png",
-    "ディル" => "dill.png",
     "わさび" => "wasabi.png",
     "からし" => "karashi.png",
     "マスタード" => "mustard.png",
