@@ -23,18 +23,22 @@ RSpec.describe Dish, type: :model do
     let!(:spice_category) { FactoryBot.create(:category, name: spice_category_name) }
     let!(:taste_category_name) { "辛い" }
     let!(:taste_category) { FactoryBot.create(:category, name: taste_category_name) }
+    let!(:morning_category) { FactoryBot.create(:category, name: "朝") }
+    let!(:night_category) { FactoryBot.create(:category, name: "夜") }
 
     let!(:matched_dish) do
-      dish = FactoryBot.create(:dish, name: "#{keyword}-料理A", time_of_days: [ 'morning' ])
+      dish = FactoryBot.create(:dish, name: "#{keyword}-料理A")
       FactoryBot.create(:category_content, dish: dish, category: main_category)
       FactoryBot.create(:category_content, dish: dish, category: spice_category)
       FactoryBot.create(:category_content, dish: dish, category: taste_category, label: Dish::TASTE_LABEL)
+      FactoryBot.create(:category_content, dish: dish, category: morning_category, label: Dish::TIME_LABEL)
       dish
     end
 
     let!(:other_dish) do
-      dish = FactoryBot.create(:dish, name: '料理B', time_of_days: [ 'night' ])
+      dish = FactoryBot.create(:dish, name: '料理B')
       FactoryBot.create(:category_content, dish: dish, category: FactoryBot.create(:category))
+      FactoryBot.create(:category_content, dish: dish, category: night_category, label: Dish::TIME_LABEL)
       dish
     end
 
@@ -43,21 +47,17 @@ RSpec.describe Dish, type: :model do
       result = Dish.search_by_conditions(
         keyword: keyword,
         category: main_category.name,
-        time_of_day: 'morning',
+        time_of_day: '朝',
         spice_name: spice_category_name,
         taste: taste_category_name
       )
       expect(result).to contain_exactly(matched_dish)
     end
 
-    it 'falls back to taste inference when taste category is missing' do
+    it 'returns no dishes when requested taste tags are missing' do
       CategoryContent.where(label: Dish::TASTE_LABEL).delete_all
-      spicy_dish = FactoryBot.create(:dish, name: '麻婆豆腐')
-      sweet_dish = FactoryBot.create(:dish, name: 'プリン')
-
       result = Dish.search_by_conditions(taste: '辛い')
-      expect(result).to include(spicy_dish)
-      expect(result).not_to include(sweet_dish)
+      expect(result).to be_empty
     end
   end
 
