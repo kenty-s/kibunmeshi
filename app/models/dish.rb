@@ -134,6 +134,7 @@ class Dish < ApplicationRecord
     tastes << "しょっぱい"
     tastes.uniq
   end
+
   # PostgreSQLのRANDOM関数でランダムに並び替えて1件取得
   def self.random_by_category(category_name)
     by_category(category_name).order("RANDOM()").first
