@@ -185,10 +185,11 @@ class Dish < ApplicationRecord
 
       normalized_count = normalize_condition_labels!
       backfilled_count = backfill_missing_scene_and_taste_labels!
+      spice_synced_count = sync_spice_links_if_available!
       @condition_labels_integrity_verified = true
 
       Rails.logger.info(
-        "[Dish.ensure_condition_labels_integrity!] normalized=#{normalized_count} backfilled=#{backfilled_count}"
+        "[Dish.ensure_condition_labels_integrity!] normalized=#{normalized_count} backfilled=#{backfilled_count} spice_synced=#{spice_synced_count}"
       )
     end
   rescue StandardError => e
@@ -259,5 +260,15 @@ class Dish < ApplicationRecord
   def self.add_label_link!(dish:, label:, category_name:)
     category = Category.find_or_create_by!(name: category_name)
     CategoryContent.find_or_create_by!(dish_id: dish.id, category_id: category.id, label: label)
+  end
+
+  def self.sync_spice_links_if_available!
+    mappings = spice_pairings
+    if mappings.blank?
+      Rails.logger.warn("[Dish.sync_spice_links_if_available!] skipped: spice_pairings is empty")
+      return 0
+    end
+
+    sync_spice_pairings!
   end
 end
