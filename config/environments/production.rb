@@ -80,18 +80,21 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: app_host, protocol: "https" }
 
   config.action_mailer.perform_deliveries = true
-  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.raise_delivery_errors = false
 
-  smtp_address = ENV["SMTP_ADDRESS"]
-  if smtp_address && !smtp_address.empty?
+  smtp_address = ENV.fetch("SMTP_ADDRESS", "smtp-relay.brevo.com")
+  smtp_username = ENV["SMTP_USERNAME"] || ENV["BREVO_SMTP_LOGIN"]
+  smtp_password = ENV["SMTP_PASSWORD"] || ENV["BREVO_SMTP_KEY"]
+
+  if smtp_username.present? && smtp_password.present?
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
       address: smtp_address,
       port: ENV.fetch("SMTP_PORT", "587").to_i,
       domain: ENV["SMTP_DOMAIN"] || app_host,
-      user_name: ENV["SMTP_USERNAME"],
-      password: ENV["SMTP_PASSWORD"],
-      authentication: ENV.fetch("SMTP_AUTHENTICATION", "plain").to_sym,
+      user_name: smtp_username,
+      password: smtp_password,
+      authentication: ENV.fetch("SMTP_AUTHENTICATION", "login").to_sym,
       enable_starttls_auto: ENV.fetch("SMTP_ENABLE_STARTTLS_AUTO", "true") == "true"
     }
   end
