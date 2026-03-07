@@ -5,6 +5,14 @@
       登録済みのメールアドレスに再設定用のリンクを送信します。
     </p>
 
+    <% if Rails.env.development? && ActionMailer::Base.delivery_method == :letter_opener_web %>
+      <p class="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        開発環境では実メールは送信されません。送信後は
+        <%= link_to "Letter Opener", "/letter_opener", class: "font-medium underline" %>
+        でメール内容を確認してください。
+      </p>
+    <% end %>
+
     <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
       <% if resource.errors.any? %>
         <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">

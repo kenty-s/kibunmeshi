@@ -7,6 +7,18 @@ class User < ApplicationRecord
          :validatable,
          :omniauthable, omniauth_providers: [ :google_oauth2 ]
 
+  def send_devise_notification(notification, *args)
+    return super unless notification.to_sym == :reset_password_instructions
+
+    notification_mail = devise_mailer.public_send(notification, self, *args)
+
+    if Rails.env.production?
+      notification_mail.deliver_now
+    else
+      notification_mail.deliver_later
+    end
+  end
+
   def self.from_omniauth(auth)
     provider = auth.provider
     uid = auth.uid
