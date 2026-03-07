@@ -4,11 +4,11 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: graduation_production
+      POSTGRES_DB: kibunmeshi_production
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d graduation_production"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kibunmeshi_production"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -24,7 +24,8 @@ services:
       - .env.production
     environment:
       RAILS_ENV: production
-      DATABASE_URL: postgres://postgres:password@db:5432/graduation_production
+      SOLID_QUEUE_IN_PUMA: "true"
+      DATABASE_URL: postgres://postgres:password@db:5432/kibunmeshi_production
     ports:
       - "80:3000"
     depends_on:

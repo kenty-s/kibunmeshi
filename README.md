@@ -86,6 +86,12 @@ MVP時点では「自宅で作る料理のマンネリ解消」を主目的と�
 * 主なラベル: 気分 / 時間帯 / シーン / 季節 / ジャンル / 味覚/刺激 / スパイス/ハーブ
 * seedで初期データを投入・更新
 
+## メール送信設定
+* パスワード再設定メールは development / test では `deliver_later`、production では `deliver_now` で送信します。Render 上で SMTP 失敗を即座に表面化させるためです。`SOLID_QUEUE_IN_PUMA` は他の非同期ジョブ用として維持できます。
+* development で `SMTP_ADDRESS` 未設定の場合、実メールは送信されず `letter_opener_web` を使います。送信後は `/letter_opener` で内容を確認してください。
+* Docker Compose の development 環境では `.env` を `web` コンテナに渡すようにしています。実メール送信を試す場合は `.env` に `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_AUTHENTICATION`, `SMTP_ENABLE_STARTTLS_AUTO`, `MAILER_SENDER` を設定してください。設定例は `.env.example.erb` と `.env.production.example.erb` に置いています。
+* 送信元アドレスは `MAILER_SENDER` を優先し、未設定時は `SMTP_USERNAME` を使います。どちらも無い場合だけ `no-reply@example.com` を使います。
+
 ## 機能の実装方針予定
 
 ### 本リリース（MVP）

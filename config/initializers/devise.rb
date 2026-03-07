@@ -9,6 +9,11 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
+  mailer_sender = ENV["MAILER_SENDER"].presence ||
+                  ENV["BREVO_SENDER_EMAIL"].presence ||
+                  ENV["SMTP_USERNAME"].presence ||
+                  "no-reply@example.com"
+
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.
@@ -24,7 +29,7 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = ENV["MAILER_SENDER"] || ENV["BREVO_SENDER_EMAIL"] || "no-reply@example.com"
+  config.mailer_sender = mailer_sender
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
