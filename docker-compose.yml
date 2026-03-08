@@ -1,3 +1,5 @@
+name: kibunmeshi-dev
+
 services:
   db:
     image: postgres:15
@@ -7,8 +9,6 @@ services:
       POSTGRES_DB: kibunmeshi_development
     volumes:
       - db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
 
   web:
     build:
@@ -23,11 +23,12 @@ services:
     volumes:
       - .:/app
       - bundle_data:/app/vendor/bundle
+    entrypoint: []
     ports:
       - "3000:3000"
     depends_on:
       - db
-    command: bash -lc "rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0"
+    command: bash -lc "rm -f tmp/pids/server.pid && bin/rails db:prepare && bin/rails server -b 0.0.0.0"
 
 volumes:
   db_data:

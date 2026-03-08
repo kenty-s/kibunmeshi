@@ -16,20 +16,7 @@ test:
   database: kibunmeshi_test
 
 production:
-  primary: &primary_production
-    adapter: postgresql
-    encoding: unicode
-    url: <%= ENV['DATABASE_URL'] %>
-    max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  cache:
-    <<: *primary_production
-    database: kibunmeshi_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: kibunmeshi_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: kibunmeshi_production_cable
-    migrations_paths: db/cable_migrate
+  adapter: postgresql
+  encoding: unicode
+  url: <%= ENV['DATABASE_URL'] %>
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
