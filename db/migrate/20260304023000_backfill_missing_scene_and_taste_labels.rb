@@ -23,10 +23,21 @@ class BackfillMissingSceneAndTasteLabels < ActiveRecord::Migration[7.2]
   def up
     return unless table_exists?(:dishes) && table_exists?(:categories) && table_exists?(:category_contents)
 
+    Dish.reset_column_information
+    Category.reset_column_information
+    CategoryContent.reset_column_information
+
     say_with_time "Backfilling missing scene/taste labels for dishes" do
-      Dish.find_each do |dish|
-        backfill_scene_labels(dish)
-        backfill_taste_labels(dish)
+      Dish.connection_pool.with_connection do |connection|
+        connection.schema_cache.clear!
+        connection.clear_cache!
+
+        connection.unprepared_statement do
+          Dish.select(:id, :name).find_each do |dish|
+            backfill_scene_labels(dish)
+            backfill_taste_labels(dish)
+          end
+        end
       end
     end
   end

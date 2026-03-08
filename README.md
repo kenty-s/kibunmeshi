@@ -1,6 +1,5 @@
 # サービス名
 キブンメシ
-あなたの「食べたい」を教えます。~ 何食べたい？の答えがここに ~
 
 ## サービス概要
 「食べたい」欲望として、「ガッツリ」「サッパリ」、ジャンル(「中華」「イタリアン」etc)、「弁当にあと1品」など漠然と求めるものはあるけど、
@@ -37,8 +36,8 @@
 
 
 ## サービスの利用イメージ
-MVP時点では「自宅で作る料理のマンネリ解消」を主目的とし、冷蔵庫の中身や気分に合わせておすすめ料理を提案することで、日々の献立決めのストレスを解消します。
-将来的には「外食先の提案」も検討中です。
+MVP時点では「自宅で作る料理のマンネリ解消」を主目的とし、冷蔵庫の中身や気分に合わせておすすめ料理を提案することで、日々の献立決めのストレスを解消する。
+将来的には「外食先の提案」も検討中である。
 
 - スーパーでの買い物中のメニュー決め
 - 冷蔵庫とにらめっこしながらのあと１品決め
@@ -87,10 +86,9 @@ MVP時点では「自宅で作る料理のマンネリ解消」を主目的と�
 * seedで初期データを投入・更新
 
 ## メール送信設定
-* パスワード再設定メールは development / test では `deliver_later`、production では `deliver_now` で送信します。Render 上で SMTP 失敗を即座に表面化させるためです。production では Web プロセス内で Solid Queue を動かしていません。
-* development で `SMTP_ADDRESS` 未設定の場合、実メールは送信されず `letter_opener_web` を使います。送信後は `/letter_opener` で内容を確認してください。
-* Docker Compose の development 環境では `.env` を `web` コンテナに渡すようにしています。実メール送信を試す場合は `.env` に `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_DOMAIN`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_AUTHENTICATION`, `SMTP_ENABLE_STARTTLS_AUTO`, `MAILER_SENDER` を設定してください。設定例は `.env.example.erb` と `.env.production.example.erb` に置いています。
-* 送信元アドレスは `MAILER_SENDER` を優先し、未設定時は `SMTP_USERNAME` を使います。どちらも無い場合だけ `no-reply@example.com` を使います。
+* development / test では `deliver_later`、production では `deliver_now` を使う。
+* development で SMTP 未設定の場合は `letter_opener_web` で確認できる。
+* 必要な環境変数の例は `.env.example.erb` と `.env.production.example.erb` に記載している。
 
 ## 機能の実装方針予定
 
