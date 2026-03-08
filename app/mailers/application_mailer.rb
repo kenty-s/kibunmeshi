@@ -1,7 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: ENV["MAILER_SENDER"].presence ||
-                ENV["BREVO_SENDER_EMAIL"].presence ||
-                ENV["SMTP_USERNAME"].presence ||
-                "no-reply@example.com"
+  default from: ENV["MAILER_SENDER"].presence || "noreply.kibunmeshi@gmail.com"
   layout "mailer"
 end

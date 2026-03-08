@@ -9,10 +9,7 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
-  mailer_sender = ENV["MAILER_SENDER"].presence ||
-                  ENV["BREVO_SENDER_EMAIL"].presence ||
-                  ENV["SMTP_USERNAME"].presence ||
-                  "no-reply@example.com"
+  mailer_sender = ENV["MAILER_SENDER"].presence || "noreply.kibunmeshi@gmail.com"
 
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing

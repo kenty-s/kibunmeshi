@@ -88,6 +88,8 @@ MVP時点では「自宅で作る料理のマンネリ解消」を主目的と�
 ## メール送信設定
 * development / test では `deliver_later`、production では `deliver_now` を使う。
 * development で SMTP 未設定の場合は `letter_opener_web` で確認できる。
+* 本番送信には専用 Gmail `noreply.kibunmeshi@gmail.com` を使う想定である。
+* `SMTP_PASSWORD` には Gmail の通常パスワードではなく App Password を使う。
 * 必要な環境変数の例は `.env.example.erb` と `.env.production.example.erb` に記載している。
 
 ## 機能の実装方針予定
