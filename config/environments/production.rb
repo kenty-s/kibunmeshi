@@ -79,11 +79,11 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = false
 
-  smtp_address = ENV.fetch("SMTP_ADDRESS", "smtp-relay.brevo.com")
-  smtp_username = ENV["SMTP_USERNAME"] || ENV["BREVO_SMTP_LOGIN"]
-  smtp_password = ENV["SMTP_PASSWORD"] || ENV["BREVO_SMTP_KEY"]
+  smtp_address = ENV["SMTP_ADDRESS"]
+  smtp_username = ENV["SMTP_USERNAME"]
+  smtp_password = ENV["SMTP_PASSWORD"]
 
-  if smtp_username.present? && smtp_password.present?
+  if smtp_address.present? && smtp_username.present? && smtp_password.present?
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
       address: smtp_address,
