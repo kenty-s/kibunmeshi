@@ -1,3 +1,5 @@
+name: kibunmeshi-prod
+
 services:
   db:
     image: postgres:15
@@ -24,7 +26,6 @@ services:
       - .env.production
     environment:
       RAILS_ENV: production
-      SOLID_QUEUE_IN_PUMA: "true"
       DATABASE_URL: postgres://postgres:password@db:5432/kibunmeshi_production
     ports:
       - "80:3000"

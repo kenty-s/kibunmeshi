@@ -19,6 +19,8 @@ COPY . .
 RUN bundle exec rails tailwindcss:build
 RUN bundle exec rails assets:precompile
 
+RUN chmod +x bin/docker-entrypoint.sh
+
 EXPOSE 3000
 
-CMD ["bash", "-lc", "bundle exec rails server -b 0.0.0.0 -p ${PORT:-3000}"]
+ENTRYPOINT ["./bin/docker-entrypoint.sh"]
