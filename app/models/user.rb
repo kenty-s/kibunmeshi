@@ -12,11 +12,7 @@ class User < ApplicationRecord
 
     notification_mail = devise_mailer.public_send(notification, self, *args)
 
-    if Rails.env.production?
-      notification_mail.deliver_now
-    else
-      notification_mail.deliver_later
-    end
+    notification_mail.deliver_later
   end
 
   def self.from_omniauth(auth)
