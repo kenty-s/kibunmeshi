@@ -80,14 +80,6 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.delivery_method = :gmail_api
-  config.action_mailer.gmail_api_settings = {
-    client_id: ENV["GMAIL_API_CLIENT_ID"],
-    client_secret: ENV["GMAIL_API_CLIENT_SECRET"],
-    refresh_token: ENV["GMAIL_API_REFRESH_TOKEN"],
-    user_id: ENV.fetch("GMAIL_API_USER_ID", "me"),
-    open_timeout: ENV.fetch("GMAIL_API_OPEN_TIMEOUT", "5").to_i,
-    read_timeout: ENV.fetch("GMAIL_API_READ_TIMEOUT", "10").to_i
-  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
