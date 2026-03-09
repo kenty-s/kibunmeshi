@@ -79,22 +79,15 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
 
-  smtp_address = ENV["SMTP_ADDRESS"]
-  smtp_username = ENV["SMTP_USERNAME"]
-  smtp_password = ENV["SMTP_PASSWORD"]
-
-  if smtp_address.present? && smtp_username.present? && smtp_password.present?
-    config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = {
-      address: smtp_address,
-      port: ENV.fetch("SMTP_PORT", "587").to_i,
-      domain: ENV["SMTP_DOMAIN"] || app_host,
-      user_name: smtp_username,
-      password: smtp_password,
-      authentication: ENV.fetch("SMTP_AUTHENTICATION", "login").to_sym,
-      enable_starttls_auto: ENV.fetch("SMTP_ENABLE_STARTTLS_AUTO", "true") == "true"
-    }
-  end
+  config.action_mailer.delivery_method = :gmail_api
+  config.action_mailer.gmail_api_settings = {
+    client_id: ENV["GMAIL_API_CLIENT_ID"],
+    client_secret: ENV["GMAIL_API_CLIENT_SECRET"],
+    refresh_token: ENV["GMAIL_API_REFRESH_TOKEN"],
+    user_id: ENV.fetch("GMAIL_API_USER_ID", "me"),
+    open_timeout: ENV.fetch("GMAIL_API_OPEN_TIMEOUT", "5").to_i,
+    read_timeout: ENV.fetch("GMAIL_API_READ_TIMEOUT", "10").to_i
+  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

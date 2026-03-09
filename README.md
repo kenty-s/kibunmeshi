@@ -87,10 +87,10 @@ MVP時点では「自宅で作る料理のマンネリ解消」を主目的と�
 
 ## メール送信設定
 * development / test / production で `deliver_later` を使う。production は `ActiveJob :async` でリクエスト外送信する。
-* development で SMTP 未設定の場合は `letter_opener_web` で確認できる。
+* Render Free では SMTP を外へ出せないため、本番は Gmail API を使う。
 * 本番送信には専用 Gmail `noreply.kibunmeshi@gmail.com` を使う想定である。
-* `SMTP_PASSWORD` には Gmail の通常パスワードではなく App Password を使う。
-* 必要な環境変数の例は `.env.example.erb` と `.env.production.example.erb` に記載している。
+* 必要な環境変数は `MAILER_SENDER`、`GMAIL_API_CLIENT_ID`、`GMAIL_API_CLIENT_SECRET`、`GMAIL_API_REFRESH_TOKEN` である。
+* development で API 未設定の場合は `letter_opener_web` で確認できる。
 
 ## 機能の実装方針予定
 

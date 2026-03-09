@@ -16,7 +16,7 @@ class Users::PasswordsController < Devise::PasswordsController
     Rails.logger.error(e.backtrace.first(10).join("\n")) if e.backtrace
 
     self.resource = resource_class.new
-    flash.now[:alert] = "パスワード再設定メールの送信に失敗しました。SMTP設定を確認してください。"
+    flash.now[:alert] = "パスワード再設定メールの送信に失敗しました。メール送信設定を確認してください。"
     render :new, status: :unprocessable_entity
   end
 

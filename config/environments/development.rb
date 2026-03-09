@@ -44,17 +44,19 @@ Rails.application.configure do
   # Set localhost to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
-  smtp_address = ENV["SMTP_ADDRESS"]
-  if smtp_address && !smtp_address.empty?
-    config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = {
-      address: smtp_address,
-      port: ENV.fetch("SMTP_PORT", "587").to_i,
-      domain: ENV["SMTP_DOMAIN"] || "localhost",
-      user_name: ENV["SMTP_USERNAME"],
-      password: ENV["SMTP_PASSWORD"],
-      authentication: ENV.fetch("SMTP_AUTHENTICATION", "plain").to_sym,
-      enable_starttls_auto: ENV.fetch("SMTP_ENABLE_STARTTLS_AUTO", "true") == "true"
+  gmail_api_client_id = ENV["GMAIL_API_CLIENT_ID"]
+  gmail_api_client_secret = ENV["GMAIL_API_CLIENT_SECRET"]
+  gmail_api_refresh_token = ENV["GMAIL_API_REFRESH_TOKEN"]
+
+  if gmail_api_client_id.present? && gmail_api_client_secret.present? && gmail_api_refresh_token.present?
+    config.action_mailer.delivery_method = :gmail_api
+    config.action_mailer.gmail_api_settings = {
+      client_id: gmail_api_client_id,
+      client_secret: gmail_api_client_secret,
+      refresh_token: gmail_api_refresh_token,
+      user_id: ENV.fetch("GMAIL_API_USER_ID", "me"),
+      open_timeout: ENV.fetch("GMAIL_API_OPEN_TIMEOUT", "5").to_i,
+      read_timeout: ENV.fetch("GMAIL_API_READ_TIMEOUT", "10").to_i
     }
   else
     config.action_mailer.delivery_method = :letter_opener_web
