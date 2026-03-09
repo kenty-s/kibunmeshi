@@ -50,14 +50,6 @@ Rails.application.configure do
 
   if gmail_api_client_id.present? && gmail_api_client_secret.present? && gmail_api_refresh_token.present?
     config.action_mailer.delivery_method = :gmail_api
-    config.action_mailer.gmail_api_settings = {
-      client_id: gmail_api_client_id,
-      client_secret: gmail_api_client_secret,
-      refresh_token: gmail_api_refresh_token,
-      user_id: ENV.fetch("GMAIL_API_USER_ID", "me"),
-      open_timeout: ENV.fetch("GMAIL_API_OPEN_TIMEOUT", "5").to_i,
-      read_timeout: ENV.fetch("GMAIL_API_READ_TIMEOUT", "10").to_i
-    }
   else
     config.action_mailer.delivery_method = :letter_opener_web
   end
