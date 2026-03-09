@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.2.3"
+gem "rails", "~> 8.1.2"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use postgresql as the database for Active Record
@@ -19,7 +19,7 @@ gem "jbuilder"
 # 検索機能
 gem "ransack", "~> 4.0"
 # 日本語翻訳
-gem "rails-i18n", "~> 7.0.0"
+gem "rails-i18n", "~> 8.1.0"
 # enumのi18n化
 gem "enum_help", "0.0.20"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
