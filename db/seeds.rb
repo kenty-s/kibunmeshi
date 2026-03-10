@@ -53,9 +53,9 @@ def dish_placeholder_svg(name)
   SVG
 end
 
-SPICE_LABEL = "スパイス/ハーブ"
+SPICE_LABEL = "スパイス・ハーブ"
 SPICE_NAMES = Dish.spice_pairings.values.flatten.uniq.freeze
-TASTE_LABEL = "味覚/刺激"
+TASTE_LABEL = "味覚・刺激"
 TASTE_NAMES = [ "甘い", "すっぱい", "しょっぱい", "苦い", "辛い" ].freeze
 SCENE_LABEL = "シーン"
 SCENE_NAMES = [ "外食", "弁当", "内食" ].freeze
@@ -132,10 +132,10 @@ Category.where(name: REMOVED_CATEGORY_NAMES)
 # シーン
 SCENE_NAMES.each { |name| Category.find_or_create_by(name: name) }
 
-# 味覚/刺激
+# 味覚・刺激
 TASTE_NAMES.each { |name| Category.find_or_create_by(name: name) }
 
-# スパイス/ハーブ
+# スパイス・ハーブ
 SPICE_NAMES.each { |name| Category.find_or_create_by(name: name) }
 
 puts "Categories created!"

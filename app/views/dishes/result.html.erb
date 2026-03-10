@@ -67,10 +67,10 @@
         </div>
       </div>
 
-      <!-- 味覚/刺激 -->
+      <!-- 味覚・刺激 -->
       <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
         <div class="flex flex-wrap items-center gap-4">
-          <span class="text-xl font-bold text-gray-900 min-w-[6rem]">味覚/刺激</span>
+          <span class="text-xl font-bold text-gray-900 min-w-[6rem]">味覚・刺激</span>
           <div class="flex flex-wrap gap-2">
             <% @dish.category_contents.includes(:category).where(label: Dish::TASTE_LABEL).each do |cc| %>
               <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-sm"><%= cc.category.name %></span>
@@ -79,7 +79,7 @@
         </div>
       </div>
 
-      <!-- スパイス/ハーブ -->
+      <!-- スパイス・ハーブ -->
       <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
         <div class="flex flex-wrap items-center gap-4">
           <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">スパイス</span>
