@@ -270,4 +270,3 @@ class Dish < ApplicationRecord
     sync_spice_pairings!
   end
 end
-
