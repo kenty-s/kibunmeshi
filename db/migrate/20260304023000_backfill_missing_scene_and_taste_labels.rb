@@ -12,7 +12,7 @@ class BackfillMissingSceneAndTasteLabels < ActiveRecord::Migration[7.2]
   end
 
   SCENE_LABEL = "シーン".freeze
-  TASTE_LABEL = "味覚/刺激".freeze
+  TASTE_LABEL = "味覚・刺激".freeze
 
   NO_BENTO_PATTERN = /ラーメン|うどん|そうめん|ひやむぎ|ざるそば|冷やし中華|パスタ|フォー|スープ|みそ汁|おでん|すき焼き|しゃぶしゃぶ|刺身|寿司|海鮮丼|鉄火丼|ちらし寿司|手巻き寿司|かき氷|アイス|ゼリー|プリン|スムージー|ハーブティー|チャイ|スパイスコーラ/.freeze
   BENTO_FRIENDLY_PATTERN = /生姜焼き|唐揚げ|ハンバーグ|オムライス|焼きそば|チャーハン|チキンカツ|鶏の照り焼き|野菜炒め|春巻き|エビフライ|チキン南蛮|ホットドッグ|サンドイッチ|おにぎり|タコライス/.freeze

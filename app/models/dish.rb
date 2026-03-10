@@ -2,9 +2,8 @@ require "yaml"
 require "set"
 
 class Dish < ApplicationRecord
-  SPICE_LABEL = "スパイス/ハーブ"
-  LEGACY_SPICE_LABEL = "スパイス・ハーブ"
-  TASTE_LABEL = "味覚/刺激"
+  SPICE_LABEL = "スパイス・ハーブ"
+  TASTE_LABEL = "味覚・刺激"
   SCENE_LABEL = "シーン"
   TIME_LABEL = "時間帯"
   SEASON_LABEL = "季節"
@@ -12,8 +11,7 @@ class Dish < ApplicationRecord
   SPICE_PAIRINGS_PATH = Rails.root.join("config/spice_pairings.yml")
   LABEL_NORMALIZATION_TARGETS = {
     "スパイス・ハーブ" => SPICE_LABEL,
-    "スパイス/ハーブ" => SPICE_LABEL,
-    "味覚/刺激" => TASTE_LABEL,
+    "味覚・刺激" => TASTE_LABEL,
     "シーン" => SCENE_LABEL,
     "時間帯" => TIME_LABEL,
     "季節" => SEASON_LABEL,
@@ -45,7 +43,7 @@ class Dish < ApplicationRecord
     scope = filter_by_label(scope, GENRE_LABEL, params[:genre])           if params[:genre].present?
     selected_spice = Array(params[:spice_name]).compact_blank.first
     if selected_spice.present?
-      spice_labels = [ SPICE_LABEL, LEGACY_SPICE_LABEL, nil, "" ]
+      spice_labels = [ SPICE_LABEL, nil, "" ]
       spice_dish_ids = Dish.joins(:category_contents)
                            .joins(:categories)
                            .where(categories: { name: selected_spice })
@@ -272,3 +270,4 @@ class Dish < ApplicationRecord
     sync_spice_pairings!
   end
 end
+

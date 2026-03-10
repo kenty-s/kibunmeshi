@@ -432,7 +432,7 @@ class SearchHistoriesController < ApplicationController
         .map { |cc| cc.category&.name.to_s }
         .find { |name| %w[ガッツリ サッパリ].include?(name) }
       spice_names = contents
-        .select { |cc| cc.label == "スパイス/ハーブ" }
+        .select { |cc| cc.label == "スパイス・ハーブ" }
         .map { |cc| cc.category&.name.to_s }
         .compact_blank
         .uniq

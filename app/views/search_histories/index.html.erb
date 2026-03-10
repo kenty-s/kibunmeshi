@@ -38,7 +38,7 @@
       <% scene_tags = dish_tags.any? ? dish_tags.select { |cc| cc.label == "シーン" }.map { |cc| cc.category.name } : Array(h.query_params["scene"]) %>
       <% genre_tags = dish_tags.any? ? dish_tags.select { |cc| cc.label == "ジャンル" }.map { |cc| cc.category.name } : Array(h.query_params["genre"]) %>
       <% spice_param = h.query_params["spice_name"].presence || h.query_params["spice_names"] %>
-      <% spice_tags = dish_tags.any? ? dish_tags.select { |cc| cc.label == "スパイス/ハーブ" }.map { |cc| cc.category.name } : Array(spice_param) %>
+      <% spice_tags = dish_tags.any? ? dish_tags.select { |cc| cc.label == "スパイス・ハーブ" }.map { |cc| cc.category.name } : Array(spice_param) %>
       <% tag_orders = {
         "時間帯" => ["朝", "昼", "夜"],
         "季節" => ["春", "夏", "秋", "冬"],
