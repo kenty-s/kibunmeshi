@@ -121,7 +121,7 @@
       end %>
   <% end %>
   <% only_category = repeat_params.except("category").values.all?(&:blank?) %>
-  <% share_text = "今日のキブンは「#{@dish.name}」！ #キブンメシ" %>
+  <% share_text = "今日のキブンメシは「#{@dish.name}」！ #キブンメシ" %>
   <% share_url = "https://kibunmeshi.onrender.com/" %>
   <% x_share_url = "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(share_text)}&url=#{ERB::Util.url_encode(share_url)}" %>
   <% cookpad_url = cookpad_search_url(@dish.name) %>
