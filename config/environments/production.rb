@@ -15,19 +15,10 @@ Rails.application.configure do
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
 
-  # Cache digest stamped assets for far-future expiry.
-  # Short cache for others: robots.txt, sitemap.xml, 404.html, etc.
+  # ActionDispatch::Static expects concrete header values here.
+  # Returning a Proc leaks the literal Proc string into Cache-Control, which breaks asset responses like og:image.
   config.public_file_server.headers = {
-    "cache-control" => lambda do |path, _|
-      if path.start_with?("/assets/")
-        # Files in /assets/ are expected to be fully immutable.
-        # If the content change the URL too.
-        "public, immutable, max-age=#{1.year.to_i}"
-      else
-        # For anything else we cache for 1 minute.
-        "public, max-age=#{1.minute.to_i}, stale-while-revalidate=#{5.minutes.to_i}"
-      end
-    end
+    "cache-control" => "public, immutable, max-age=#{1.year.to_i}"
   }
 
   config.hosts << "kibunmeshi.onrender.com"
