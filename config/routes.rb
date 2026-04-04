@@ -32,10 +32,8 @@ Rails.application.routes.draw do
   get "mypage", to: "mypages#show", as: :mypage
   patch "mypage", to: "mypages#update"
 
-  # 管理者画面
-  # namespace :admin do
-  #   root 'dashboard#index'
-  #   resources :dishes
-  #   resources :categories
-  # end
+  namespace :admin do
+    root "analytics#show"
+    get "analytics", to: "analytics#show"
+  end
 end

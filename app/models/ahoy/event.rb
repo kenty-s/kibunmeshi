@@ -5,4 +5,7 @@ class Ahoy::Event < ApplicationRecord
 
   belongs_to :visit
   belongs_to :user, optional: true
+
+  scope :page_views, -> { where(name: "page_view") }
+  scope :searches, -> { where(name: "search_performed") }
 end

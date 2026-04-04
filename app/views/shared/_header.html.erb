@@ -16,17 +16,20 @@
           <span class="hidden md:inline text-white/90 whitespace-nowrap">
             <%= current_user.name %>さん
           </span>
+          <% if current_user.respond_to?(:admin?) && current_user.admin? %>
+            <%= link_to "管理画面", admin_root_path, class: "app-header__action px-2 md:px-4 py-2 text-xs md:text-sm font-medium text-orange-700 bg-amber-50 rounded-md hover:bg-amber-100 transition-colors" %>
+          <% end %>
           <%= link_to "マイページ", mypage_path, class: "app-header__action px-2 md:px-4 py-2 text-xs md:text-sm font-medium text-orange-700 bg-white/90 rounded-md hover:bg-white transition-colors" %>
           <%= link_to "検索履歴", search_histories_path, class: "app-header__action px-2 md:px-4 py-2 text-xs md:text-sm font-medium text-orange-700 bg-white/90 rounded-md hover:bg-white transition-colors" %>
-          <%= button_to "ログアウト", destroy_user_session_path, 
-              method: :delete, 
+          <%= button_to "ログアウト", destroy_user_session_path,
+              method: :delete,
               class: "app-header__action px-2 md:px-4 py-2 text-xs md:text-sm font-medium text-white bg-orange-700/90 rounded-md hover:bg-orange-700 transition-colors",
               form: { class: "inline" } %>
         <% else %>
           <!-- 未ログイン -->
-          <%= link_to "ログイン", new_user_session_path, 
+          <%= link_to "ログイン", new_user_session_path,
               class: "app-header__action px-2 md:px-4 py-2 text-xs md:text-sm font-medium text-orange-700 bg-white/90 rounded-md hover:bg-white transition-colors" %>
-          <%= link_to "新規登録", new_user_registration_path, 
+          <%= link_to "新規登録", new_user_registration_path,
               class: "app-header__action px-3 md:px-6 py-2 text-xs md:text-sm font-bold text-white bg-orange-700 rounded-md hover:bg-orange-800 transition-colors" %>
         <% end %>
       </div>

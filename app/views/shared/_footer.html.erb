@@ -1,5 +1,17 @@
 <footer id="footer" class="footer-bottom">
   <div class="mx-auto max-w-6xl px-4 pt-4 pb-16 text-left">
-    <p class="text-sm text-gray-500">© 2026 キブンメシ</p>
+    <% if @total_page_views.present? || @total_visits.present? %>
+      <div class="mb-4 rounded-2xl border border-orange-100 bg-white/90 px-4 py-3 shadow-sm">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p class="text-xs font-semibold tracking-wide text-gray-500">© 2026 キブンメシ</p>
+          <div class="flex flex-wrap items-center gap-4 text-sm text-gray-700">
+            <span><span class="font-semibold text-orange-700">累計PV</span> <%= number_with_delimiter(@total_page_views.to_i) %></span>
+            <span><span class="font-semibold text-sky-700">累計訪問数</span> <%= number_with_delimiter(@total_visits.to_i) %></span>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <p class="text-sm text-gray-500">© 2026 キブンメシ</p>
+    <% end %>
   </div>
 </footer>

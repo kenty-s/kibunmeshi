@@ -7,9 +7,10 @@ class SearchController < ApplicationController
 
     @dishes = Dish.search_by_conditions(@selected_conditions)
     @dish = @dishes.sample
+    track_search_performed(mode: "advanced", params_hash: @selected_conditions.to_h, result_found: @dish.present?)
     return redirect_to root_path, alert: "条件に合う料理が見つかりませんでした" if @dish.nil?
 
-    save_history(@selected_conditions, @dish)  # 呼び出し名
+    save_history(@selected_conditions, @dish)
     render "dishes/result"
   end
 

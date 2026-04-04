@@ -16,6 +16,12 @@ RSpec.describe Dish, type: :model do
     end
   end
 
+  describe '.scene_names_for' do
+    it 'treats chirashi sushi as home-oriented' do
+      expect(Dish.scene_names_for('ちらし寿司')).to eq([ '内食' ])
+    end
+  end
+
   describe '.search_by_conditions' do
     let!(:keyword) { "spec-keyword-#{SecureRandom.hex(4)}" }
     let!(:main_category) { FactoryBot.create(:category) }
