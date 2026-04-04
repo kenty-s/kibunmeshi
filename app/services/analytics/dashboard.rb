@@ -9,17 +9,21 @@ module Analytics
       now: Time.zone.now,
       page_view_scope: Ahoy::Event.page_views,
       visit_scope: Ahoy::Visit.all,
-      search_scope: Ahoy::Event.searches
+      search_scope: Ahoy::Event.searches,
+      admin_user: nil
     )
       @now = now.in_time_zone
       @page_view_scope = page_view_scope
       @visit_scope = visit_scope
       @search_scope = search_scope
+      @admin_user = admin_user
     end
 
     def call
       {
         totals: totals,
+        audience_breakdown: audience_breakdown,
+        user_rows: user_rows,
         summary_cards: summary_cards,
         week_over_week: week_over_week,
         charts: charts
@@ -27,7 +31,7 @@ module Analytics
     end
 
     def totals
-      {
+      @totals ||= {
         page_views: page_view_scope.count,
         visits: visit_scope.count,
         searches: search_scope.count,
@@ -37,7 +41,45 @@ module Analytics
 
     private
 
-    attr_reader :now, :page_view_scope, :visit_scope, :search_scope
+    attr_reader :now, :page_view_scope, :visit_scope, :search_scope, :admin_user
+
+    def audience_breakdown
+      @audience_breakdown ||= begin
+        rows = user_rows
+        [
+          build_audience_segment(
+            key: :self,
+            title: "あなた",
+            subtitle: "管理者アカウントの計測",
+            rows: rows.select { |row| row[:segment] == :self }
+          ),
+          build_audience_segment(
+            key: :other_users,
+            title: "他ユーザー",
+            subtitle: "ログイン済みの他利用者",
+            rows: rows.select { |row| row[:segment] == :user }
+          ),
+          build_audience_segment(
+            key: :guests,
+            title: "未ログイン",
+            subtitle: "ゲスト利用をまとめて集計",
+            rows: rows.select { |row| row[:segment] == :guest }
+          ),
+          build_audience_segment(
+            key: :effect_target,
+            title: "効果検証対象",
+            subtitle: "あなた以外のPV / 訪問 / 検索",
+            rows: rows.reject { |row| row[:segment] == :self }
+          )
+        ]
+      end
+    end
+
+    def user_rows
+      @user_rows ||= actor_stats.values
+                               .map { |row| decorate_actor_row(row) }
+                               .sort_by { |row| [ user_row_priority(row), -row[:page_views], -row[:visits], -row[:searches], row[:label].to_s ] }
+    end
 
     def summary_cards
       [
@@ -150,7 +192,7 @@ module Analytics
         title: "累計推移",
         subtitle: "直近#{TOTAL_MONTH_POINTS}か月の累計PV・累計訪問数・累計検索数",
         type: "line",
-        has_data: [page_view_counts, visit_counts, search_counts].any? { |counts| counts.values.any?(&:positive?) },
+        has_data: [ page_view_counts, visit_counts, search_counts ].any? { |counts| counts.values.any?(&:positive?) },
         data: chart_payload(
           labels: bucket_starts.map { |bucket| bucket.strftime("%Y/%m") },
           page_views: cumulative_values(page_view_counts),
@@ -172,7 +214,7 @@ module Analytics
         title: title,
         subtitle: subtitle,
         type: type,
-        has_data: [page_view_counts, visit_counts, search_counts].any? { |counts| counts.values.any?(&:positive?) },
+        has_data: [ page_view_counts, visit_counts, search_counts ].any? { |counts| counts.values.any?(&:positive?) },
         data: chart_payload(
           labels: bucket_starts.map { |bucket| bucket_label(bucket, period) },
           page_views: page_view_counts.values,
@@ -181,6 +223,132 @@ module Analytics
           type: type
         )
       }
+    end
+
+    def build_audience_segment(key:, title:, subtitle:, rows:)
+      page_views = rows.sum { |row| row[:page_views] }
+      visits = rows.sum { |row| row[:visits] }
+      searches = rows.sum { |row| row[:searches] }
+
+      {
+        key: key,
+        title: title,
+        subtitle: subtitle,
+        page_views: page_views,
+        visits: visits,
+        searches: searches,
+        share: percent_of(page_views, totals[:page_views]),
+        actors_count: rows.size
+      }
+    end
+
+    def actor_stats
+      @actor_stats ||= begin
+        stats = {}
+        merge_event_actor_counts!(stats, page_view_scope, metric: :page_views)
+        merge_visit_actor_counts!(stats, visit_scope, metric: :visits)
+        merge_event_actor_counts!(stats, search_scope, metric: :searches)
+        stats
+      end
+    end
+
+    def merge_event_actor_counts!(stats, scope, metric:)
+      event_actor_counts(scope).each do |(user_id, name, email), count|
+        merge_actor_count!(stats, user_id: user_id, name: name, email: email, metric: metric, count: count)
+      end
+    end
+
+    def merge_visit_actor_counts!(stats, scope, metric:)
+      visit_actor_counts(scope).each do |(user_id, name, email), count|
+        merge_actor_count!(stats, user_id: user_id, name: name, email: email, metric: metric, count: count)
+      end
+    end
+
+    def merge_actor_count!(stats, user_id:, name:, email:, metric:, count:)
+      key = actor_key(user_id)
+      stats[key] ||= {
+        key: key,
+        user_id: user_id,
+        name: name,
+        email: email,
+        page_views: 0,
+        visits: 0,
+        searches: 0
+      }
+
+      stats[key][metric] += count
+      stats[key][:name] ||= name
+      stats[key][:email] ||= email
+    end
+
+    def event_actor_counts(scope)
+      scope.joins("LEFT JOIN ahoy_visits analytics_visits ON analytics_visits.id = ahoy_events.visit_id")
+           .joins("LEFT JOIN users analytics_users ON analytics_users.id = COALESCE(ahoy_events.user_id, analytics_visits.user_id)")
+           .group(Arel.sql("COALESCE(ahoy_events.user_id, analytics_visits.user_id)"), "analytics_users.name", "analytics_users.email")
+           .count
+    end
+
+    def visit_actor_counts(scope)
+      scope.left_outer_joins(:user)
+           .group("ahoy_visits.user_id", "users.name", "users.email")
+           .count
+    end
+
+    def decorate_actor_row(row)
+      segment = user_segment(row[:user_id])
+      {
+        key: row[:key],
+        user_id: row[:user_id],
+        label: actor_label(row, segment),
+        email: row[:email],
+        page_views: row[:page_views],
+        visits: row[:visits],
+        searches: row[:searches],
+        share: percent_of(row[:page_views], totals[:page_views]),
+        segment: segment,
+        effect_target: segment != :self
+      }
+    end
+
+    def actor_key(user_id)
+      user_id.present? ? "user:#{user_id}" : "guest"
+    end
+
+    def user_segment(user_id)
+      return :guest if user_id.blank?
+      return :self if admin_user.present? && user_id == admin_user.id
+
+      :user
+    end
+
+    def actor_label(row, segment)
+      base_label = row[:name].presence || row[:email].presence || "ユーザー##{row[:user_id]}"
+
+      case segment
+      when :self
+        "#{base_label} (あなた)"
+      when :guest
+        "未ログインユーザー"
+      else
+        base_label
+      end
+    end
+
+    def user_row_priority(row)
+      case row[:segment]
+      when :self
+        0
+      when :user
+        1
+      else
+        2
+      end
+    end
+
+    def percent_of(numerator, denominator)
+      return 0.0 unless denominator.to_i.positive?
+
+      ((numerator.to_f / denominator) * 100).round(1)
     end
 
     def comparison_for(range:, previous_range:, column:, scope:)
