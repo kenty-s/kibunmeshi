@@ -1,8 +1,8 @@
 <%
   total_metrics = [
-    { key: :page_views, label: "累計PV", panel_class: "border-orange-100 bg-orange-50", text_class: "text-orange-700" },
-    { key: :visits, label: "累計訪問数", panel_class: "border-sky-100 bg-sky-50", text_class: "text-sky-700" },
-    { key: :searches, label: "累計検索数", panel_class: "border-emerald-100 bg-emerald-50", text_class: "text-emerald-700" }
+    { key: :page_views, label: "参考PV合計", panel_class: "border-gray-200 bg-gray-50/90", text_class: "text-gray-600" },
+    { key: :visits, label: "参考訪問数合計", panel_class: "border-gray-200 bg-gray-50/90", text_class: "text-gray-600" },
+    { key: :searches, label: "参考検索数合計", panel_class: "border-gray-200 bg-gray-50/90", text_class: "text-gray-600" }
   ]
 
   metric_panels = [
@@ -23,20 +23,44 @@
     { key: :searches, label: "検索数", unit: "回", panel_class: "border-emerald-100 bg-emerald-50", text_class: "text-emerald-700" }
   ]
 
-  audience_cards = {
-    self: { panel_class: "border-slate-200 bg-slate-50", text_class: "text-slate-700" },
-    other_users: { panel_class: "border-sky-100 bg-sky-50", text_class: "text-sky-700" },
-    guests: { panel_class: "border-amber-100 bg-amber-50", text_class: "text-amber-700" },
-    effect_target: { panel_class: "border-emerald-100 bg-emerald-50", text_class: "text-emerald-700" }
-  }
-
   user_row_badges = {
     self: "border-slate-200 bg-slate-50 text-slate-700",
     user: "border-sky-200 bg-sky-50 text-sky-700",
     guest: "border-amber-200 bg-amber-50 text-amber-700"
   }
 
-  evaluation_segment = @dashboard[:audience_breakdown].find { |segment| segment[:key] == :effect_target }
+  guest_segment = @dashboard[:audience_breakdown].find { |segment| segment[:key] == :guests } || { page_views: 0, visits: 0, searches: 0, share: 0.0, actors_count: 0 }
+  self_segment = @dashboard[:audience_breakdown].find { |segment| segment[:key] == :self } || { page_views: 0, visits: 0, searches: 0, share: 0.0, actors_count: 0 }
+  other_users_segment = @dashboard[:audience_breakdown].find { |segment| segment[:key] == :other_users } || { page_views: 0, visits: 0, searches: 0, share: 0.0, actors_count: 0 }
+  evaluation_segment = @dashboard[:audience_breakdown].find { |segment| segment[:key] == :effect_target } || { page_views: 0, visits: 0, searches: 0, share: 0.0, actors_count: 0 }
+  guest_effect_share = evaluation_segment[:page_views].to_i.positive? ? ((guest_segment[:page_views].to_f / evaluation_segment[:page_views]) * 100).round(1) : 0.0
+
+  reference_cards = [
+    {
+      title: "参考: 全体合計",
+      subtitle: "管理者PVを含む全体の母数",
+      page_views: @dashboard[:totals][:page_views],
+      visits: @dashboard[:totals][:visits],
+      searches: @dashboard[:totals][:searches],
+      note: "全体を見たい時だけ参照"
+    },
+    {
+      title: "参考: 効果検証対象",
+      subtitle: "あなた以外の合計",
+      page_views: evaluation_segment[:page_views],
+      visits: evaluation_segment[:visits],
+      searches: evaluation_segment[:searches],
+      note: "全PVの #{number_to_percentage(evaluation_segment[:share], precision: 1)}"
+    },
+    {
+      title: "参考: あなた",
+      subtitle: "管理者アカウントのアクセス",
+      page_views: self_segment[:page_views],
+      visits: self_segment[:visits],
+      searches: self_segment[:searches],
+      note: "全PVの #{number_to_percentage(self_segment[:share], precision: 1)}"
+    }
+  ]
 %>
 
 <section class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-sky-50">
@@ -45,7 +69,7 @@
       <div>
         <p class="text-sm font-semibold tracking-wide text-orange-700">ADMIN ANALYTICS</p>
         <h1 class="mt-2 text-3xl font-black text-gray-900">PV / 訪問数 / 検索数ダッシュボード</h1>
-        <p class="mt-2 text-sm text-gray-600">PV は page_view、検索数は search_performed イベント、訪問数は Ahoy の visit データから集計しています。</p>
+        <p class="mt-2 text-sm text-gray-600">主指標は未ログインユーザーの利用状況です。全体合計や管理者自身のアクセスは参考値として下に分けて表示しています。</p>
       </div>
       <div class="grid grid-cols-1 gap-3 sm:min-w-[360px] sm:grid-cols-3">
         <% total_metrics.each do |metric| %>
@@ -56,6 +80,122 @@
         <% end %>
       </div>
     </header>
+
+    <section class="rounded-3xl border border-white bg-white/95 p-6 shadow-lg">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-gray-900">誰のPVか</h2>
+          <p class="text-sm text-gray-600">未ログインユーザーを主指標として前面に出しています。全体合計と管理者のアクセスは、右側の参考カードと下の一覧で補助的に確認できます。</p>
+        </div>
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 lg:min-w-[240px]">
+          <p class="text-xs font-semibold text-amber-700">主指標</p>
+          <p class="mt-1 text-sm font-bold text-gray-900">未ログインPVが効果検証対象に占める割合</p>
+          <p class="mt-2 text-2xl font-extrabold text-gray-900"><%= number_to_percentage(guest_effect_share, precision: 1) %></p>
+        </div>
+      </div>
+
+      <div class="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
+        <article class="relative overflow-hidden rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 p-6 shadow-md">
+          <div class="absolute right-0 top-0 h-32 w-32 rounded-full bg-amber-200/30 blur-3xl"></div>
+          <div class="relative">
+            <span class="inline-flex rounded-full border border-amber-300 bg-white/80 px-3 py-1 text-xs font-semibold text-amber-800">主指標</span>
+            <h3 class="mt-4 text-2xl font-black text-gray-900">未ログインユーザーの利用状況</h3>
+            <p class="mt-2 text-sm text-gray-600">ログイン前の利用がこのアプリの主要な反応なので、まずここを見れば効果の変化を追えます。</p>
+
+            <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+              <div class="rounded-2xl border border-amber-100 bg-white/85 px-5 py-5">
+                <p class="text-xs font-semibold text-amber-700">未ログインPV</p>
+                <p class="mt-2 text-5xl font-black tracking-tight text-gray-900"><%= number_with_delimiter(guest_segment[:page_views]) %></p>
+                <p class="mt-2 text-sm text-gray-600">全PVの <span class="font-bold text-gray-900"><%= number_to_percentage(guest_segment[:share], precision: 1) %></span></p>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="rounded-2xl border border-amber-100 bg-white/85 px-4 py-4">
+                  <p class="text-xs text-gray-500">訪問数</p>
+                  <p class="mt-2 text-2xl font-extrabold text-gray-900"><%= number_with_delimiter(guest_segment[:visits]) %></p>
+                </div>
+                <div class="rounded-2xl border border-amber-100 bg-white/85 px-4 py-4">
+                  <p class="text-xs text-gray-500">検索数</p>
+                  <p class="mt-2 text-2xl font-extrabold text-gray-900"><%= number_with_delimiter(guest_segment[:searches]) %></p>
+                </div>
+                <div class="rounded-2xl border border-amber-100 bg-white/85 px-4 py-4">
+                  <p class="text-xs text-gray-500">効果検証対象比</p>
+                  <p class="mt-2 text-2xl font-extrabold text-gray-900"><%= number_to_percentage(guest_effect_share, precision: 1) %></p>
+                </div>
+                <div class="rounded-2xl border border-amber-100 bg-white/85 px-4 py-4">
+                  <p class="text-xs text-gray-500">ログイン済み他ユーザーPV</p>
+                  <p class="mt-2 text-2xl font-extrabold text-gray-900"><%= number_with_delimiter(other_users_segment[:page_views]) %></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div class="grid grid-cols-1 gap-4">
+          <% reference_cards.each do |card| %>
+            <article class="rounded-2xl border border-gray-200 bg-gray-50/90 p-4 shadow-sm">
+              <p class="text-xs font-semibold text-gray-600"><%= card[:title] %></p>
+              <p class="mt-1 text-xs text-gray-500"><%= card[:subtitle] %></p>
+              <p class="mt-3 text-2xl font-extrabold text-gray-900"><%= number_with_delimiter(card[:page_views]) %><span class="ml-1 text-xs font-medium text-gray-500">PV</span></p>
+              <div class="mt-3 grid grid-cols-2 gap-3 text-xs">
+                <div class="rounded-xl bg-white px-3 py-2">
+                  <p class="text-gray-500">訪問数</p>
+                  <p class="mt-1 text-base font-bold text-gray-900"><%= number_with_delimiter(card[:visits]) %></p>
+                </div>
+                <div class="rounded-xl bg-white px-3 py-2">
+                  <p class="text-gray-500">検索数</p>
+                  <p class="mt-1 text-base font-bold text-gray-900"><%= number_with_delimiter(card[:searches]) %></p>
+                </div>
+              </div>
+              <p class="mt-3 text-xs text-gray-500"><%= card[:note] %></p>
+            </article>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="mt-6 overflow-x-auto rounded-2xl border border-gray-100">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left font-semibold text-gray-600">対象</th>
+              <th class="px-4 py-3 text-left font-semibold text-gray-600">種別</th>
+              <th class="px-4 py-3 text-right font-semibold text-gray-600">PV</th>
+              <th class="px-4 py-3 text-right font-semibold text-gray-600">訪問数</th>
+              <th class="px-4 py-3 text-right font-semibold text-gray-600">検索数</th>
+              <th class="px-4 py-3 text-right font-semibold text-gray-600">PV構成比</th>
+              <th class="px-4 py-3 text-left font-semibold text-gray-600">扱い</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 bg-white">
+            <% @dashboard[:user_rows].each do |row| %>
+              <tr class="<%= 'bg-amber-50/40' if row[:segment] == :guest %>">
+                <td class="px-4 py-3 align-top">
+                  <p class="font-semibold text-gray-900"><%= row[:label] %></p>
+                  <p class="mt-1 text-xs text-gray-500"><%= row[:email].presence || "メール情報なし / 未ログイン" %></p>
+                </td>
+                <td class="px-4 py-3 align-top">
+                  <span class="rounded-full border px-3 py-1 text-xs font-semibold <%= user_row_badges.fetch(row[:segment]) %>">
+                    <%= row[:segment] == :guest ? "主指標" : row[:segment] == :user ? "参考: ログイン" : "参考: あなた" %>
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-right font-semibold text-gray-900"><%= number_with_delimiter(row[:page_views]) %></td>
+                <td class="px-4 py-3 text-right text-gray-700"><%= number_with_delimiter(row[:visits]) %></td>
+                <td class="px-4 py-3 text-right text-gray-700"><%= number_with_delimiter(row[:searches]) %></td>
+                <td class="px-4 py-3 text-right text-gray-700"><%= number_to_percentage(row[:share], precision: 1) %></td>
+                <td class="px-4 py-3 align-top">
+                  <% if row[:segment] == :guest %>
+                    <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">最優先で確認</span>
+                  <% elsif row[:effect_target] %>
+                    <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">補助確認</span>
+                  <% else %>
+                    <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">参考値</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
     <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
       <% @dashboard[:summary_cards].each do |card| %>
@@ -121,86 +261,6 @@
           </div>
         </article>
       <% end %>
-    </section>
-
-    <section class="rounded-3xl border border-white bg-white/95 p-6 shadow-lg">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h2 class="text-xl font-bold text-gray-900">誰のPVか</h2>
-          <p class="text-sm text-gray-600">管理者自身のアクセスと、それ以外のユーザー・未ログイン利用を切り分けて確認できます。効果検証では「効果検証対象」を見ると、自分以外のPVを追えます。</p>
-        </div>
-        <% if evaluation_segment.present? %>
-          <div class="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 lg:min-w-[240px]">
-            <p class="text-xs font-semibold text-emerald-700">効果検証対象PV</p>
-            <p class="mt-1 text-2xl font-extrabold text-gray-900"><%= number_with_delimiter(evaluation_segment[:page_views]) %></p>
-            <p class="mt-1 text-xs text-gray-600">全PVの <%= number_to_percentage(evaluation_segment[:share], precision: 1) %></p>
-          </div>
-        <% end %>
-      </div>
-
-      <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <% @dashboard[:audience_breakdown].each do |segment| %>
-          <% style = audience_cards.fetch(segment[:key]) %>
-          <article class="rounded-2xl border p-5 <%= style[:panel_class] %>">
-            <p class="text-xs font-semibold <%= style[:text_class] %>"><%= segment[:title] %></p>
-            <p class="mt-1 text-xs text-gray-500"><%= segment[:subtitle] %></p>
-            <p class="mt-3 text-3xl font-black text-gray-900"><%= number_with_delimiter(segment[:page_views]) %></p>
-            <p class="mt-1 text-xs text-gray-600">PV構成比 <%= number_to_percentage(segment[:share], precision: 1) %></p>
-            <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
-              <div class="rounded-xl bg-white/80 px-3 py-2">
-                <p class="text-gray-500">訪問数</p>
-                <p class="mt-1 text-base font-bold text-gray-900"><%= number_with_delimiter(segment[:visits]) %></p>
-              </div>
-              <div class="rounded-xl bg-white/80 px-3 py-2">
-                <p class="text-gray-500">検索数</p>
-                <p class="mt-1 text-base font-bold text-gray-900"><%= number_with_delimiter(segment[:searches]) %></p>
-              </div>
-            </div>
-          </article>
-        <% end %>
-      </div>
-
-      <div class="mt-6 overflow-x-auto rounded-2xl border border-gray-100">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-4 py-3 text-left font-semibold text-gray-600">対象</th>
-              <th class="px-4 py-3 text-left font-semibold text-gray-600">種別</th>
-              <th class="px-4 py-3 text-right font-semibold text-gray-600">PV</th>
-              <th class="px-4 py-3 text-right font-semibold text-gray-600">訪問数</th>
-              <th class="px-4 py-3 text-right font-semibold text-gray-600">検索数</th>
-              <th class="px-4 py-3 text-right font-semibold text-gray-600">PV構成比</th>
-              <th class="px-4 py-3 text-left font-semibold text-gray-600">効果検証</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100 bg-white">
-            <% @dashboard[:user_rows].each do |row| %>
-              <tr>
-                <td class="px-4 py-3 align-top">
-                  <p class="font-semibold text-gray-900"><%= row[:label] %></p>
-                  <p class="mt-1 text-xs text-gray-500"><%= row[:email].presence || "メール情報なし / 未ログイン" %></p>
-                </td>
-                <td class="px-4 py-3 align-top">
-                  <span class="rounded-full border px-3 py-1 text-xs font-semibold <%= user_row_badges.fetch(row[:segment]) %>">
-                    <%= row[:segment] == :self ? "あなた" : row[:segment] == :user ? "ログイン" : "未ログイン" %>
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-right font-semibold text-gray-900"><%= number_with_delimiter(row[:page_views]) %></td>
-                <td class="px-4 py-3 text-right text-gray-700"><%= number_with_delimiter(row[:visits]) %></td>
-                <td class="px-4 py-3 text-right text-gray-700"><%= number_with_delimiter(row[:searches]) %></td>
-                <td class="px-4 py-3 text-right text-gray-700"><%= number_to_percentage(row[:share], precision: 1) %></td>
-                <td class="px-4 py-3 align-top">
-                  <% if row[:effect_target] %>
-                    <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">対象</span>
-                  <% else %>
-                    <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">除外候補</span>
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
     </section>
 
     <section class="rounded-3xl border border-white bg-white/95 p-6 shadow-lg">

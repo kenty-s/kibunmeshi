@@ -336,7 +336,7 @@ module Analytics
 
     def user_row_priority(row)
       case row[:segment]
-      when :self
+      when :guest
         0
       when :user
         1
