@@ -39,6 +39,15 @@ module Analytics
       }
     end
 
+    def analysis_totals
+      @analysis_totals ||= {
+        page_views: analysis_page_view_scope.count,
+        visits: analysis_visit_scope.count,
+        searches: analysis_search_scope.count,
+        tracking_started_at: analysis_tracking_started_at
+      }
+    end
+
     private
 
     attr_reader :now, :page_view_scope, :visit_scope, :search_scope, :admin_user
@@ -68,8 +77,8 @@ module Analytics
           build_audience_segment(
             key: :effect_target,
             title: "効果検証対象",
-            subtitle: "あなた以外のPV / 訪問 / 検索",
-            rows: rows.reject { |row| row[:segment] == :self }
+            subtitle: "管理者以外のPV / 訪問 / 検索",
+            rows: rows.reject { |row| admin_segment?(row[:segment]) }
           )
         ]
       end
@@ -115,9 +124,9 @@ module Analytics
       {
         current_label: formatted_period_label(:week, current_range),
         previous_label: formatted_period_label(:week, previous_range),
-        page_views: comparison_for(range: current_range, previous_range: previous_range, column: :time, scope: page_view_scope),
-        visits: comparison_for(range: current_range, previous_range: previous_range, column: :started_at, scope: visit_scope),
-        searches: comparison_for(range: current_range, previous_range: previous_range, column: :time, scope: search_scope)
+        page_views: comparison_for(range: current_range, previous_range: previous_range, column: :time, scope: analysis_page_view_scope),
+        visits: comparison_for(range: current_range, previous_range: previous_range, column: :started_at, scope: analysis_visit_scope),
+        searches: comparison_for(range: current_range, previous_range: previous_range, column: :time, scope: analysis_search_scope)
       }
     end
 
@@ -127,7 +136,7 @@ module Analytics
         monthly: build_period_chart(
           key: :monthly,
           title: "月間PV・訪問数・検索数",
-          subtitle: "直近#{MONTH_POINTS}か月の推移",
+          subtitle: "管理者以外の直近#{MONTH_POINTS}か月の推移",
           period: :month,
           points: MONTH_POINTS,
           type: "bar"
@@ -135,7 +144,7 @@ module Analytics
         weekly: build_period_chart(
           key: :weekly,
           title: "週間PV・訪問数・検索数",
-          subtitle: "直近#{WEEK_POINTS}週間の推移",
+          subtitle: "管理者以外の直近#{WEEK_POINTS}週間の推移",
           period: :week,
           points: WEEK_POINTS,
           type: "bar"
@@ -143,7 +152,7 @@ module Analytics
         daily: build_period_chart(
           key: :daily,
           title: "1日ごとのPV・訪問数・検索数",
-          subtitle: "直近#{DAY_POINTS}日間の推移",
+          subtitle: "管理者以外の直近#{DAY_POINTS}日間の推移",
           period: :day,
           points: DAY_POINTS,
           type: "line"
@@ -155,10 +164,10 @@ module Analytics
       {
         key: :total,
         title: "累計",
-        subtitle: tracking_started_at.present? ? "計測開始: #{tracking_started_at.strftime('%Y/%m/%d')}" : "計測データなし",
-        page_views: totals[:page_views],
-        visits: totals[:visits],
-        searches: totals[:searches],
+        subtitle: analysis_tracking_started_at.present? ? "計測開始: #{analysis_tracking_started_at.strftime('%Y/%m/%d')}" : "計測データなし",
+        page_views: analysis_totals[:page_views],
+        visits: analysis_totals[:visits],
+        searches: analysis_totals[:searches],
         comparison_label: nil,
         page_view_change: nil,
         visit_change: nil,
@@ -171,26 +180,26 @@ module Analytics
         key: key,
         title: title,
         subtitle: formatted_period_label(key == :day ? :day : key, range),
-        page_views: count_records(page_view_scope, :time, range),
-        visits: count_records(visit_scope, :started_at, range),
-        searches: count_records(search_scope, :time, range),
+        page_views: count_records(analysis_page_view_scope, :time, range),
+        visits: count_records(analysis_visit_scope, :started_at, range),
+        searches: count_records(analysis_search_scope, :time, range),
         comparison_label: comparison_label,
-        page_view_change: comparison_for(range: range, previous_range: previous_range, column: :time, scope: page_view_scope),
-        visit_change: comparison_for(range: range, previous_range: previous_range, column: :started_at, scope: visit_scope),
-        search_change: comparison_for(range: range, previous_range: previous_range, column: :time, scope: search_scope)
+        page_view_change: comparison_for(range: range, previous_range: previous_range, column: :time, scope: analysis_page_view_scope),
+        visit_change: comparison_for(range: range, previous_range: previous_range, column: :started_at, scope: analysis_visit_scope),
+        search_change: comparison_for(range: range, previous_range: previous_range, column: :time, scope: analysis_search_scope)
       }
     end
 
     def build_total_chart
       bucket_starts = build_bucket_starts(:month, TOTAL_MONTH_POINTS)
-      page_view_counts = counts_by_period(page_view_scope, column: :time, period: :month, bucket_starts: bucket_starts)
-      visit_counts = counts_by_period(visit_scope, column: :started_at, period: :month, bucket_starts: bucket_starts)
-      search_counts = counts_by_period(search_scope, column: :time, period: :month, bucket_starts: bucket_starts)
+      page_view_counts = counts_by_period(analysis_page_view_scope, column: :time, period: :month, bucket_starts: bucket_starts)
+      visit_counts = counts_by_period(analysis_visit_scope, column: :started_at, period: :month, bucket_starts: bucket_starts)
+      search_counts = counts_by_period(analysis_search_scope, column: :time, period: :month, bucket_starts: bucket_starts)
 
       {
         key: :total,
         title: "累計推移",
-        subtitle: "直近#{TOTAL_MONTH_POINTS}か月の累計PV・累計訪問数・累計検索数",
+        subtitle: "管理者以外の直近#{TOTAL_MONTH_POINTS}か月の累計PV・累計訪問数・累計検索数",
         type: "line",
         has_data: [ page_view_counts, visit_counts, search_counts ].any? { |counts| counts.values.any?(&:positive?) },
         data: chart_payload(
@@ -205,9 +214,9 @@ module Analytics
 
     def build_period_chart(key:, title:, subtitle:, period:, points:, type:)
       bucket_starts = build_bucket_starts(period, points)
-      page_view_counts = counts_by_period(page_view_scope, column: :time, period: period, bucket_starts: bucket_starts)
-      visit_counts = counts_by_period(visit_scope, column: :started_at, period: period, bucket_starts: bucket_starts)
-      search_counts = counts_by_period(search_scope, column: :time, period: period, bucket_starts: bucket_starts)
+      page_view_counts = counts_by_period(analysis_page_view_scope, column: :time, period: period, bucket_starts: bucket_starts)
+      visit_counts = counts_by_period(analysis_visit_scope, column: :started_at, period: period, bucket_starts: bucket_starts)
+      search_counts = counts_by_period(analysis_search_scope, column: :time, period: period, bucket_starts: bucket_starts)
 
       {
         key: key,
@@ -306,7 +315,7 @@ module Analytics
         searches: row[:searches],
         share: percent_of(row[:page_views], totals[:page_views]),
         segment: segment,
-        effect_target: segment != :self
+        effect_target: !admin_segment?(segment)
       }
     end
 
@@ -317,6 +326,7 @@ module Analytics
     def user_segment(user_id)
       return :guest if user_id.blank?
       return :self if admin_user.present? && user_id == admin_user.id
+      return :admin if admin_user_ids.include?(user_id)
 
       :user
     end
@@ -327,6 +337,8 @@ module Analytics
       case segment
       when :self
         "#{base_label} (あなた)"
+      when :admin
+        "#{base_label} (管理者)"
       when :guest
         "未ログインユーザー"
       else
@@ -340,9 +352,46 @@ module Analytics
         0
       when :user
         1
-      else
+      when :self
         2
+      else
+        3
       end
+    end
+
+    def admin_segment?(segment)
+      segment == :self || segment == :admin
+    end
+
+    def admin_user_ids
+      @admin_user_ids ||= begin
+        ids = User.where(admin: true).pluck(:id)
+        ids << admin_user.id if admin_user.present?
+        ids.compact.uniq
+      end
+    end
+
+    def analysis_page_view_scope
+      @analysis_page_view_scope ||= exclude_admin_events(page_view_scope)
+    end
+
+    def analysis_visit_scope
+      @analysis_visit_scope ||= exclude_admin_visits(visit_scope)
+    end
+
+    def analysis_search_scope
+      @analysis_search_scope ||= exclude_admin_events(search_scope)
+    end
+
+    def exclude_admin_events(scope)
+      scope.joins("LEFT JOIN ahoy_visits analytics_admin_visits ON analytics_admin_visits.id = ahoy_events.visit_id")
+           .joins("LEFT JOIN users analytics_admin_users ON analytics_admin_users.id = COALESCE(ahoy_events.user_id, analytics_admin_visits.user_id)")
+           .where("COALESCE(analytics_admin_users.admin, FALSE) = FALSE")
+    end
+
+    def exclude_admin_visits(scope)
+      scope.left_outer_joins(:user)
+           .where("COALESCE(users.admin, FALSE) = FALSE")
     end
 
     def percent_of(numerator, denominator)
@@ -520,6 +569,10 @@ module Analytics
 
     def tracking_started_at
       @tracking_started_at ||= [ page_view_scope.minimum(:time), visit_scope.minimum(:started_at), search_scope.minimum(:time) ].compact.min&.in_time_zone
+    end
+
+    def analysis_tracking_started_at
+      @analysis_tracking_started_at ||= [ analysis_page_view_scope.minimum(:time), analysis_visit_scope.minimum(:started_at), analysis_search_scope.minimum(:time) ].compact.min&.in_time_zone
     end
   end
 end

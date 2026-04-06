@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for?(:page_title) ? yield(:page_title) : "kibunmeshi" %></title>
-    <meta name="application-name" content="kibunmeshi">
-    <meta name="apple-mobile-web-app-title" content="kibunmeshi">
+    <% site_name = "キブンメシ" %>
+    <% default_description = "キブンで料理を探せるアプリ。ガッツリ/サッパリや詳細条件から、その日の気分に合う一皿をすぐ見つけられます。" %>
+    <% page_title = content_for?(:page_title) ? yield(:page_title) : site_name %>
+
+    <title><%= page_title %></title>
+    <meta name="application-name" content="<%= site_name %>">
+    <meta name="apple-mobile-web-app-title" content="<%= site_name %>">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#f97316">
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : default_description %>">
 
-    <% og_title = content_for?(:og_title) ? yield(:og_title) : "kibunmeshi" %>
-    <% og_description = content_for?(:og_description) ? yield(:og_description) : "Find a dish based on your mood." %>
+    <% og_title = content_for?(:og_title) ? yield(:og_title) : page_title %>
+    <% og_description = content_for?(:og_description) ? yield(:og_description) : default_description %>
     <% og_url = content_for?(:og_url) ? yield(:og_url) : root_url %>
 
     <% og_image =
@@ -22,6 +27,7 @@
     %>
 
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="<%= site_name %>">
     <meta property="og:title" content="<%= og_title %>">
     <meta property="og:description" content="<%= og_description %>">
     <meta property="og:url" content="<%= og_url %>">
@@ -34,7 +40,18 @@
     <meta name="twitter:title" content="<%= og_title %>">
     <meta name="twitter:description" content="<%= og_description %>">
     <meta name="twitter:image" content="<%= og_image %>">
-    <meta name="twitter:image:alt" content="kibunmeshi">
+    <meta name="twitter:image:alt" content="<%= site_name %>">
+
+    <script type="application/ld+json">
+      <%= raw({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": site_name,
+        "alternateName": "kibunmeshi",
+        "url": root_url,
+        "inLanguage": "ja"
+      }.to_json) %>
+    </script>
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -68,3 +85,4 @@
     <%= render 'shared/footer' %>
   </body>
 </html>
+
