@@ -25,6 +25,7 @@
 
   user_row_badges = {
     self: "border-slate-200 bg-slate-50 text-slate-700",
+    admin: "border-slate-200 bg-slate-50 text-slate-700",
     user: "border-sky-200 bg-sky-50 text-sky-700",
     guest: "border-amber-200 bg-amber-50 text-amber-700"
   }
@@ -42,11 +43,11 @@
       page_views: @dashboard[:totals][:page_views],
       visits: @dashboard[:totals][:visits],
       searches: @dashboard[:totals][:searches],
-      note: "全体を見たい時だけ参照"
+      note: "グラフ集計には含めていません"
     },
     {
-      title: "参考: 効果検証対象",
-      subtitle: "あなた以外の合計",
+      title: "参考: 管理者以外",
+      subtitle: "管理者以外の合計",
       page_views: evaluation_segment[:page_views],
       visits: evaluation_segment[:visits],
       searches: evaluation_segment[:searches],
@@ -58,7 +59,7 @@
       page_views: self_segment[:page_views],
       visits: self_segment[:visits],
       searches: self_segment[:searches],
-      note: "全PVの #{number_to_percentage(self_segment[:share], precision: 1)}"
+      note: "グラフ集計には含めていません"
     }
   ]
 %>
@@ -84,12 +85,12 @@
     <section class="rounded-3xl border border-white bg-white/95 p-6 shadow-lg">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h2 class="text-xl font-bold text-gray-900">誰のPVか</h2>
-          <p class="text-sm text-gray-600">未ログインユーザーを主指標として前面に出しています。全体合計と管理者のアクセスは、右側の参考カードと下の一覧で補助的に確認できます。</p>
+          <h2 class="text-xl font-bold text-gray-900">PVの内訳</h2>
+          <p class="text-sm text-gray-600">PVを「未ログイン」「ログイン済みユーザー」「管理者」に分けて表示しています。まずは未ログインユーザーの動きを見て、必要に応じて右側の参考カードと下の一覧で全体や管理者分を確認できます。</p>
         </div>
         <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 lg:min-w-[240px]">
-          <p class="text-xs font-semibold text-amber-700">主指標</p>
-          <p class="mt-1 text-sm font-bold text-gray-900">未ログインPVが効果検証対象に占める割合</p>
+          <p class="text-xs font-semibold text-amber-700">未ログイン比率</p>
+          <p class="mt-1 text-sm font-bold text-gray-900">管理者を除いたPVのうち、未ログインユーザーが占める割合</p>
           <p class="mt-2 text-2xl font-extrabold text-gray-900"><%= number_to_percentage(guest_effect_share, precision: 1) %></p>
         </div>
       </div>
@@ -98,9 +99,9 @@
         <article class="relative overflow-hidden rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 p-6 shadow-md">
           <div class="absolute right-0 top-0 h-32 w-32 rounded-full bg-amber-200/30 blur-3xl"></div>
           <div class="relative">
-            <span class="inline-flex rounded-full border border-amber-300 bg-white/80 px-3 py-1 text-xs font-semibold text-amber-800">主指標</span>
+            <span class="inline-flex rounded-full border border-amber-300 bg-white/80 px-3 py-1 text-xs font-semibold text-amber-800">まず見る指標</span>
             <h3 class="mt-4 text-2xl font-black text-gray-900">未ログインユーザーの利用状況</h3>
-            <p class="mt-2 text-sm text-gray-600">ログイン前の利用がこのアプリの主要な反応なので、まずここを見れば効果の変化を追えます。</p>
+            <p class="mt-2 text-sm text-gray-600">まずは未ログインユーザーの反応を見ると、施策の変化を追いやすくなります。</p>
 
             <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
               <div class="rounded-2xl border border-amber-100 bg-white/85 px-5 py-5">
@@ -118,7 +119,7 @@
                   <p class="mt-2 text-2xl font-extrabold text-gray-900"><%= number_with_delimiter(guest_segment[:searches]) %></p>
                 </div>
                 <div class="rounded-2xl border border-amber-100 bg-white/85 px-4 py-4">
-                  <p class="text-xs text-gray-500">効果検証対象比</p>
+                  <p class="text-xs text-gray-500">管理者以外に占める割合</p>
                   <p class="mt-2 text-2xl font-extrabold text-gray-900"><%= number_to_percentage(guest_effect_share, precision: 1) %></p>
                 </div>
                 <div class="rounded-2xl border border-amber-100 bg-white/85 px-4 py-4">
@@ -174,7 +175,7 @@
                 </td>
                 <td class="px-4 py-3 align-top">
                   <span class="rounded-full border px-3 py-1 text-xs font-semibold <%= user_row_badges.fetch(row[:segment]) %>">
-                    <%= row[:segment] == :guest ? "主指標" : row[:segment] == :user ? "参考: ログイン" : "参考: あなた" %>
+                    <%= row[:segment] == :guest ? "主指標" : row[:segment] == :user ? "参考: ログイン" : row[:segment] == :self ? "参考: あなた" : "参考: 管理者" %>
                   </span>
                 </td>
                 <td class="px-4 py-3 text-right font-semibold text-gray-900"><%= number_with_delimiter(row[:page_views]) %></td>
@@ -196,6 +197,10 @@
         </table>
       </div>
     </section>
+
+    <div class="rounded-2xl border border-sky-100 bg-sky-50/80 px-4 py-3 text-sm text-sky-900 shadow-sm">
+      比較カードと下の推移グラフは、すべて管理者アカウントのPV / 訪問 / 検索を除外して算出しています。
+    </div>
 
     <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
       <% @dashboard[:summary_cards].each do |card| %>
@@ -323,7 +328,8 @@
         <article class="rounded-3xl border border-white bg-white/95 p-6 shadow-lg">
           <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 class="text-xl font-bold text-gray-900"><%= chart[:title] %></h2>
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[11px] font-semibold text-sky-700">管理者を除外した集計</span>
+              <h2 class="mt-2 text-xl font-bold text-gray-900"><%= chart[:title] %></h2>
               <p class="text-sm text-gray-600"><%= chart[:subtitle] %></p>
             </div>
             <div class="text-xs text-gray-400">件数の推移はグラフ、差分は上の比較カードで確認</div>

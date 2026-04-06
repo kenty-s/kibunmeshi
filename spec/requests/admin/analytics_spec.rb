@@ -30,8 +30,9 @@ RSpec.describe "Admin analytics", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("PV / 訪問数 / 検索数ダッシュボード")
-      expect(response.body).to include("誰のPVか")
-      expect(response.body).to include("効果検証対象")
+      expect(response.body).to include("PVの内訳")
+      expect(response.body).to include("管理者を除いたPVのうち、未ログインユーザーが占める割合")
+      expect(response.body).to include("管理者を除外した集計")
     end
   end
 end
