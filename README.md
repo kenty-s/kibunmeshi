@@ -93,6 +93,13 @@
 * 本番送信には専用 Gmail `noreply.kibunmeshi@gmail.com` を使用(Gmail API)
 * 必要な環境変数は `MAILER_SENDER`、`GMAIL_API_CLIENT_ID`、`GMAIL_API_CLIENT_SECRET`、`GMAIL_API_REFRESH_TOKEN` である。
 
+
+## 本番の管理者画面
+* 管理画面の URL は `/admin`。
+* 本番では `ADMIN_EMAIL` と `ADMIN_PASSWORD` を設定すると、起動時に管理者ユーザーを自動で作成または管理者へ昇格する。
+* `ADMIN_NAME` を指定すると表示名も更新される。
+* 既存ユーザーのパスワードは通常維持し、デプロイ時に更新したい時だけ `ADMIN_FORCE_PASSWORD_UPDATE=true` を使う。
+
 ## 機能の実装方針
 
 ### 料理検索
