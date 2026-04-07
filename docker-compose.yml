@@ -18,17 +18,17 @@ services:
       - .env
     environment:
       RAILS_ENV: development
+      RUN_SEEDS: "true"
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     volumes:
       - .:/app
       - bundle_data:/app/vendor/bundle
-    entrypoint: []
+    entrypoint: ["bash", "/app/bin/docker-entrypoint.sh"]
     ports:
       - "3000:3000"
     depends_on:
       - db
-    command: bash -lc "rm -f tmp/pids/server.pid && bin/rails db:prepare && bin/rails db:seed && bin/rails server -b 0.0.0.0"
 
 volumes:
   db_data:

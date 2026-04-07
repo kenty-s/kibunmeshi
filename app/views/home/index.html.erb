@@ -18,10 +18,10 @@
   <div id="kibun-search-cards" class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full items-start">
     <!-- ガッツリ -->
     <div class="bg-red-50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-red-200 p-8">
-      <div class="flex flex-col sm:flex-row items-start gap-5 sm:gap-7 mb-0">
-        <%= image_tag 'gattsuri.png', width: 96, height: 96, class: 'object-contain shrink-0' %>
-        <div class="flex-1 sm:pr-3">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+      <div class="kibun-card-head mb-0">
+        <%= image_tag 'gattsuri.png', width: 96, height: 96, class: 'kibun-card-illustration object-contain shrink-0' %>
+        <div class="kibun-card-copy flex-1 sm:pr-3">
+          <div class="kibun-card-title-row flex flex-col sm:flex-row sm:items-center sm:gap-4">
             <h3 class="text-3xl sm:text-4xl font-extrabold leading-tight whitespace-nowrap text-gray-800">ガッツリ</h3>
             <p class="text-gray-600 text-base sm:text-lg leading-snug mt-2 sm:mt-0">お腹いっぱい食べたい！<br>ボリューム満点の料理</p>
           </div>
@@ -41,10 +41,10 @@
 
     <!-- サッパリ -->
     <div class="bg-green-50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-green-200 p-8">
-      <div class="flex flex-col sm:flex-row items-start gap-5 sm:gap-7 mb-0">
-        <%= image_tag 'sappari.png', width: 96, height: 96, class: 'object-contain shrink-0' %>
-        <div class="flex-1 sm:pr-3">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+      <div class="kibun-card-head mb-0">
+        <%= image_tag 'sappari.png', width: 96, height: 96, class: 'kibun-card-illustration object-contain shrink-0' %>
+        <div class="kibun-card-copy flex-1 sm:pr-3">
+          <div class="kibun-card-title-row flex flex-col sm:flex-row sm:items-center sm:gap-4">
             <h3 class="text-3xl sm:text-4xl font-extrabold leading-tight whitespace-nowrap text-gray-800">サッパリ</h3>
             <p class="text-gray-600 text-base sm:text-lg leading-snug mt-2 sm:mt-0">軽やかに食べたい！<br>あっさりとした料理</p>
           </div>
