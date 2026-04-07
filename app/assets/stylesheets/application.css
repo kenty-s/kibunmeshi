@@ -225,6 +225,40 @@ body {
   transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
+.kibun-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.kibun-card-illustration {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.kibun-card-copy {
+  min-width: 0;
+}
+
+@media (max-width: 639px) {
+  .kibun-card-title-row h3 {
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+}
+
+@media (min-width: 640px) {
+  .kibun-card-head {
+    gap: 1.75rem;
+  }
+
+  .kibun-card-illustration {
+    width: 96px;
+    height: 96px;
+  }
+}
+
 .kibun-card-submit--gattsuri {
   background-color: #b3120b;
 }

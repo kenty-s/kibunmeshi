@@ -4,6 +4,12 @@ set -e
 # 残っている pid を毎回掃除
 rm -f tmp/pids/server.pid
 
+# lockfile 更新後でも named volume 側の gems を自動で同期する
+if ! bundle check > /dev/null 2>&1; then
+  echo "bundle check failed -> bundle install"
+  bundle install --jobs 4 --retry 3
+fi
+
 # 本番起動前に DB を準備する
 bundle exec rails db:prepare
 
