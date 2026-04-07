@@ -13,6 +13,9 @@ fi
 # 本番起動前に DB を準備する
 bundle exec rails db:prepare
 
+# ADMIN_* 環境変数があれば管理者ユーザーを用意する
+bundle exec rails admin:ensure_user
+
 # 明示的に実行する時だけ seed
 if [ "${RUN_SEEDS:-false}" = "true" ]; then
   echo "RUN_SEEDS=true -> db:seed"
