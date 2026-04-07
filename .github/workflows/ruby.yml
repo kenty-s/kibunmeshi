@@ -55,6 +55,8 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Build Tailwind CSS
+      run: bundle exec rails tailwindcss:build
     - name: Prepare DB
       run: bin/rails db:prepare
     - name: Run tests

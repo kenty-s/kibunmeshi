@@ -48,6 +48,9 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
+      - name: Build Tailwind CSS
+        run: bundle exec rails tailwindcss:build
+
       - name: Prepare DB
         run: bin/rails db:prepare
 
@@ -68,7 +71,7 @@ jobs:
           bundler-cache: true
 
       - name: Security audit dependencies
-        run: bundle exec bundler-audit --update
+        run: bundle exec bundler-audit check --update --config config/bundler-audit.yml
 
       - name: Security audit application code
         run: bundle exec brakeman -q -w2
