@@ -1,7 +1,7 @@
 module DishesHelper
-  def cookpad_search_url(dish_name)
+  def kurashiru_search_url(dish_name)
     query = ERB::Util.url_encode(dish_name.to_s)
-    "https://cookpad.com/search/#{query}"
+    "https://www.kurashiru.com/search?query=#{query}"
   end
 
   def tabelog_search_url(dish_name)

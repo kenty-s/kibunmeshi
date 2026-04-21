@@ -124,7 +124,7 @@
   <% share_text = "今日のキブンメシは「#{@dish.name}」！ #キブンメシ" %>
   <% share_url = "https://kibunmeshi.onrender.com/" %>
   <% x_share_url = "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(share_text)}&url=#{ERB::Util.url_encode(share_url)}" %>
-  <% cookpad_url = cookpad_search_url(@dish.name) %>
+  <% kurashiru_url = kurashiru_search_url(@dish.name) %>
   <% tabelog_url = tabelog_search_url(@dish.name) %>
 
   <% if spice_focus_candidates.present? %>
@@ -173,15 +173,15 @@
         rel: "noopener noreferrer",
         class: "px-6 py-3 bg-black text-white rounded-lg border border-black hover:bg-gray-900 transition-all duration-200" %>
 
-    <%= link_to "クックパッドで検索", cookpad_url,
+    <%= link_to "クラシルで検索", kurashiru_url,
         target: "_blank",
         rel: "noopener noreferrer",
-        class: "px-6 py-3 bg-orange-500 text-white rounded-lg border border-orange-500 hover:bg-orange-600 transition-all duration-200" %>
+        class: "px-6 py-3 bg-red-500 text-white rounded-lg border border-red-500 hover:bg-red-600 hover:border-red-600 shadow-md font-semibold transition-all duration-200" %>
 
     <%= link_to "食べログで検索", tabelog_url,
         target: "_blank",
         rel: "noopener noreferrer",
-        class: "px-6 py-3 bg-amber-500 text-white rounded-lg border border-amber-500 hover:bg-amber-600 transition-all duration-200",
+        class: "px-6 py-3 bg-orange-500 text-white rounded-lg border border-orange-500 hover:bg-orange-600 transition-all duration-200",
         data: {
           controller: "tabelog-nearby",
           action: "click->tabelog-nearby#open",

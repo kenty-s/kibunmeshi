@@ -118,7 +118,8 @@
 ### フロントエンド・モバイル対応
 - 画面は `ERB` と `Tailwind CSS` を中心に構築し、`Turbo` と `Stimulus` で軽量な操作性を実装する。
 - PWA 用の manifest / service worker を配信し、ホーム画面追加後は standalone 表示で利用できる。
-- 結果画面ではブラウザの位置情報を用いて近隣の食べログ検索へ遷移できる。
+- 結果画面では提案された料理名をもとにクラシルの検索結果へ遷移できる。
+- 食べログ導線ではブラウザの位置情報を使い、現在地付近の店を検索できる。
 
 ### 通知・画像・開発運用
 - 本番メール送信は Gmail API を使う独自 delivery method で実装し、開発環境では `Letter Opener Web` を利用する。
@@ -138,7 +139,7 @@
 | 履歴・分析 | Kaminari / Rails.cache（memory_store） / Chart.js（CDN） | 検索履歴のページネーション、傾向集計のキャッシュ、グラフ描画 |
 | 通知 | Active Job（`:async`） / Gmail API / Letter Opener Web | パスワードリセットメールの非同期送信、本番・開発の配送切替 |
 | 画像・PWA | Active Storage / Web App Manifest / Service Worker | 料理画像管理、ホーム画面追加対応 |
-| 外部連携 | Nominatim（OpenStreetMap） / 食べログ | 現在地を使った近隣店検索導線 |
+| 外部連携 | クラシル / Nominatim（OpenStreetMap） / 食べログ | レシピ検索導線と、現在地を使った近隣店検索導線 |
 | 開発環境 | Docker / Docker Compose / Puma | ローカル開発、アプリサーバー起動 |
 | テスト・品質 | RSpec / FactoryBot / Capybara / Selenium WebDriver / RuboCop / Brakeman / Bundler Audit | 自動テスト、静的解析、セキュリティチェック |
 
