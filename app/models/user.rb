@@ -7,6 +7,16 @@ class User < ApplicationRecord
          :validatable,
          :omniauthable, omniauth_providers: [ :google_oauth2 ]
 
+  def self.refresh_last_search_executed_at!(user_id)
+    return if user_id.blank?
+
+    last_search_executed_at = SearchHistory.where(user_id: user_id).maximum(:executed_at)
+    where(id: user_id).update_all(
+      last_search_executed_at: last_search_executed_at,
+      updated_at: Time.current
+    )
+  end
+
   def send_devise_notification(notification, *args)
     return super unless notification.to_sym == :reset_password_instructions
 
