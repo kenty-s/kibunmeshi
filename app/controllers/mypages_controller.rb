@@ -25,8 +25,8 @@ class MypagesController < ApplicationController
   end
 
   def load_dashboard_data
-    @search_count = @user.search_histories.count
-    @last_executed_at = @user.search_histories.maximum(:executed_at)
+    @search_count = @user.search_histories_count
+    @last_executed_at = @user.last_search_executed_at
   end
 
   def mypage_account_params

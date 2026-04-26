@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
     return if respond_to?(:turbo_frame_request?, true) && turbo_frame_request?
     return unless respond_to?(:ahoy, true)
 
-    ahoy.track("page_view", {
+    track_analytics_event("page_view", {
       path: request.path,
       controller: controller_path,
       action: action_name
@@ -27,10 +27,16 @@ class ApplicationController < ActionController::Base
   def track_search_performed(mode:, params_hash:, result_found:)
     return unless respond_to?(:ahoy, true)
 
-    ahoy.track("search_performed", {
+    track_analytics_event("search_performed", {
       search_mode: mode,
       query_params: params_hash,
       result_found: result_found
     })
+  end
+
+  def track_analytics_event(name, properties)
+    ahoy.track(name, properties)
+  rescue ActiveRecord::ConnectionNotEstablished, PG::Error => e
+    Rails.logger.warn("[analytics] skipped #{name}: #{e.class}: #{e.message}")
   end
 end

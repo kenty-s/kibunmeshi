@@ -11,8 +11,6 @@ class HomeController < ApplicationController
     else
       "夜"
     end
-    @total_page_views = Ahoy::Event.page_views.count
-    @total_visits = Ahoy::Visit.count
   end
 
   private
