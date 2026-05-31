@@ -103,12 +103,13 @@ end
 def sync_label_tags(dish:, label:, names:)
   CategoryContent.where(dish: dish, label: label).delete_all
   Array(names).compact_blank.uniq.each do |name|
-    category = Category.find_by(name: name)
-    CategoryContent.find_or_create_by(dish: dish, category: category, label: label) if category
+    condition = Category.find_by(name: name)
+    CategoryContent.find_or_create_by(dish: dish, category: condition, label: label) if condition
   end
 end
 
-# カテゴリを作成（全てのタグをCategoryとして統合）
+# 検索条件の選択肢をCategoryとして作成する。
+# 例: "ガッツリ", "昼", "夏", "和食" など。
 puts "Creating categories..."
 
 CategoryContent.where(label: REMOVED_LABELS).delete_all
@@ -144,169 +145,176 @@ puts "Categories created!"
 puts "Creating dishes..."
 
 foods_data = [
-  # ガッツリ系 - 朝食
-  { name: 'ベーコンエッグ', category: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'パンケーキ', category: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
-  { name: '焼き魚', category: 'サッパリ', time_of_days: [ '朝', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'フレンチトースト', category: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'オムレツ', category: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'ホットサンド', category: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'ホットドッグ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
+  # ガッツリ系
+  # 朝食
+  { name: 'ベーコンエッグ', mood: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'パンケーキ', mood: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  { name: 'フレンチトースト', mood: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'オムレツ', mood: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'ホットサンド', mood: 'ガッツリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
 
-  # ガッツリ系 - 昼食・夜食（定番）
-  { name: 'カレーライス', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'その他' ] },
-  { name: 'ラーメン', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '中華' ] },
-  { name: 'とんかつ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'ハンバーグ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'ステーキ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
-  { name: '唐揚げ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
-  { name: 'ピザ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
-  { name: 'ハンバーガー', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
-  { name: 'オムライス', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
-  { name: '親子丼', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: '牛丼', category: 'ガッツリ', time_of_days: [ '朝', '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: '焼きそば', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏', '秋' ], genres: [ '和食' ] },
-  { name: 'お好み焼き', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'たこ焼き', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'かしみん焼き', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'エビフライ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
-  { name: 'チキンカツ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'カツカレー', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'ロコモコ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '洋食' ] },
-  { name: 'タコライス', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
+  # 昼食・夜食（定番）
+  { name: 'カレーライス', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'その他' ] },
+  { name: 'ラーメン', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '中華' ] },
+  { name: 'とんかつ', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'ハンバーグ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'ステーキ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
+  { name: '唐揚げ', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
+  { name: 'ピザ', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
+  { name: 'ハンバーガー', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
+  { name: 'オムライス', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
+  { name: '親子丼', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
+  { name: '牛丼', mood: 'ガッツリ', time_of_days: [ '朝', '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: '焼きそば', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏', '秋' ], genres: [ '和食' ] },
+  { name: 'お好み焼き', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'たこ焼き', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'かしみん焼き', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'エビフライ', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  { name: 'チキンカツ', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'カツカレー', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'ロコモコ', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '洋食' ] },
+  { name: 'タコライス', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
+  { name: 'ホットドッグ', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
 
   # パスタ類
-  { name: 'ミートソースパスタ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'カルボナーラ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'ペペロンチーノ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
-  { name: 'ナポリタン', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
-  { name: 'たらこパスタ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'きのこパスタ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'ミートソースパスタ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'カルボナーラ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'ナポリタン', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
+  { name: 'たらこパスタ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '洋食' ] },
 
   # 中華料理
-  { name: 'チャーハン', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '中華' ] },
-  { name: '麻婆豆腐', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '中華' ] },
-  { name: 'エビチリ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏', '秋' ], genres: [ '中華' ] },
-  { name: '酢豚', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ '中華' ] },
-  { name: '回鍋肉', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏', '秋' ], genres: [ '中華' ] },
-  { name: '青椒肉絲', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ '中華' ] },
-  { name: '餃子', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '中華' ] },
-  { name: 'シュウマイ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '中華' ] },
-  { name: '春巻き', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '中華' ] },
-  { name: 'エビマヨ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '中華' ] },
+  { name: 'チャーハン', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '中華' ] },
+  { name: '麻婆豆腐', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '中華' ] },
+  { name: 'エビチリ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏', '秋' ], genres: [ '中華' ] },
+  { name: '酢豚', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ '中華' ] },
+  { name: '回鍋肉', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏', '秋' ], genres: [ '中華' ] },
+  { name: '青椒肉絲', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ '中華' ] },
+  { name: '餃子', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '中華' ] },
+  { name: 'シュウマイ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '中華' ] },
+  { name: '春巻き', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '中華' ] },
+  { name: 'エビマヨ', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '中華' ] },
 
   # 洋食（煮込み・オーブン料理）
-  { name: 'グラタン', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'シチュー', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'ドリア', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'ラザニア', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'ローストチキン', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'ローストビーフ', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'チキンソテー', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋' ], genres: [ '洋食' ] },
+  { name: 'グラタン', mood: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'ドリア', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'ラザニア', mood: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'ローストチキン', mood: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'ローストビーフ', mood: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'チキンソテー', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋' ], genres: [ '洋食' ] },
 
   # 和食（定番）
-  { name: '寿司', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '和食' ] },
-  { name: '刺身', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
-  { name: '天ぷら', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏' ], genres: [ '和食' ] },
-  { name: 'すき焼き', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'しゃぶしゃぶ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: '焼き鳥', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
-  { name: 'うな重', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ '和食' ] },
-  { name: 'かつ丼', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: '天丼', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '和食' ] },
-  { name: '海鮮丼', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
-  { name: '鉄火丼', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
-  { name: 'ちらし寿司', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春' ], genres: [ '和食' ] },
-  { name: '手巻き寿司', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
-  { name: 'おでん', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: '肉じゃが', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: '豚の角煮', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: '鶏の照り焼き', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: '生姜焼き', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'チキン南蛮', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '和食' ] },
-  { name: '山形風芋煮', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: '宮城風芋煮', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: '芋の子汁', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: '天ぷら', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏' ], genres: [ '和食' ] },
+  { name: 'すき焼き', mood: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: '焼き鳥', mood: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
+  { name: 'うな重', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  { name: 'かつ丼', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
+  { name: '天丼', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '和食' ] },
+  { name: '豚の角煮', mood: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: '鶏の照り焼き', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
+  { name: '生姜焼き', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'チキン南蛮', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '和食' ] },
 
   # エスニック（メジャーなもの）
-  { name: 'グリーンカレー', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
-  { name: 'ガパオライス', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
-  { name: 'パッタイ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
-  { name: 'トムヤムクン', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
-  { name: 'タンドリーチキン', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
-  { name: 'バターチキンカレー', category: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ 'エスニック' ] },
-  { name: 'キーマカレー', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏', '秋' ], genres: [ 'エスニック' ] },
-  { name: 'ナン', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ 'エスニック' ] },
-  { name: 'タコス', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
-  { name: 'ブリトー', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
-  { name: 'プルコギ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ 'エスニック' ] },
-  { name: 'ビビンバ', category: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'エスニック' ] },
-  { name: 'チヂミ', category: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'エスニック' ] },
-  { name: 'フォー', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ 'エスニック' ] },
+  { name: 'ガパオライス', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
+  { name: 'タンドリーチキン', mood: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
+  { name: 'バターチキンカレー', mood: 'ガッツリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ 'エスニック' ] },
+  { name: 'キーマカレー', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏', '秋' ], genres: [ 'エスニック' ] },
+  { name: 'ナン', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ 'エスニック' ] },
+  { name: 'タコス', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
+  { name: 'ブリトー', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
+  { name: 'プルコギ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ 'エスニック' ] },
+  { name: 'ビビンバ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'エスニック' ] },
+  { name: 'チヂミ', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'エスニック' ] },
 
-  # サッパリ系 - 朝食
-  { name: 'おにぎり', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
-  { name: 'トースト', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
-  { name: '納豆ご飯', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '和食' ] },
-  { name: '卵かけご飯', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'フルーツヨーグルト', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
-  { name: 'シリアル', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
-  { name: 'オートミール', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'おかゆ', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'みそ汁', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'スムージー', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
-  { name: 'フルーツサラダ', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  # サッパリ系
+  # 朝食
+  { name: 'おにぎり', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
+  { name: 'トースト', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
+  { name: '納豆ご飯', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '和食' ] },
+  { name: '卵かけご飯', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'フルーツヨーグルト', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  { name: 'シリアル', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
+  { name: 'オートミール', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'おかゆ', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'みそ汁', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'スムージー', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  { name: 'フルーツサラダ', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  { name: '焼き魚', mood: 'サッパリ', time_of_days: [ '朝', '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
 
-  # サッパリ系 - 昼食・夜食
-  { name: 'ざるそば', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
-  { name: 'うどん', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'そうめん', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
-  { name: 'ひやむぎ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
-  { name: '冷やし中華', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '中華' ] },
-  { name: 'お茶漬け', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'サラダ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
-  { name: 'シーザーサラダ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
-  { name: 'コブサラダ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
-  { name: '豆腐サラダ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
-  { name: '海藻サラダ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏' ], genres: [ '和食' ] },
-  { name: 'ポテトサラダ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
-  { name: '冷奴', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '夏' ], genres: [ '和食' ] },
-  { name: '湯豆腐', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
-  { name: '野菜炒め', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '中華' ] },
-  { name: '水ナスの浅漬け', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ '和食' ] },
-  { name: '浅漬け', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '夏' ], genres: [ '和食' ] },
-  { name: '酢の物', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  # 昼食・夜食（定番）
+  { name: 'ざるそば', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  { name: 'うどん', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'そうめん', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  { name: 'ひやむぎ', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  { name: '冷やし中華', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '中華' ] },
+  { name: 'お茶漬け', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
+  { name: '寿司', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '和食' ] },
+  { name: '刺身', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
+  { name: 'しゃぶしゃぶ', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: '海鮮丼', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  { name: '鉄火丼', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  { name: 'ちらし寿司', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春' ], genres: [ '和食' ] },
+  { name: '手巻き寿司', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
+  { name: 'おでん', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: '肉じゃが', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: '山形風芋煮', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: '宮城風芋煮', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: '芋の子汁', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+
+  # パスタ類
+  { name: 'ペペロンチーノ', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  { name: 'きのこパスタ', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+
+  # サラダ・副菜
+  { name: 'サラダ', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  { name: 'シーザーサラダ', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  { name: 'コブサラダ', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
+  { name: '豆腐サラダ', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '和食' ] },
+  { name: '海藻サラダ', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏' ], genres: [ '和食' ] },
+  { name: 'ポテトサラダ', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
+  { name: '冷奴', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  { name: '湯豆腐', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '和食' ] },
+  { name: '野菜炒め', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏', '秋' ], genres: [ '中華' ] },
+  { name: '水ナスの浅漬け', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  { name: '浅漬け', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  { name: '酢の物', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '夏' ], genres: [ '和食' ] },
+
+  # 洋食（煮込み・オーブン料理）
+  { name: 'シチュー', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+
+  # エスニック（メジャーなもの）
+  { name: 'グリーンカレー', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
+  { name: 'パッタイ', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
+  { name: 'トムヤムクン', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
+  { name: 'フォー', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ 'エスニック' ] },
 
   # スープ類
-  { name: 'コンソメスープ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'ミネストローネ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'コーンスープ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'わかめスープ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏' ], genres: [ '和食' ] },
-  { name: '春雨スープ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏' ], genres: [ '中華' ] },
-  { name: '卵スープ', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '中華' ] },
-  { name: 'クラムチャウダー', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'コンソメスープ', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'ミネストローネ', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'コーンスープ', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'わかめスープ', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏' ], genres: [ '和食' ] },
+  { name: '春雨スープ', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '夏' ], genres: [ '中華' ] },
+  { name: '卵スープ', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '中華' ] },
+  { name: 'クラムチャウダー', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] },
 
   # その他サッパリ系
-  { name: '茶碗蒸し', category: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
-  { name: 'カプレーゼ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '洋食' ] },
-  { name: 'カルパッチョ', category: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
-  { name: 'サンドイッチ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
+  { name: '茶碗蒸し', mood: 'サッパリ', time_of_days: [ '夜' ], seasons: [ '春', '秋', '冬' ], genres: [ '和食' ] },
+  { name: 'カプレーゼ', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '洋食' ] },
+  { name: 'カルパッチョ', mood: 'サッパリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  { name: 'サンドイッチ', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋' ], genres: [ '洋食' ] },
 
   # デザート
-  { name: 'かき氷', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
-  { name: 'スパイスコーラ', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ 'その他' ] },
-  { name: 'アイスクリーム', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '洋食' ] },
-  { name: 'ミントアイス', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '洋食' ] },
-  { name: 'フルーツサンド', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
-  { name: 'プリン', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '洋食' ] },
-  { name: 'ゼリー', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '洋食' ] },
-  { name: 'ハーブティー', category: 'サッパリ', time_of_days: [ '朝', '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'その他' ] },
-  { name: 'チャイ', category: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ 'その他' ] },
-  { name: 'スパイスクッキー', category: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] }
+  { name: 'かき氷', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '和食' ] },
+  { name: 'スパイスコーラ', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ 'その他' ] },
+  { name: 'アイスクリーム', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '洋食' ] },
+  { name: 'ミントアイス', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '洋食' ] },
+  { name: 'フルーツサンド', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏' ], genres: [ '洋食' ] },
+  { name: 'プリン', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ '洋食' ] },
+  { name: 'ゼリー', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ '洋食' ] },
+  { name: 'ハーブティー', mood: 'サッパリ', time_of_days: [ '朝', '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'その他' ] },
+  { name: 'チャイ', mood: 'サッパリ', time_of_days: [ '朝' ], seasons: [ '秋', '冬' ], genres: [ 'その他' ] },
+  { name: 'スパイスクッキー', mood: 'サッパリ', time_of_days: [ '昼' ], seasons: [ '秋', '冬' ], genres: [ '洋食' ] }
 ]
-
-# 廃止した料理を明示的に削除
-Dish.where(name: [ 'ミントゼリー' ]).destroy_all
 
 foods_data.each do |food_data|
   dish = Dish.find_or_initialize_by(name: food_data[:name])
@@ -321,8 +329,8 @@ foods_data.each do |food_data|
     )
   end
 
-  label_values = {
-    "気分" => Array(food_data[:category]),
+  condition_labels = {
+    "気分" => Array(food_data[:mood]),
     "時間帯" => food_data[:time_of_days],
     "季節" => food_data[:seasons],
     "ジャンル" => food_data[:genres],
@@ -331,7 +339,7 @@ foods_data.each do |food_data|
     SPICE_LABEL => spice_names_for(dish.name)
   }
 
-  label_values.each do |label, names|
+  condition_labels.each do |label, names|
     sync_label_tags(dish: dish, label: label, names: names)
   end
 end
