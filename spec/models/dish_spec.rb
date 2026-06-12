@@ -83,6 +83,20 @@ RSpec.describe Dish, type: :model do
     end
   end
 
+  describe '#category_names_for_label' do
+    it 'returns unique category names for the label' do
+      dish = FactoryBot.create(:dish, name: 'ミネストローネ')
+      home_scene = FactoryBot.create(:category, name: '内食')
+      duplicated_home_scene = FactoryBot.create(:category, name: '内食')
+      lunch = FactoryBot.create(:category, name: '昼')
+      FactoryBot.create(:category_content, dish: dish, category: home_scene, label: Dish::SCENE_LABEL)
+      FactoryBot.create(:category_content, dish: dish, category: duplicated_home_scene, label: Dish::SCENE_LABEL)
+      FactoryBot.create(:category_content, dish: dish, category: lunch, label: Dish::TIME_LABEL)
+
+      expect(dish.category_names_for_label(Dish::SCENE_LABEL)).to eq([ '内食' ])
+    end
+  end
+
   describe '.spices_for_name' do
     it 'handles blank and unknown names' do
       aggregate_failures do

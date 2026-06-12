@@ -83,13 +83,17 @@ class Dish < ApplicationRecord
   end
 
   def spice_names_for_display(fallback_names: [])
-    names = category_contents.includes(:category).where(label: SPICE_LABEL).map { |cc| cc.category.name }
+    names = category_names_for_label(SPICE_LABEL)
     return names if names.present?
 
     fallback = Array(fallback_names).compact_blank
     return fallback if fallback.present?
 
     self.class.spices_for_name(name)
+  end
+
+  def category_names_for_label(label)
+    category_contents.includes(:category).where(label: label).map { |cc| cc.category.name }.compact_blank.uniq
   end
 
   def self.spices_for_name(dish_name)

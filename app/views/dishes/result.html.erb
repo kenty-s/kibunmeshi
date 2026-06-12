@@ -22,8 +22,8 @@
         <div class="flex flex-wrap items-center gap-4">
           <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">時間帯</span>
           <div class="flex flex-wrap gap-2">
-            <% @dish.category_contents.includes(:category).where(label: "時間帯").each do |cc| %>
-              <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"><%= cc.category.name %></span>
+            <% @dish.category_names_for_label(Dish::TIME_LABEL).each do |name| %>
+              <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"><%= name %></span>
             <% end %>
           </div>
         </div>
@@ -34,8 +34,8 @@
         <div class="flex flex-wrap items-center gap-4">
           <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">シーン</span>
           <div class="flex flex-wrap gap-2">
-            <% @dish.category_contents.includes(:category).where(label: Dish::SCENE_LABEL).each do |cc| %>
-              <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm"><%= cc.category.name %></span>
+            <% @dish.category_names_for_label(Dish::SCENE_LABEL).each do |name| %>
+              <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm"><%= name %></span>
             <% end %>
           </div>
         </div>
@@ -46,8 +46,8 @@
         <div class="flex flex-wrap items-center gap-4">
           <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">季節</span>
           <div class="flex flex-wrap gap-2">
-            <% @dish.category_contents.includes(:category).where(label: "季節").each do |cc| %>
-              <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm"><%= cc.category.name %></span>
+            <% @dish.category_names_for_label(Dish::SEASON_LABEL).each do |name| %>
+              <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm"><%= name %></span>
             <% end %>
           </div>
         </div>
@@ -60,8 +60,8 @@
         <div class="flex flex-wrap items-center gap-4">
           <span class="text-xl font-bold text-gray-900 min-w-[4.5rem]">ジャンル</span>
           <div class="flex flex-wrap gap-2">
-            <% @dish.category_contents.includes(:category).where(label: "ジャンル").each do |cc| %>
-              <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"><%= cc.category.name %></span>
+            <% @dish.category_names_for_label(Dish::GENRE_LABEL).each do |name| %>
+              <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm"><%= name %></span>
             <% end %>
           </div>
         </div>
@@ -72,8 +72,8 @@
         <div class="flex flex-wrap items-center gap-4">
           <span class="text-xl font-bold text-gray-900 min-w-[6rem]">味覚・刺激</span>
           <div class="flex flex-wrap gap-2">
-            <% @dish.category_contents.includes(:category).where(label: Dish::TASTE_LABEL).each do |cc| %>
-              <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-sm"><%= cc.category.name %></span>
+            <% @dish.category_names_for_label(Dish::TASTE_LABEL).each do |name| %>
+              <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-sm"><%= name %></span>
             <% end %>
           </div>
         </div>
