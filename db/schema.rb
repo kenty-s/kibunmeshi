@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_23_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_12_061000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -89,6 +89,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_23_000000) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_categories_on_name_unique", unique: true, where: "(name IS NOT NULL)"
   end
 
   create_table "category_contents", force: :cascade do |t|
@@ -97,6 +98,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_23_000000) do
     t.string "label"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index "dish_id, category_id, COALESCE(label, ''::character varying)", name: "index_category_contents_unique_normalized_label", unique: true
     t.index ["category_id"], name: "index_category_contents_on_category_id"
     t.index ["dish_id"], name: "index_category_contents_on_dish_id"
   end

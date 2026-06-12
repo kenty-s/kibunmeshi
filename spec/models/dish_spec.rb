@@ -28,9 +28,9 @@ RSpec.describe Dish, type: :model do
     let!(:spice_category_name) { "spec-spice-#{SecureRandom.hex(4)}" }
     let!(:spice_category) { FactoryBot.create(:category, name: spice_category_name) }
     let!(:taste_category_name) { "辛い" }
-    let!(:taste_category) { FactoryBot.create(:category, name: taste_category_name) }
-    let!(:morning_category) { FactoryBot.create(:category, name: "朝") }
-    let!(:night_category) { FactoryBot.create(:category, name: "夜") }
+    let!(:taste_category) { Category.find_or_create_by!(name: taste_category_name) }
+    let!(:morning_category) { Category.find_or_create_by!(name: "朝") }
+    let!(:night_category) { Category.find_or_create_by!(name: "夜") }
 
     let!(:matched_dish) do
       dish = FactoryBot.create(:dish, name: "#{keyword}-料理A")
@@ -70,7 +70,7 @@ RSpec.describe Dish, type: :model do
   describe '#spice_names_for_display' do
     it 'returns spice category names when present' do
       dish = FactoryBot.create(:dish, name: '料理A')
-      spice = FactoryBot.create(:category, name: 'クミン')
+      spice = Category.find_or_create_by!(name: 'クミン')
       FactoryBot.create(:category_content, dish: dish, category: spice, label: Dish::SPICE_LABEL)
 
       expect(dish.spice_names_for_display).to contain_exactly('クミン')
@@ -84,13 +84,11 @@ RSpec.describe Dish, type: :model do
   end
 
   describe '#category_names_for_label' do
-    it 'returns unique category names for the label' do
+    it 'returns category names for the requested label only' do
       dish = FactoryBot.create(:dish, name: 'ミネストローネ')
-      home_scene = FactoryBot.create(:category, name: '内食')
-      duplicated_home_scene = FactoryBot.create(:category, name: '内食')
-      lunch = FactoryBot.create(:category, name: '昼')
+      home_scene = Category.find_or_create_by!(name: '内食')
+      lunch = Category.find_or_create_by!(name: '昼')
       FactoryBot.create(:category_content, dish: dish, category: home_scene, label: Dish::SCENE_LABEL)
-      FactoryBot.create(:category_content, dish: dish, category: duplicated_home_scene, label: Dish::SCENE_LABEL)
       FactoryBot.create(:category_content, dish: dish, category: lunch, label: Dish::TIME_LABEL)
 
       expect(dish.category_names_for_label(Dish::SCENE_LABEL)).to eq([ '内食' ])
