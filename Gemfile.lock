@@ -288,7 +288,7 @@ GEM
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
-    psych (5.3.1)
+    psych (5.4.0)
       date
       stringio
     public_suffix (7.0.5)
@@ -443,11 +443,10 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.2.0)
-    tailwindcss-rails (4.4.0)
+    tailwindcss-rails (4.5.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
-    tailwindcss-ruby (4.1.16)
-    tailwindcss-ruby (4.1.16-x86_64-linux-gnu)
+    tailwindcss-ruby (4.3.1-x86_64-linux-gnu)
     thor (1.5.0)
     thruster (0.1.16)
     thruster (0.1.16-x86_64-linux)
@@ -478,7 +477,7 @@ GEM
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.8.1)
+    zeitwerk (2.8.2)
 
 PLATFORMS
   x86_64-linux-gnu
@@ -515,7 +514,7 @@ DEPENDENCIES
   solid_cache
   solid_queue
   stimulus-rails
-  tailwindcss-rails (~> 4.4)
+  tailwindcss-rails (~> 4.5)
   thruster
   turbo-rails
   tzinfo-data
