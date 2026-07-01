@@ -224,7 +224,7 @@ foods_data = [
   { name: 'ブリトー', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '夏' ], genres: [ 'エスニック' ] },
   { name: 'プルコギ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '秋', '冬' ], genres: [ 'エスニック' ] },
   { name: 'ビビンバ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'エスニック' ] },
-  { name: 'チヂミ', mood: 'ガッツリ', time_of_days: [ '昼' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'エスニック' ] },
+  { name: 'チヂミ', mood: 'ガッツリ', time_of_days: [ '昼', '夜' ], seasons: [ '春', '夏', '秋', '冬' ], genres: [ 'エスニック' ] },
 
   # サッパリ系
   # 朝食
