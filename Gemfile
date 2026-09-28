@@ -17,7 +17,7 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 # 検索機能
-gem "ransack", "~> 4.0"
+gem "ransack", "~> 5.0"
 # 日本語翻訳
 gem "rails-i18n", "~> 7.0.0"
 # enumのi18n化
